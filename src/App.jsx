@@ -3,6 +3,8 @@ import { ProfileEditForm } from './components/portfolio/profile-edit-form.jsx'
 import { ExperienceSection } from './components/portfolio/experience-section.jsx' // <-- Nueva importación
 
 function App() {
+  const haceDosHoras = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+  
   const mockUser = {
     name: "Mauricio Jaimes",
     headline: "Frontend Developer en Formación",
@@ -11,7 +13,8 @@ function App() {
     githubUrl: "https://github.com",
     linkedinUrl: "https://linkedin.com",
     websiteUrl: "https://portafolio.com",
-    status: "active"
+    status: "active",
+    lastActive: haceDosHoras
   }
 
   const mockExperiences = [

@@ -14,7 +14,7 @@ export function HeroSection({ user }) {
           <div className="flex-1 text-center md:text-left">
             <div className="flex flex-col md:flex-row items-center md:items-center gap-3 mb-2">
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{user?.name || "Tu Nombre"}</h1>
-              <StatusBadge status={user?.status || "active"} />
+              <StatusBadge status={user?.status || "active"} lastActive={user?.lastActive} />
             </div>
             
             <p className="text-lg text-gray-600 mb-4">{user?.headline || "Sin titular"}</p>
