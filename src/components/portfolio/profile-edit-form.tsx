@@ -1,6 +1,7 @@
 import React, { useState, ChangeEvent } from "react"
 import { Camera, Save, Loader2, Code, Briefcase, Globe, FileText } from "lucide-react"
 import type { UserData } from "./hero-section"
+import { ExperienceForm } from "./experience-form"
 
 interface ProfileEditFormProps {
   initialUser: UserData;
@@ -59,7 +60,7 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 mt-8 mb-20">
-      
+
       {/* SECCIÓN 1: INFORMACIÓN BÁSICA */}
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
         <div className="p-6 border-b border-gray-200 bg-gray-50/50">
@@ -76,15 +77,32 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
           <div className="grid gap-4">
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">Nombre Completo</label>
-              <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none" />
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
+              />
             </div>
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">Titular</label>
-              <input type="text" name="headline" value={formData.headline} onChange={handleChange} className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none" />
+              <input
+                type="text"
+                name="headline"
+                value={formData.headline}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
+              />
             </div>
             <div className="space-y-2 mt-2">
               <label className="block text-sm font-medium text-gray-700">Estado de Disponibilidad</label>
-              <select name="status" value={formData.status} onChange={handleChange} className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+              >
                 <option value="active">🟢 Disponible para contratar</option>
                 <option value="busy">🟠 Trabajando actualmente</option>
                 <option value="incognito">⚪ No disponible (Modo Incógnito)</option>
@@ -103,7 +121,13 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
         <div className="p-6">
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Resumen Profesional</label>
-            <textarea name="bio" value={formData.bio} onChange={handleChange} rows={5} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none resize-none" />
+            <textarea
+              name="bio"
+              value={formData.bio}
+              onChange={handleChange}
+              rows={5}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+            />
             <p className={`text-[11px] text-right font-medium ${bioCharsLeft <= 50 ? 'text-red-500' : 'text-gray-400'}`}>
               {bioCharsLeft} caracteres restantes
             </p>
@@ -117,37 +141,77 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
           <h3 className="text-lg font-semibold text-gray-900">Presencia en la Red</h3>
         </div>
         <div className="p-6 space-y-4">
-          
+
           <div>
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gray-100 rounded-md"><Code className="w-5 h-5" /></div>
-              <input type="url" name="githubUrl" value={formData.githubUrl} onChange={handleChange} placeholder="https://github.com/tu-usuario" className={`flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${errors.githubUrl ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'} text-sm`} />
+              <div className="p-2 bg-gray-100 rounded-md">
+                <Code className="w-5 h-5" />
+              </div>
+              <input
+                type="url"
+                name="githubUrl"
+                value={formData.githubUrl}
+                onChange={handleChange}
+                placeholder="https://github.com/tu-usuario"
+                className={`flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${errors.githubUrl ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'} text-sm`}
+              />
             </div>
-            {errors.githubUrl && <p className="text-red-500 text-[11px] mt-1 ml-12">{errors.githubUrl}</p>}
+            {errors.githubUrl && (
+              <p className="text-red-500 text-[11px] mt-1 ml-12">{errors.githubUrl}</p>
+            )}
           </div>
 
           <div>
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-50 rounded-md"><Briefcase className="w-5 h-5 text-blue-600" /></div>
-              <input type="url" name="linkedinUrl" value={formData.linkedinUrl} onChange={handleChange} placeholder="https://linkedin.com/in/tu-perfil" className={`flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${errors.linkedinUrl ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'} text-sm`} />
+              <div className="p-2 bg-blue-50 rounded-md">
+                <Briefcase className="w-5 h-5 text-blue-600" />
+              </div>
+              <input
+                type="url"
+                name="linkedinUrl"
+                value={formData.linkedinUrl}
+                onChange={handleChange}
+                placeholder="https://linkedin.com/in/tu-perfil"
+                className={`flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${errors.linkedinUrl ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'} text-sm`}
+              />
             </div>
-            {errors.linkedinUrl && <p className="text-red-500 text-[11px] mt-1 ml-12">{errors.linkedinUrl}</p>}
+            {errors.linkedinUrl && (
+              <p className="text-red-500 text-[11px] mt-1 ml-12">{errors.linkedinUrl}</p>
+            )}
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-50 rounded-md"><Globe className="w-5 h-5 text-green-600" /></div>
-            <input type="url" name="websiteUrl" value={formData.websiteUrl} onChange={handleChange} placeholder="https://tu-sitio.com" className="flex-1 px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-sm border-gray-300" />
+            <div className="p-2 bg-green-50 rounded-md">
+              <Globe className="w-5 h-5 text-green-600" />
+            </div>
+            <input
+              type="url"
+              name="websiteUrl"
+              value={formData.websiteUrl}
+              onChange={handleChange}
+              placeholder="https://tu-sitio.com"
+              className="flex-1 px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-sm border-gray-300"
+            />
           </div>
 
         </div>
       </div>
 
+      {/* SECCIÓN 4: EXPERIENCIA LABORAL */}
+      <ExperienceForm />
+
+      {/* BOTÓN GUARDAR */}
       <div className="flex justify-end">
-        <button onClick={handleSave} disabled={isLoading} className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all shadow-md active:scale-95 disabled:opacity-50">
+        <button
+          onClick={handleSave}
+          disabled={isLoading}
+          className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all shadow-md active:scale-95 disabled:opacity-50"
+        >
           {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           Guardar Cambios
         </button>
       </div>
+
     </div>
   )
 }
