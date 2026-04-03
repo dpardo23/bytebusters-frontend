@@ -1,19 +1,25 @@
 import { useState } from "react"
-import { Camera, Save, Loader2, Info, Code, Briefcase, Globe } from "lucide-react"
+import { Camera, Save, Loader2, Code, Briefcase, Globe, FileText } from "lucide-react"
 
 export function ProfileEditForm({ initialUser }) {
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: initialUser?.name || "",
     headline: initialUser?.headline || "",
-    status: initialUser?.status || "active", 
+    status: initialUser?.status || "active",
+    bio: initialUser?.bio || "", 
     githubUrl: initialUser?.githubUrl || "",
     linkedinUrl: initialUser?.linkedinUrl || "",
     websiteUrl: initialUser?.websiteUrl || "",
   })
 
+  const bioLimit = 500;
+  const bioCharsLeft = bioLimit - (formData.bio?.length || 0);
+
   const handleChange = (e) => {
     const { name, value } = e.target
+    if (name === "bio" && value.length > bioLimit) return;
+    
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
@@ -21,7 +27,7 @@ export function ProfileEditForm({ initialUser }) {
     setIsLoading(true)
     setTimeout(() => {
       setIsLoading(false)
-      alert("¡Perfil y estado actualizados!")
+      alert("¡Perfil, estado y biografía actualizados!")
     }, 1000)
   }
 
@@ -49,21 +55,37 @@ export function ProfileEditForm({ initialUser }) {
               <label className="block text-sm font-medium text-gray-700">Titular</label>
               <input type="text" name="headline" value={formData.headline} onChange={handleChange} className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none" />
             </div>
-            
             <div className="space-y-2 mt-2">
               <label className="block text-sm font-medium text-gray-700">Estado de Disponibilidad</label>
-              <select 
-                name="status" 
-                value={formData.status} 
-                onChange={handleChange} 
-                className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none bg-white"
-              >
+              <select name="status" value={formData.status} onChange={handleChange} className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none bg-white">
                 <option value="active">🟢 Disponible para contratar</option>
                 <option value="busy">🟠 Trabajando actualmente</option>
                 <option value="incognito">⚪ No disponible (Modo Incógnito)</option>
               </select>
             </div>
+          </div>
+        </div>
+      </div>
 
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden text-left">
+        <div className="p-6 border-b border-gray-200 bg-gray-50/50 flex items-center gap-2">
+          <FileText className="w-5 h-5 text-gray-500" />
+          <h3 className="text-lg font-semibold text-gray-900">Sobre mí</h3>
+        </div>
+        <div className="p-6">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Resumen Profesional</label>
+            <textarea 
+              name="bio" 
+              value={formData.bio} 
+              onChange={handleChange} 
+              rows="5"
+              placeholder="Escribe un breve resumen sobre tu experiencia, habilidades y lo que buscas en tu próximo rol..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+            />
+            <p className={`text-[11px] text-right font-medium ${bioCharsLeft <= 50 ? 'text-red-500' : 'text-gray-400'}`}>
+              {bioCharsLeft} caracteres restantes
+            </p>
           </div>
         </div>
       </div>
@@ -71,7 +93,6 @@ export function ProfileEditForm({ initialUser }) {
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden text-left">
         <div className="p-6 border-b border-gray-200 bg-gray-50/50">
           <h3 className="text-lg font-semibold text-gray-900">Presencia en la Red</h3>
-          <p className="text-sm text-gray-500">Añade enlaces a tus perfiles profesionales.</p>
         </div>
         <div className="p-6 space-y-4">
           <div className="flex items-center gap-3">
