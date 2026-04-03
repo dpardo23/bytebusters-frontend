@@ -1,6 +1,19 @@
 import { Briefcase, Calendar, MapPin } from "lucide-react"
 
-export function ExperienceSection({ experiences }) {
+export interface ExperienceData {
+  role: string;
+  company: string;
+  location: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+}
+
+interface ExperienceSectionProps {
+  experiences: ExperienceData[];
+}
+
+export function ExperienceSection({ experiences }: ExperienceSectionProps) {
   return (
     <div className="max-w-4xl mx-auto mt-8 mb-8">
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden text-left">

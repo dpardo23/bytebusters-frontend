@@ -1,15 +1,14 @@
-import { HeroSection } from './components/portfolio/hero-section.jsx'
-import { ProfileEditForm } from './components/portfolio/profile-edit-form.jsx'
-import { ExperienceSection } from './components/portfolio/experience-section.jsx' // <-- Nueva importación
+import { HeroSection, UserData } from './components/portfolio/hero-section'
+import { ProfileEditForm } from './components/portfolio/profile-edit-form'
+import { ExperienceSection, ExperienceData } from './components/portfolio/experience-section'
 
 function App() {
   const haceDosHoras = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
   
-  const mockUser = {
+  const mockUser: UserData = {
     name: "Mauricio Jaimes",
     headline: "Frontend Developer en Formación",
     location: "Cochabamba, Bolivia",
-    createdAt: "2024-01-01",
     githubUrl: "https://github.com",
     linkedinUrl: "https://linkedin.com",
     websiteUrl: "https://portafolio.com",
@@ -17,7 +16,7 @@ function App() {
     lastActive: haceDosHoras
   }
 
-  const mockExperiences = [
+  const mockExperiences: ExperienceData[] = [
     {
       role: "Desarrollador Frontend Junior",
       company: "Tech Solutions",

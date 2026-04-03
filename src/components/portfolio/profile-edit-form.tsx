@@ -1,9 +1,14 @@
-import { useState } from "react"
+import React, { useState, ChangeEvent } from "react"
 import { Camera, Save, Loader2, Code, Briefcase, Globe, FileText } from "lucide-react"
+import type { UserData } from "./hero-section"
 
-export function ProfileEditForm({ initialUser }) {
-  const [isLoading, setIsLoading] = useState(false)
-  const [formData, setFormData] = useState({
+interface ProfileEditFormProps {
+  initialUser: UserData;
+}
+
+export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [formData, setFormData] = useState<UserData>({
     name: initialUser?.name || "",
     headline: initialUser?.headline || "",
     status: initialUser?.status || "active",
@@ -13,13 +18,13 @@ export function ProfileEditForm({ initialUser }) {
     websiteUrl: initialUser?.websiteUrl || "",
   })
 
-  const [errors, setErrors] = useState({})
+  const [errors, setErrors] = useState<Record<string, string | null>>({})
 
   const bioLimit = 500;
   const bioCharsLeft = bioLimit - (formData.bio?.length || 0);
 
-  const validateDomain = (name, value) => {
-    if (!value) return null; 
+  const validateDomain = (name: string, value: string): string | null => {
+    if (!value) return null;
     if (name === 'githubUrl' && !value.toLowerCase().includes('github.com')) {
       return "Debe ser una URL válida de GitHub";
     }
@@ -29,7 +34,7 @@ export function ProfileEditForm({ initialUser }) {
     return null;
   }
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     if (name === "bio" && value.length > bioLimit) return;
     
@@ -55,6 +60,7 @@ export function ProfileEditForm({ initialUser }) {
   return (
     <div className="max-w-4xl mx-auto space-y-6 mt-8 mb-20">
       
+      {/* SECCIÓN 1: INFORMACIÓN BÁSICA */}
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
         <div className="p-6 border-b border-gray-200 bg-gray-50/50">
           <h3 className="text-lg font-semibold text-gray-900">Información Básica</h3>
@@ -88,6 +94,7 @@ export function ProfileEditForm({ initialUser }) {
         </div>
       </div>
 
+      {/* SECCIÓN 2: SOBRE MÍ */}
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden text-left">
         <div className="p-6 border-b border-gray-200 bg-gray-50/50 flex items-center gap-2">
           <FileText className="w-5 h-5 text-gray-500" />
@@ -96,7 +103,7 @@ export function ProfileEditForm({ initialUser }) {
         <div className="p-6">
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Resumen Profesional</label>
-            <textarea name="bio" value={formData.bio} onChange={handleChange} rows="5" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none resize-none" />
+            <textarea name="bio" value={formData.bio} onChange={handleChange} rows={5} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none resize-none" />
             <p className={`text-[11px] text-right font-medium ${bioCharsLeft <= 50 ? 'text-red-500' : 'text-gray-400'}`}>
               {bioCharsLeft} caracteres restantes
             </p>
@@ -104,6 +111,7 @@ export function ProfileEditForm({ initialUser }) {
         </div>
       </div>
 
+      {/* SECCIÓN 3: ENLACES SOCIALES */}
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden text-left">
         <div className="p-6 border-b border-gray-200 bg-gray-50/50">
           <h3 className="text-lg font-semibold text-gray-900">Presencia en la Red</h3>

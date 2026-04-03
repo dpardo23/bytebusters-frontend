@@ -1,11 +1,15 @@
 import { Circle } from "lucide-react"
 
-// Función que calcula el tiempo relativo (ej: "hace 5 min", "hace 2 horas")
-function getTimeAgo(dateString) {
+interface StatusBadgeProps {
+  status?: string;
+  lastActive?: string;
+}
+
+function getTimeAgo(dateString: string): string {
   if (!dateString) return "";
   const now = new Date();
   const past = new Date(dateString);
-  const diffInSeconds = Math.floor((now - past) / 1000);
+  const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000);
 
   if (diffInSeconds < 60) return "hace unos segundos";
   const diffInMinutes = Math.floor(diffInSeconds / 60);
@@ -16,10 +20,9 @@ function getTimeAgo(dateString) {
   return `hace ${diffInDays} días`;
 }
 
-export function StatusBadge({ status = "active", lastActive }) {
+export function StatusBadge({ status = "active", lastActive }: StatusBadgeProps) {
   let bgColor, textColor, borderColor, labelText;
   
-  // Calculamos el texto del tiempo solo si hay una fecha
   const timeText = lastActive ? ` • ${getTimeAgo(lastActive)}` : "";
 
   switch (status) {
@@ -27,7 +30,6 @@ export function StatusBadge({ status = "active", lastActive }) {
       bgColor = "bg-green-50";
       textColor = "text-green-600";
       borderColor = "border-green-200";
-      // Añadimos el tiempo relativo SOLO al estado activo o busy
       labelText = `Disponible para contratar${timeText}`;
       break;
     case 'busy':
@@ -40,7 +42,6 @@ export function StatusBadge({ status = "active", lastActive }) {
       bgColor = "bg-gray-50";
       textColor = "text-gray-600";
       borderColor = "border-gray-200";
-      // En incógnito ocultamos el tiempo por privacidad
       labelText = "No disponible";
       break;
     default:

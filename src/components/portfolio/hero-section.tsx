@@ -1,8 +1,24 @@
 import { MapPin, Calendar, Download } from "lucide-react"
-import { StatusBadge } from "./status-badge.jsx"
-import { SocialLinks } from "./social-links.jsx"
+import { StatusBadge } from "./status-badge"
+import { SocialLinks } from "./social-links"
 
-export function HeroSection({ user }) {
+export interface UserData {
+  name?: string;
+  headline?: string;
+  location?: string;
+  status?: string;
+  lastActive?: string;
+  githubUrl?: string;
+  linkedinUrl?: string;
+  websiteUrl?: string;
+  bio?: string;
+}
+
+interface HeroSectionProps {
+  user: UserData;
+}
+
+export function HeroSection({ user }: HeroSectionProps) {
   return (
     <section className="py-16 px-4 bg-gradient-to-b from-blue-50 to-white">
       <div className="container mx-auto max-w-4xl">
