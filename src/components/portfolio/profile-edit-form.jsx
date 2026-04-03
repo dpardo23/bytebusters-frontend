@@ -7,27 +7,48 @@ export function ProfileEditForm({ initialUser }) {
     name: initialUser?.name || "",
     headline: initialUser?.headline || "",
     status: initialUser?.status || "active",
-    bio: initialUser?.bio || "", 
+    bio: initialUser?.bio || "",
     githubUrl: initialUser?.githubUrl || "",
     linkedinUrl: initialUser?.linkedinUrl || "",
     websiteUrl: initialUser?.websiteUrl || "",
   })
 
+  const [errors, setErrors] = useState({})
+
   const bioLimit = 500;
   const bioCharsLeft = bioLimit - (formData.bio?.length || 0);
+
+  const validateDomain = (name, value) => {
+    if (!value) return null; 
+    if (name === 'githubUrl' && !value.toLowerCase().includes('github.com')) {
+      return "Debe ser una URL válida de GitHub";
+    }
+    if (name === 'linkedinUrl' && !value.toLowerCase().includes('linkedin.com')) {
+      return "Debe ser una URL válida de LinkedIn";
+    }
+    return null;
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target
     if (name === "bio" && value.length > bioLimit) return;
     
     setFormData(prev => ({ ...prev, [name]: value }))
+
+    const errorMessage = validateDomain(name, value);
+    setErrors(prev => ({ ...prev, [name]: errorMessage }));
   }
 
   const handleSave = () => {
+    if (Object.values(errors).some(err => err !== null)) {
+      alert("Por favor, corrige los errores en los enlaces antes de guardar.");
+      return;
+    }
+
     setIsLoading(true)
     setTimeout(() => {
       setIsLoading(false)
-      alert("¡Perfil, estado y biografía actualizados!")
+      alert("¡Perfil guardado con éxito!")
     }, 1000)
   }
 
@@ -75,14 +96,7 @@ export function ProfileEditForm({ initialUser }) {
         <div className="p-6">
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Resumen Profesional</label>
-            <textarea 
-              name="bio" 
-              value={formData.bio} 
-              onChange={handleChange} 
-              rows="5"
-              placeholder="Escribe un breve resumen sobre tu experiencia, habilidades y lo que buscas en tu próximo rol..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-            />
+            <textarea name="bio" value={formData.bio} onChange={handleChange} rows="5" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none resize-none" />
             <p className={`text-[11px] text-right font-medium ${bioCharsLeft <= 50 ? 'text-red-500' : 'text-gray-400'}`}>
               {bioCharsLeft} caracteres restantes
             </p>
@@ -95,18 +109,28 @@ export function ProfileEditForm({ initialUser }) {
           <h3 className="text-lg font-semibold text-gray-900">Presencia en la Red</h3>
         </div>
         <div className="p-6 space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-gray-100 rounded-md"><Code className="w-5 h-5" /></div>
-            <input type="url" name="githubUrl" value={formData.githubUrl} onChange={handleChange} placeholder="https://github.com/tu-usuario" className="flex-1 px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-sm" />
+          
+          <div>
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gray-100 rounded-md"><Code className="w-5 h-5" /></div>
+              <input type="url" name="githubUrl" value={formData.githubUrl} onChange={handleChange} placeholder="https://github.com/tu-usuario" className={`flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${errors.githubUrl ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'} text-sm`} />
+            </div>
+            {errors.githubUrl && <p className="text-red-500 text-[11px] mt-1 ml-12">{errors.githubUrl}</p>}
           </div>
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-50 rounded-md"><Briefcase className="w-5 h-5 text-blue-600" /></div>
-            <input type="url" name="linkedinUrl" value={formData.linkedinUrl} onChange={handleChange} placeholder="https://linkedin.com/in/tu-perfil" className="flex-1 px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-sm" />
+
+          <div>
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-50 rounded-md"><Briefcase className="w-5 h-5 text-blue-600" /></div>
+              <input type="url" name="linkedinUrl" value={formData.linkedinUrl} onChange={handleChange} placeholder="https://linkedin.com/in/tu-perfil" className={`flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${errors.linkedinUrl ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'} text-sm`} />
+            </div>
+            {errors.linkedinUrl && <p className="text-red-500 text-[11px] mt-1 ml-12">{errors.linkedinUrl}</p>}
           </div>
+
           <div className="flex items-center gap-3">
             <div className="p-2 bg-green-50 rounded-md"><Globe className="w-5 h-5 text-green-600" /></div>
-            <input type="url" name="websiteUrl" value={formData.websiteUrl} onChange={handleChange} placeholder="https://tu-sitio.com" className="flex-1 px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-sm" />
+            <input type="url" name="websiteUrl" value={formData.websiteUrl} onChange={handleChange} placeholder="https://tu-sitio.com" className="flex-1 px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-sm border-gray-300" />
           </div>
+
         </div>
       </div>
 
