@@ -10,7 +10,8 @@ function App() {
     createdAt: "2024-01-01",
     githubUrl: "https://github.com",
     linkedinUrl: "https://linkedin.com",
-    websiteUrl: "https://portafolio.com"
+    websiteUrl: "https://portafolio.com",
+    status: "active"
   }
 
   const mockExperiences = [

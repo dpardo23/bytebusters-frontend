@@ -1,4 +1,5 @@
 import { MapPin, Calendar, Code, Briefcase, Globe, Download } from "lucide-react"
+import { StatusBadge } from "./status-badge.jsx"
 
 export function HeroSection({ user }) {
   return (
@@ -11,7 +12,11 @@ export function HeroSection({ user }) {
           </div>
 
           <div className="flex-1 text-center md:text-left">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{user?.name || "Tu Nombre"}</h1>
+            <div className="flex flex-col md:flex-row items-center md:items-center gap-3 mb-2">
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{user?.name || "Tu Nombre"}</h1>
+              <StatusBadge status={user?.status || "active"} />
+            </div>
+            
             <p className="text-lg text-gray-600 mb-4">{user?.headline || "Sin titular"}</p>
             
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-sm text-gray-500 mb-6">
@@ -20,7 +25,6 @@ export function HeroSection({ user }) {
             </div>
 
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
-
               {user?.githubUrl && (
                 <a href={user.githubUrl} target="_blank" className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                   <Code className="w-4 h-4 mr-2" /> GitHub
@@ -31,7 +35,6 @@ export function HeroSection({ user }) {
                   <Briefcase className="w-4 h-4 mr-2" /> LinkedIn
                 </a>
               )}
-
               {user?.websiteUrl && (
                 <a href={user.websiteUrl} target="_blank" className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                   <Globe className="w-4 h-4 mr-2" /> Web
