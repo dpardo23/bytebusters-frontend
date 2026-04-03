@@ -22,7 +22,7 @@ export function ExperienceForm() {
 
     if (name === "endDate" && expData.startDate) {
       if (new Date(value) < new Date(expData.startDate)) {
-        setError("La fecha de fin no puede ser anterior al inicio.");
+        setError("La fecha final no puede ser anterior a la fecha de inicio.");
       } else setError("");
     }
   };
@@ -70,14 +70,20 @@ export function ExperienceForm() {
             />
           </div>
           <div className="w-full space-y-1">
-            <label className="block text-xs text-gray-500 font-medium">Fecha de fin</label>
+            <label className="block text-xs text-gray-500 font-medium">Fecha final</label>
             <input
               type="date"
               name="endDate"
               onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md outline-none ${error ? "border-red-500" : ""}`}
+              disabled={!expData.startDate}
+              className={`w-full px-3 py-2 border rounded-md outline-none
+                ${error ? "border-red-500" : ""}
+                ${!expData.startDate ? "bg-gray-100 text-gray-400 cursor-not-allowed" : ""}`}
             />
             {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+            {!expData.startDate && (
+              <p className="text-xs text-gray-400 mt-1">Primero selecciona la fecha de inicio.</p>
+            )}
           </div>
         </div>
       </div>
