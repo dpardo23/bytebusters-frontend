@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, AlertCircle } from "lucide-react";
 
 interface EducationData {
   school: string;
@@ -14,11 +14,32 @@ export function EducationForm() {
     school: "", degree: "", startDate: "", endDate: "", isCurrent: false
   });
 
+  const [dateError, setDateError] = useState<string>("");
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
+
     if (type === "checkbox") {
       setEduData(prev => ({ ...prev, isCurrent: checked, endDate: checked ? "" : prev.endDate }));
+      setDateError("");
     } else {
+      // Validación: fecha fin no puede ser anterior a fecha inicio
+      if (name === "endDate" && eduData.startDate && value) {
+        if (new Date(value) < new Date(eduData.startDate)) {
+          setDateError("La fecha de fin no puede ser anterior a la de inicio");
+        } else {
+          setDateError("");
+        }
+      }
+
+      if (name === "startDate" && eduData.endDate && value) {
+        if (new Date(eduData.endDate) < new Date(value)) {
+          setDateError("La fecha de fin no puede ser anterior a la de inicio");
+        } else {
+          setDateError("");
+        }
+      }
+
       setEduData(prev => ({ ...prev, [name]: value }));
     }
   };
@@ -45,6 +66,20 @@ export function EducationForm() {
           onChange={handleChange}
           className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
         />
+
+        <label className="flex items-center gap-2 cursor-pointer group">
+          <input
+            type="checkbox"
+            name="isCurrent"
+            checked={eduData.isCurrent}
+            onChange={handleChange}
+            className="w-4 h-4 accent-blue-600"
+          />
+          <span className="text-sm text-gray-700 group-hover:text-blue-600 transition-colors">
+            Actualmente estudiando aquí
+          </span>
+        </label>
+
         <div className="flex gap-4">
           <div className="w-full space-y-1">
             <label className="block text-xs text-gray-500 font-medium">Fecha de inicio</label>
@@ -52,22 +87,34 @@ export function EducationForm() {
               type="date"
               name="startDate"
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-md outline-none"
+              className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div className="w-full space-y-1">
-            <label className="block text-xs text-gray-500 font-medium">Fecha de fin</label>
+            <label className="block text-xs text-gray-500 font-medium">Fecha final</label>
             <input
               type="date"
               name="endDate"
               onChange={handleChange}
-              disabled={eduData.isCurrent}
-              className={`w-full px-3 py-2 border rounded-md outline-none
-                ${!eduData.startDate ? "bg-gray-100 text-gray-400 cursor-not-allowed" : ""}
-                ${eduData.isCurrent ? "bg-gray-100 text-gray-400 cursor-not-allowed" : ""}`}
+              disabled={eduData.isCurrent || !eduData.startDate}
+              className={`w-full px-3 py-2 border rounded-md outline-none transition-colors
+                ${dateError ? "border-red-500 focus:ring-2 focus:ring-red-500" : "focus:ring-2 focus:ring-blue-500"}
+                ${eduData.isCurrent || !eduData.startDate ? "bg-gray-100 text-gray-400 cursor-not-allowed" : ""}`}
             />
+            {!eduData.startDate && !eduData.isCurrent && (
+              <p className="text-xs text-gray-400 mt-1 ml-1">
+                Primero selecciona la fecha de inicio
+              </p>
+            )}
           </div>
         </div>
+
+        {dateError && (
+          <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-lg text-red-600 text-sm">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            {dateError}
+          </div>
+        )}
       </div>
     </div>
   );
