@@ -12,6 +12,7 @@ export interface UserData {
   linkedinUrl?: string;
   websiteUrl?: string;
   bio?: string;
+  isGuest?: boolean;
 }
 
 interface HeroSectionProps {
@@ -19,6 +20,12 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ user }: HeroSectionProps) {
+
+  const handleCopyUrl = () => {
+    navigator.clipboard.writeText(window.location.href);
+    alert("¡Enlace del portafolio copiado!");
+  };
+
   return (
     <section className="py-16 px-4 bg-gradient-to-b from-blue-50 to-white">
       <div className="container mx-auto max-w-4xl">
@@ -43,15 +50,30 @@ export function HeroSection({ user }: HeroSectionProps) {
             </div>
 
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
-              <SocialLinks 
-                githubUrl={user?.githubUrl} 
-                linkedinUrl={user?.linkedinUrl} 
-                websiteUrl={user?.websiteUrl} 
-              />
-              
+
+              {!user?.isGuest ? (
+                <SocialLinks
+                  githubUrl={user?.githubUrl}
+                  linkedinUrl={user?.linkedinUrl}
+                  websiteUrl={user?.websiteUrl}
+                />
+              ) : (
+                <div className="text-xs font-medium text-amber-700 bg-amber-50 px-3 py-2 rounded-lg border border-amber-100">
+                  🔒 Inicia sesión para ver redes sociales
+                </div>
+              )}
+
+              <button
+                onClick={handleCopyUrl}
+                className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+              >
+                🔗 Compartir Perfil
+              </button>
+
               <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
                 <Download className="w-4 h-4 mr-2" /> Descargar CV
               </button>
+
             </div>
             
           </div>

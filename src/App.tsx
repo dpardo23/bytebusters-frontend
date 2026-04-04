@@ -14,7 +14,7 @@ function App() {
     linkedinUrl: "https://linkedin.com",
     websiteUrl: "https://portafolio.com",
     status: "active",
-    lastActive: haceDosHoras
+    lastActive: haceDosHoras,
   }
 
   const mockExperiences: ExperienceData[] = [
@@ -55,7 +55,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <HeroSection user={mockUser} />
+      <HeroSection user={{ ...mockUser, isGuest: false }} />
       <div className="px-4">
         <ProfileEditForm initialUser={mockUser} />
         <ExperienceSection experiences={mockExperiences} />
