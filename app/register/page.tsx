@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { useAuth } from '@/contexts/auth-context'
 import { Code2, Github, Linkedin, Loader2, Eye, EyeOff, Briefcase, Users } from 'lucide-react'
+import { toast } from 'sonner'
 import type { UserRole } from '@/lib/mock-data'
 
 export default function RegisterPage() {
@@ -90,6 +91,7 @@ export default function RegisterPage() {
     const result = await register({ email, password, name, role })
 
     if (result.success) {
+      toast.success('Cuenta creada correctamente')
       router.push('/dashboard')
     } else {
       setError(result.error || 'Error al crear la cuenta')
