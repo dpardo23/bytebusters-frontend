@@ -7,7 +7,7 @@ interface AuthContextType {
   user: User | null
   isLoading: boolean
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
-  register: (data: RegisterData) => Promise<{ success: boolean; error?: string }>
+  register: (data: RegisterData, options?: { signal?: AbortSignal }) => Promise<{ success: boolean; error?: string }>
   logout: () => void
   switchRole: (role: UserRole) => void
 }
@@ -20,6 +20,27 @@ interface RegisterData {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
+
+const delay = (ms: number, signal?: AbortSignal): Promise<void> =>
+  new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException('Aborted', 'AbortError'))
+      return
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      signal?.removeEventListener('abort', onAbort)
+      resolve()
+    }, ms)
+
+    const onAbort = () => {
+      window.clearTimeout(timeoutId)
+      signal?.removeEventListener('abort', onAbort)
+      reject(new DOMException('Aborted', 'AbortError'))
+    }
+
+    signal?.addEventListener('abort', onAbort, { once: true })
+  })
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
@@ -55,8 +76,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { success: true }
   }
 
-  const register = async (data: RegisterData): Promise<{ success: boolean; error?: string }> => {
-    await new Promise((resolve) => setTimeout(resolve, 800))
+  const register = async (data: RegisterData, options?: { signal?: AbortSignal }): Promise<{ success: boolean; error?: string }> => {
+    await delay(800, options?.signal)
 
     const exists = mockUsers.find((currentUser) => currentUser.email.toLowerCase() === data.email.toLowerCase())
 

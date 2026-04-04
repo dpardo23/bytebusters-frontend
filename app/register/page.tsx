@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -16,6 +16,8 @@ import type { UserRole } from '@/lib/mock-data'
 export default function RegisterPage() {
   const router = useRouter()
   const { register } = useAuth()
+  const registerAbortControllerRef = useRef<AbortController | null>(null)
+  const isMountedRef = useRef(true)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -30,6 +32,13 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false
+      registerAbortControllerRef.current?.abort()
+    }
+  }, [])
 
   const validateField = (field: 'name' | 'email' | 'password' | 'confirmPassword') => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -87,17 +96,41 @@ export default function RegisterPage() {
       return
     }
 
+    registerAbortControllerRef.current?.abort()
+    const controller = new AbortController()
+    registerAbortControllerRef.current = controller
+
     setIsLoading(true)
-    const result = await register({ email, password, name, role })
+    try {
+      const result = await register({ email, password, name, role }, { signal: controller.signal })
 
-    if (result.success) {
-      toast.success('Cuenta creada correctamente')
-      router.push('/dashboard')
-    } else {
-      setError(result.error || 'Error al crear la cuenta')
+      if (controller.signal.aborted || !isMountedRef.current) {
+        return
+      }
+
+      if (result.success) {
+        toast.success('Cuenta creada correctamente')
+        router.push('/dashboard')
+      } else {
+        setError(result.error || 'Error al crear la cuenta')
+      }
+    } catch (caughtError) {
+      if (caughtError instanceof DOMException && caughtError.name === 'AbortError') {
+        return
+      }
+
+      if (isMountedRef.current) {
+        setError('No se pudo completar el registro')
+      }
+    } finally {
+      if (registerAbortControllerRef.current === controller) {
+        registerAbortControllerRef.current = null
+      }
+
+      if (isMountedRef.current) {
+        setIsLoading(false)
+      }
     }
-
-    setIsLoading(false)
   }
 
   return (
