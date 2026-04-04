@@ -14,50 +14,18 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('system')
+  const [theme, setTheme] = useState<Theme>('light')
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light')
-
-  useEffect(() => {
-    const stored = localStorage.getItem('devfolio-theme') as Theme | null
-    if (stored) {
-      setTheme(stored)
-    }
-  }, [])
 
   useEffect(() => {
     const root = window.document.documentElement
     root.classList.remove('light', 'dark')
-
-    let resolved: 'light' | 'dark'
-    if (theme === 'system') {
-      resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    } else {
-      resolved = theme
-    }
-
-    root.classList.add(resolved)
-    setResolvedTheme(resolved)
-    localStorage.setItem('devfolio-theme', theme)
-  }, [theme])
-
-  useEffect(() => {
-    if (theme !== 'system') return
-
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    const handleChange = (event: MediaQueryListEvent) => {
-      const root = window.document.documentElement
-      root.classList.remove('light', 'dark')
-      const resolved = event.matches ? 'dark' : 'light'
-      root.classList.add(resolved)
-      setResolvedTheme(resolved)
-    }
-
-    mediaQuery.addEventListener('change', handleChange)
-    return () => mediaQuery.removeEventListener('change', handleChange)
+    root.classList.add('light')
+    setResolvedTheme('light')
   }, [theme])
 
   const toggleTheme = () => {
-    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
+    setTheme('light')
   }
 
   return (
