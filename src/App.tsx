@@ -2,11 +2,12 @@ import { HeroSection, UserData } from './components/portfolio/hero-section'
 import { ProfileEditForm } from './components/portfolio/profile-edit-form'
 import { ExperienceSection, ExperienceData } from './components/portfolio/experience-section'
 import { EducationSection, EducationData } from './components/portfolio/education-section'
+import { GuestConversion } from './components/portfolio/guest-conversion'
 
 function App() {
   const haceDosHoras = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
   
-  const isGuestMode = false; //cambia entre true/false para alternar modo invitado
+  const isGuestMode = true;
 
   const mockUser: UserData = {
     name: "Mauricio Jaimes",
@@ -65,6 +66,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
+      <GuestConversion isGuest={isGuestMode} />
       <HeroSection user={{ ...mockUser, isGuest: isGuestMode }} />
       <div className="px-4">
         <ProfileEditForm initialUser={mockUser} />
