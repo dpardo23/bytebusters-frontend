@@ -1,6 +1,7 @@
 import { HeroSection, UserData } from './components/portfolio/hero-section'
 import { ProfileEditForm } from './components/portfolio/profile-edit-form'
 import { ExperienceSection, ExperienceData } from './components/portfolio/experience-section'
+import { EducationSection, EducationData } from './components/portfolio/education-section'
 
 function App() {
   const haceDosHoras = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
@@ -35,12 +36,30 @@ function App() {
     }
   ]
 
+  const mockEducation: EducationData[] = [
+    {
+      school: "Universidad Mayor de San Simón",
+      degree: "Ingeniería de Sistemas",
+      startDate: "2026-04-03",
+      endDate: "",
+      isCurrent: true
+    },
+    {
+      school: "Platzi",
+      degree: "Curso de Desarrollo Web Frontend",
+      startDate: "2024-01-01",
+      endDate: "2024-06-01",
+      isCurrent: false
+    }
+  ]
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <HeroSection user={mockUser} />
       <div className="px-4">
         <ProfileEditForm initialUser={mockUser} />
         <ExperienceSection experiences={mockExperiences} />
+        <EducationSection education={mockEducation} />
       </div>
     </div>
   )
