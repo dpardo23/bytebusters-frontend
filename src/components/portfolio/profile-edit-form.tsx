@@ -2,6 +2,7 @@ import React, { useState, ChangeEvent } from "react"
 import { Camera, Save, Loader2, Code, Briefcase, Globe, FileText } from "lucide-react"
 import type { UserData } from "./hero-section"
 import { ExperienceForm } from "./experience-form"
+import { EducationForm } from "./education-form"
 
 interface ProfileEditFormProps {
   initialUser: UserData;
@@ -199,6 +200,9 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
 
       {/* SECCIÓN 4: EXPERIENCIA LABORAL */}
       <ExperienceForm />
+
+      {/* SECCIÓN 5: EDUCACIÓN */}
+      <EducationForm />
 
       {/* BOTÓN GUARDAR */}
       <div className="flex justify-end">
