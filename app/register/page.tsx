@@ -20,38 +20,69 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [role, setRole] = useState<UserRole>('professional')
-  const [emailError, setEmailError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  })
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const validateEmail = (emailValue: string) => {
+  const validateField = (field: 'name' | 'email' | 'password' | 'confirmPassword') => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailValue) {
-      setEmailError('El email es requerido')
-    } else if (!emailRegex.test(emailValue)) {
-      setEmailError('Formato de email inválido')
-    } else {
-      setEmailError('')
+
+    let message = ''
+
+    if (field === 'name') {
+      if (!name.trim()) {
+        message = 'El nombre es requerido'
+      }
     }
+
+    if (field === 'email') {
+      if (!email.trim()) {
+        message = 'El email es requerido'
+      } else if (!emailRegex.test(email)) {
+        message = 'Formato de email inválido'
+      }
+    }
+
+    if (field === 'password') {
+      if (!password) {
+        message = 'La contrasena es requerida'
+      } else if (password.length < 6) {
+        message = 'La contrasena debe tener al menos 6 caracteres'
+      }
+    }
+
+    if (field === 'confirmPassword') {
+      if (!confirmPassword) {
+        message = 'Debes confirmar la contrasena'
+      } else if (confirmPassword !== password) {
+        message = 'Las contrasenas no coinciden'
+      }
+    }
+
+    setFieldErrors((previous) => ({ ...previous, [field]: message }))
+    return message
+  }
+
+  const validateForm = () => {
+    const nameMessage = validateField('name')
+    const emailMessage = validateField('email')
+    const passwordMessage = validateField('password')
+    const confirmPasswordMessage = validateField('confirmPassword')
+
+    return !nameMessage && !emailMessage && !passwordMessage && !confirmPasswordMessage
   }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError('')
 
-    if (emailError || !email) {
-      validateEmail(email)
-      return
-    }
-
-    if (password !== confirmPassword) {
-      setError('Las contrasenas no coinciden')
-      return
-    }
-
-    if (password.length < 6) {
-      setError('La contrasena debe tener al menos 6 caracteres')
+    if (!validateForm()) {
       return
     }
 
@@ -117,7 +148,17 @@ export default function RegisterPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="name">Nombre completo</Label>
-                <Input id="name" type="text" placeholder="Tu nombre" value={name} onChange={(event) => setName(event.target.value)} required />
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Tu nombre"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  onBlur={() => validateField('name')}
+                  className={fieldErrors.name ? 'border-destructive' : ''}
+                  required
+                />
+                {fieldErrors.name ? <p className="text-sm text-destructive mt-1">{fieldErrors.name}</p> : null}
               </div>
 
               <div className="space-y-2">
@@ -128,11 +169,11 @@ export default function RegisterPage() {
                   placeholder="tu@email.com"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
-                  onBlur={() => validateEmail(email)}
-                  className={emailError ? 'border-destructive' : ''}
+                  onBlur={() => validateField('email')}
+                  className={fieldErrors.email ? 'border-destructive' : ''}
                   required
                 />
-                {emailError && <p className="text-sm text-destructive mt-1">{emailError}</p>}
+                {fieldErrors.email ? <p className="text-sm text-destructive mt-1">{fieldErrors.email}</p> : null}
               </div>
 
               <div className="space-y-2">
@@ -144,17 +185,30 @@ export default function RegisterPage() {
                     placeholder="Minimo 6 caracteres"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
+                    onBlur={() => validateField('password')}
+                    className={fieldErrors.password ? 'border-destructive' : ''}
                     required
                   />
                   <Button type="button" variant="ghost" size="icon" className="absolute right-0 top-0 h-full px-3" onClick={() => setShowPassword(!showPassword)}>
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </Button>
                 </div>
+                {fieldErrors.password ? <p className="text-sm text-destructive mt-1">{fieldErrors.password}</p> : null}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirmar contrasena</Label>
-                <Input id="confirmPassword" type="password" placeholder="Repite la contrasena" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} required />
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="Repite la contrasena"
+                  value={confirmPassword}
+                  onChange={(event) => setConfirmPassword(event.target.value)}
+                  onBlur={() => validateField('confirmPassword')}
+                  className={fieldErrors.confirmPassword ? 'border-destructive' : ''}
+                  required
+                />
+                {fieldErrors.confirmPassword ? <p className="text-sm text-destructive mt-1">{fieldErrors.confirmPassword}</p> : null}
               </div>
 
               {error ? <p className="text-sm text-destructive">{error}</p> : null}
