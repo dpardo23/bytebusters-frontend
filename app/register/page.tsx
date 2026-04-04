@@ -20,13 +20,30 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [role, setRole] = useState<UserRole>('professional')
+  const [emailError, setEmailError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
+  const validateEmail = (emailValue: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailValue) {
+      setEmailError('El email es requerido')
+    } else if (!emailRegex.test(emailValue)) {
+      setEmailError('Formato de email inválido')
+    } else {
+      setEmailError('')
+    }
+  }
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError('')
+
+    if (emailError || !email) {
+      validateEmail(email)
+      return
+    }
 
     if (password !== confirmPassword) {
       setError('Las contrasenas no coinciden')
@@ -105,7 +122,17 @@ export default function RegisterPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="tu@email.com" value={email} onChange={(event) => setEmail(event.target.value)} required />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="tu@email.com"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  onBlur={() => validateEmail(email)}
+                  className={emailError ? 'border-destructive' : ''}
+                  required
+                />
+                {emailError && <p className="text-sm text-destructive mt-1">{emailError}</p>}
               </div>
 
               <div className="space-y-2">
