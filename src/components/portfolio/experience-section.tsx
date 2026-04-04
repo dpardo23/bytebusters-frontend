@@ -1,4 +1,4 @@
-import { Briefcase, Calendar, MapPin } from "lucide-react"
+import { Briefcase, Calendar, MapPin, Clock } from "lucide-react"
 
 export interface ExperienceData {
   role: string;
@@ -12,6 +12,17 @@ export interface ExperienceData {
 interface ExperienceSectionProps {
   experiences: ExperienceData[];
   isGuest?: boolean;
+}
+
+function calculateDuration(start: string, end: string): string {
+  if (!start) return "";
+  const d1 = new Date(start);
+  const d2 = end === "Presente" ? new Date() : new Date(end);
+  const diffTime = Math.abs(d2.getTime() - d1.getTime());
+  const diffMonths = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30));
+  const years = Math.floor(diffMonths / 12);
+  const months = diffMonths % 12;
+  return `${years > 0 ? `${years} año${years > 1 ? "s" : ""} ` : ""}${months} mes${months > 1 ? "es" : ""}`;
 }
 
 export function ExperienceSection({ experiences, isGuest = false }: ExperienceSectionProps) {
@@ -47,6 +58,9 @@ export function ExperienceSection({ experiences, isGuest = false }: ExperienceSe
                   <div className="flex flex-wrap gap-4 text-xs text-gray-500 mb-3">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3.5 h-3.5" /> {exp.startDate} - {exp.endDate}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5" /> {calculateDuration(exp.startDate, exp.endDate)}
                     </span>
                     <span className="flex items-center gap-1">
                       <MapPin className="w-3.5 h-3.5" /> {exp.location}
