@@ -6,6 +6,8 @@ import { EducationSection, EducationData } from './components/portfolio/educatio
 function App() {
   const haceDosHoras = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
   
+  const isGuestMode = false; //cambia entre true/false para alternar modo invitado
+
   const mockUser: UserData = {
     name: "Mauricio Jaimes",
     headline: "Frontend Developer en Formación",
@@ -33,6 +35,14 @@ function App() {
       startDate: "Jun 2024",
       endDate: "Dic 2024",
       description: "Mantenimiento de sitios web, maquetación de nuevos componentes interactivos y optimización de rendimiento."
+    },
+    {
+      role: "Desarrollador Freelance",
+      company: "Cliente Privado",
+      location: "Remoto",
+      startDate: "Ene 2024",
+      endDate: "May 2024",
+      description: "Este trabajo se verá borroso para usuarios invitados."
     }
   ]
 
@@ -55,10 +65,10 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <HeroSection user={{ ...mockUser, isGuest: false }} />
+      <HeroSection user={{ ...mockUser, isGuest: isGuestMode }} />
       <div className="px-4">
         <ProfileEditForm initialUser={mockUser} />
-        <ExperienceSection experiences={mockExperiences} />
+        <ExperienceSection experiences={mockExperiences} isGuest={isGuestMode} />
         <EducationSection education={mockEducation} />
       </div>
     </div>
