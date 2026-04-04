@@ -7,7 +7,7 @@ import { GuestConversion } from './components/portfolio/guest-conversion'
 function App() {
   const haceDosHoras = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
   
-  const isGuestMode = true; // Cambia a false para mostrar el portafolio completo
+  const isGuestMode = false; // Cambia a false para mostrar el portafolio completo
 
   const mockUser: UserData = {
     name: "Mauricio Jaimes",

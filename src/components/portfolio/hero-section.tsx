@@ -1,6 +1,7 @@
-import { MapPin, Calendar, Download } from "lucide-react"
+import { MapPin, Calendar, Download, Link, Check } from "lucide-react"
 import { StatusBadge } from "./status-badge"
 import { SocialLinks } from "./social-links"
+import { useState } from "react"
 
 export interface UserData {
   name?: string;
@@ -20,10 +21,12 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ user }: HeroSectionProps) {
+  const [copied, setCopied] = useState(false);
 
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(window.location.href);
-    alert("¡Enlace del portafolio copiado!");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -63,11 +66,26 @@ export function HeroSection({ user }: HeroSectionProps) {
                 </div>
               )}
 
+              {/* Botón Compartir con feedback visual */}
               <button
                 onClick={handleCopyUrl}
-                className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                className={`inline-flex items-center gap-2 px-3 py-1.5 border rounded-md text-sm font-medium transition-all duration-300
+                  ${copied
+                    ? "bg-green-50 border-green-300 text-green-700"
+                    : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+                  }`}
               >
-                🔗 Compartir Perfil
+                {copied ? (
+                  <>
+                    <Check className="w-4 h-4" />
+                    ¡Enlace copiado!
+                  </>
+                ) : (
+                  <>
+                    <Link className="w-4 h-4" />
+                    Compartir Perfil
+                  </>
+                )}
               </button>
 
               <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
@@ -75,7 +93,6 @@ export function HeroSection({ user }: HeroSectionProps) {
               </button>
 
             </div>
-            
           </div>
         </div>
       </div>
