@@ -1,14 +1,19 @@
 import Footer from '../components/shared/Footer'
+import FeaturesSection from '../components/shared/FeaturesSection'
+import HeroSection from '../components/shared/HeroSection'
 import Navbar from '../components/shared/Navbar'
+import PricingSection from '../components/shared/PricingSection'
 
 export default function LandingPage() {
   return (
-    <>
+    <div className='min-h-screen bg-background text-foreground'>
       <Navbar />
       <main>
-        <h1>ByteBusters</h1>
+        <HeroSection />
+        <FeaturesSection />
+        <PricingSection />
       </main>
       <Footer />
-    </>
+    </div>
   )
 }
