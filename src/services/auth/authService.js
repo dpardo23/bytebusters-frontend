@@ -35,7 +35,8 @@ export async function registerAccount(data) {
     id: `user-${Date.now()}`,
     email: normalizedEmail,
     name: data.name,
-    role: data.role,
+    role: data.role || 'professional',
+    avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(data.name || normalizedEmail)}`,
     createdAt: new Date().toISOString(),
   }
 

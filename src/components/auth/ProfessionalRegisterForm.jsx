@@ -37,10 +37,10 @@ export default function ProfessionalRegisterForm() {
     }
 
     setIsSubmitting(true)
-    const result = await register({ name, email, password, role: 'professional' })
+    const result = await register({ name, email, password })
 
     if (result.success) {
-      navigate('/dashboard')
+      navigate('/')
       return
     }
 
@@ -65,18 +65,6 @@ export default function ProfessionalRegisterForm() {
         <p className='mt-2 text-muted-foreground'>Completa el formulario para comenzar a crear tu portafolio.</p>
 
         <form className='mt-6 space-y-4' onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor='professional-role' className='mb-2 block text-sm font-medium text-foreground'>
-              Tipo de cuenta
-            </label>
-            <div id='professional-role' className='flex h-24 w-full items-center justify-center rounded-xl border-2 border-primary bg-primary/5'>
-              <div className='text-center'>
-                <p className='font-semibold text-foreground'>Profesional</p>
-                <p className='text-sm text-muted-foreground'>Crear portafolio</p>
-              </div>
-            </div>
-          </div>
-
           <div>
             <label htmlFor='fullName' className='mb-2 block text-sm font-medium text-foreground'>
               Nombre completo

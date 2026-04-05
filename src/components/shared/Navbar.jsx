@@ -1,9 +1,13 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Code2, Menu, Moon, X } from 'lucide-react'
+import { ChevronDown, Code2, Menu, Moon, X } from 'lucide-react'
+import useAuth from '../../hooks/auth/useAuth'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
+  const { user } = useAuth()
+  const userAvatar = user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user?.name || 'user')}`
 
   return (
     <header className='fixed inset-x-0 top-0 z-50 border-b border-border bg-background/90 backdrop-blur'>
@@ -36,15 +40,59 @@ export default function Navbar() {
           >
             <Moon className='h-5 w-5' />
           </button>
-          <span className='cursor-not-allowed rounded-md px-4 py-2 font-medium text-foreground/60'>
-            Iniciar Sesion
-          </span>
-          <Link
-            to='/auth/register/professional'
-            className='rounded-xl bg-primary px-5 py-2 font-semibold text-primary-foreground transition-opacity hover:opacity-90'
-          >
-            Crear Cuenta
-          </Link>
+          {!user ? (
+            <span className='cursor-not-allowed rounded-md px-4 py-2 font-medium text-foreground/60'>
+              Iniciar Sesion
+            </span>
+          ) : null}
+          {user ? (
+            <div className='relative'>
+              <button
+                type='button'
+                className='inline-flex min-w-52 items-center justify-between gap-3 rounded-xl border border-border bg-background px-3 py-2 text-foreground hover:bg-accent'
+                onClick={() => setIsProfileMenuOpen((prev) => !prev)}
+              >
+                <span className='inline-flex items-center gap-2'>
+                  <img src={userAvatar} alt={user.name} className='h-7 w-7 rounded-full bg-muted' />
+                  <span className='max-w-32 truncate font-medium'>{user.name}</span>
+                </span>
+                <ChevronDown className='h-4 w-4 text-muted-foreground' />
+              </button>
+
+              {isProfileMenuOpen ? (
+                <div className='absolute right-0 top-[calc(100%+8px)] z-50 w-56 overflow-hidden rounded-xl border border-border bg-card shadow-lg'>
+                  <div className='border-b border-border px-4 py-3 font-semibold text-foreground'>Mi cuenta</div>
+                  <div className='p-2'>
+                    <button
+                      type='button'
+                      className='w-full rounded-lg px-3 py-2 text-left text-foreground hover:bg-accent'
+                    >
+                      Mi perfil
+                    </button>
+                    <button
+                      type='button'
+                      className='w-full rounded-lg px-3 py-2 text-left text-foreground hover:bg-accent'
+                    >
+                      Configuracion
+                    </button>
+                    <button
+                      type='button'
+                      className='w-full rounded-lg px-3 py-2 text-left text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10'
+                    >
+                      Cerrar sesion
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          ) : (
+            <Link
+              to='/auth/register/professional'
+              className='rounded-xl bg-primary px-5 py-2 font-semibold text-primary-foreground transition-opacity hover:opacity-90'
+            >
+              Crear Cuenta
+            </Link>
+          )}
         </div>
 
         <div className='flex items-center gap-2 md:hidden'>
@@ -79,16 +127,25 @@ export default function Navbar() {
             <span className='cursor-not-allowed rounded-md px-2 py-2 text-muted-foreground/60'>
               Explorar Talento
             </span>
-            <span className='cursor-not-allowed rounded-md px-2 py-2 text-muted-foreground/60'>
-              Iniciar Sesion
-            </span>
-            <Link
-              to='/auth/register/professional'
-              className='rounded-xl bg-primary px-4 py-2 text-center font-semibold text-primary-foreground'
-              onClick={() => setIsOpen(false)}
-            >
-              Crear Cuenta
-            </Link>
+            {!user ? (
+              <span className='cursor-not-allowed rounded-md px-2 py-2 text-muted-foreground/60'>
+                Iniciar Sesion
+              </span>
+            ) : null}
+            {user ? (
+              <div className='inline-flex min-w-52 items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-foreground'>
+                <img src={userAvatar} alt={user.name} className='h-7 w-7 rounded-full bg-muted' />
+                <span className='max-w-36 truncate font-medium'>{user.name}</span>
+              </div>
+            ) : (
+              <Link
+                to='/auth/register/professional'
+                className='rounded-xl bg-primary px-4 py-2 text-center font-semibold text-primary-foreground'
+                onClick={() => setIsOpen(false)}
+              >
+                Crear Cuenta
+              </Link>
+            )}
           </div>
         </div>
       )}
