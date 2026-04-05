@@ -63,12 +63,15 @@ export default function Navbar() {
                 <div className='absolute right-0 top-[calc(100%+8px)] z-50 w-56 overflow-hidden rounded-xl border border-border bg-card shadow-lg'>
                   <div className='border-b border-border px-4 py-3 font-semibold text-foreground'>Mi cuenta</div>
                   <div className='p-2'>
-                    <button
-                      type='button'
-                      className='w-full rounded-lg px-3 py-2 text-left text-foreground hover:bg-accent'
+                    
+                    <Link
+                       to='/profile'
+                       onClick={() => setIsProfileMenuOpen(false)}
+                      className='block w-full rounded-lg px-3 py-2 text-left text-foreground hover:bg-accent'
                     >
                       Mi perfil
-                    </button>
+                    </Link>
+
                     <button
                       type='button'
                       className='w-full rounded-lg px-3 py-2 text-left text-foreground hover:bg-accent'
