@@ -4,6 +4,7 @@ import {
   clearAuthenticatedUser,
   getAuthState,
   initializeAuthState,
+  markRegisteredUser,
   setAuthenticatedUser,
 } from '../../store/auth/authStore'
 
@@ -28,6 +29,7 @@ export function useAuth() {
       async register(data) {
         const result = await registerAccount(data)
         if (result.success) {
+          markRegisteredUser()
           setAuthenticatedUser(result.user)
           setAuthSnapshot({ ...getAuthState() })
         }

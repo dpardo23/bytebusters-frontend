@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Eye, EyeOff, LoaderCircle, Network, Users, Webhook } from 'lucide-react'
+import { Check, Eye, EyeOff, LoaderCircle, Network, Users, Webhook } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
@@ -16,6 +16,7 @@ export default function RecruiterRegisterForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -40,7 +41,10 @@ export default function RecruiterRegisterForm() {
     const result = await register({ name, email, password })
 
     if (result.success) {
-      navigate('/')
+      setShowSuccessModal(true)
+      window.setTimeout(() => {
+        navigate('/')
+      }, 1200)
       return
     }
 
@@ -49,7 +53,8 @@ export default function RecruiterRegisterForm() {
   }
 
   return (
-    <div className='w-full max-w-2xl px-4'>
+    <>
+      <div className='w-full max-w-2xl px-4'>
       <div className='mx-auto mb-8 max-w-xl text-center'>
         <Link to='/' className='mb-2 inline-flex items-center gap-2 text-4xl font-bold text-foreground'>
           <span className='inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground'>
@@ -166,6 +171,23 @@ export default function RecruiterRegisterForm() {
           </Link>
         </p>
       </div>
-    </div>
+      </div>
+
+      {showSuccessModal ? (
+        <div className='fixed inset-0 z-[60] flex items-center justify-center bg-black/35 px-4'>
+          <div className='w-full max-w-sm rounded-2xl border border-border bg-card p-6 text-center shadow-xl'>
+            <div className='mb-4 flex justify-center'>
+              <span className='inline-flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg'>
+                <Check className='h-11 w-11 stroke-[3]' />
+              </span>
+            </div>
+            <h3 className='text-xl font-bold text-foreground'>Cuenta creada</h3>
+            <p className='mt-2 text-sm text-muted-foreground'>
+              Tu cuenta se creo con exito. Te estamos llevando al inicio.
+            </p>
+          </div>
+        </div>
+      ) : null}
+    </>
   )
 }
