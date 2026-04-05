@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { login, logout, registerAccount } from '../../services/auth/authService'
+import type { AuthCredentials, AuthResult, AuthState, RegisterAccountData } from '../../types/auth.types'
 import {
   clearAuthenticatedUser,
   getAuthState,
@@ -8,15 +9,21 @@ import {
   setAuthenticatedUser,
 } from '../../store/auth/authStore'
 
-export function useAuth() {
-  const [authSnapshot, setAuthSnapshot] = useState(() => getAuthState())
+interface AuthActions {
+  login(credentials: AuthCredentials): Promise<AuthResult>
+  register(data: RegisterAccountData): Promise<AuthResult>
+  logout(): Promise<void>
+}
+
+export function useAuth(): AuthState & AuthActions {
+  const [authSnapshot, setAuthSnapshot] = useState<AuthState>(() => ({ ...getAuthState() }))
 
   useEffect(() => {
     initializeAuthState()
     setAuthSnapshot({ ...getAuthState() })
   }, [])
 
-  const actions = useMemo(
+  const actions = useMemo<AuthActions>(
     () => ({
       async login(credentials) {
         const result = await login(credentials)

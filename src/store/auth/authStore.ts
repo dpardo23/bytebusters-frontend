@@ -1,4 +1,6 @@
-const authState = {
+import type { AuthState, AuthUser } from '../../types/auth.types'
+
+const authState: AuthState = {
   user: null,
   token: null,
 }
@@ -6,15 +8,15 @@ const authState = {
 const STORAGE_KEY = 'devfolio-user'
 const REGISTERED_KEY = 'devfolio-has-registered'
 
-export function getAuthState() {
+export function getAuthState(): AuthState {
   return authState
 }
 
-export function setAuthState(nextState) {
+export function setAuthState(nextState: Partial<AuthState>): void {
   Object.assign(authState, nextState)
 }
 
-export function initializeAuthState() {
+export function initializeAuthState(): void {
   try {
     const hasRegistered = localStorage.getItem(REGISTERED_KEY) === '1'
     if (!hasRegistered) {
@@ -25,7 +27,7 @@ export function initializeAuthState() {
 
     const storedUser = localStorage.getItem(STORAGE_KEY)
     if (storedUser) {
-      authState.user = JSON.parse(storedUser)
+      authState.user = JSON.parse(storedUser) as AuthUser
     }
   } catch {
     localStorage.removeItem(STORAGE_KEY)
@@ -33,16 +35,16 @@ export function initializeAuthState() {
   }
 }
 
-export function setAuthenticatedUser(user) {
+export function setAuthenticatedUser(user: AuthUser): void {
   authState.user = user
   localStorage.setItem(STORAGE_KEY, JSON.stringify(user))
 }
 
-export function markRegisteredUser() {
+export function markRegisteredUser(): void {
   localStorage.setItem(REGISTERED_KEY, '1')
 }
 
-export function clearAuthenticatedUser() {
+export function clearAuthenticatedUser(): void {
   authState.user = null
   authState.token = null
   localStorage.removeItem(STORAGE_KEY)

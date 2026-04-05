@@ -16,84 +16,86 @@ bytebusters-frontend/
 
 		components/
 			auth/
-				LoginForm.jsx
-				ProfessionalRegisterForm.jsx
-				RecruiterRegisterForm.jsx
-				OAuthButtons.jsx
+				LoginForm.tsx
+				ProfessionalRegisterForm.tsx
+				RecruiterRegisterForm.tsx
+				OAuthButtons.tsx
 			profile/
-				ProfileHeader.jsx
-				StatusBadge.jsx
-				CareerTimeline.jsx
-				GuestProfileView.jsx
+				ProfileHeader.tsx
+				StatusBadge.tsx
+				CareerTimeline.tsx
+				GuestProfileView.tsx
 			ui/
-				Button.jsx
-				Input.jsx
-				Modal.jsx
-				Avatar.jsx
-				Skeleton.jsx
+				Button.tsx
+				Input.tsx
+				Modal.tsx
+				Avatar.tsx
+				Skeleton.tsx
 			shared/
-				Navbar.jsx
-				Footer.jsx
+				Navbar.tsx
+				Footer.tsx
 
 		layouts/
-			AuthGuard.jsx
-			RoleGuard.jsx
+				AuthGuard.tsx
+				RoleGuard.tsx
 
 		pages/
-			LandingPage.jsx
+				LandingPage.tsx
 			auth/
-				LoginPage.jsx
-				ProfessionalRegisterPage.jsx
-				RecruiterRegisterPage.jsx
+					LoginPage.tsx
+					ProfessionalRegisterPage.tsx
+					RecruiterRegisterPage.tsx
 			dashboard/
-				DashboardPage.jsx
+					DashboardPage.tsx
 			profile/
-				ProfilePage.jsx
-				PublicProfilePage.jsx
+					ProfilePage.tsx
+					PublicProfilePage.tsx
 
 		store/
 			auth/
-				authStore.js
+					authStore.ts
 			profile/
-				profileStore.js
+					profileStore.ts
 
 		hooks/
 			auth/
-				useAuth.js
+					useAuth.ts
 			profile/
-				useProfile.js
-			useRoleAccess.js
+					useProfile.ts
+				useRoleAccess.ts
 
 		services/
 			auth/
-				authService.js
+					authService.ts
 			profile/
-				profileService.js
+					profileService.ts
 
 		lib/
 			api/
-				httpClient.js
+					httpClient.ts
 			constants/
-				roles.js
+					roles.ts
 			validations/
-				authValidations.js
+					authValidations.ts
 
 		utils/
-			index.js
+				index.ts
 
 		styles/
 			themes/
-				light.js
-				dark.js
+					light.ts
+					dark.ts
 			index.css
+			tsconfig.json
+			vite.config.ts
 
 		types/
-			auth.types.js
-			profile.types.js
+				auth.types.ts
+				profile.types.ts
 
-		App.jsx
-		main.jsx
-		router.jsx
+			App.tsx
+			main.tsx
+			router.tsx
 ```
 
 ## Como leer la estructura

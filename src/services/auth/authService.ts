@@ -1,4 +1,6 @@
-const mockUsers = [
+import type { AuthCredentials, AuthResult, AuthUser, RegisterAccountData } from '../../types/auth.types'
+
+const mockUsers: AuthUser[] = [
   {
     id: 'user-1',
     email: 'ana.garcia@email.com',
@@ -8,7 +10,7 @@ const mockUsers = [
   },
 ]
 
-export async function login(credentials) {
+export async function login(credentials: AuthCredentials): Promise<AuthResult> {
   const foundUser = mockUsers.find(
     (user) => user.email.toLowerCase() === String(credentials.email || '').toLowerCase(),
   )
@@ -23,7 +25,7 @@ export async function login(credentials) {
   }
 }
 
-export async function registerAccount(data) {
+export async function registerAccount(data: RegisterAccountData): Promise<AuthResult> {
   const normalizedEmail = String(data.email || '').trim().toLowerCase()
   const existingUser = mockUsers.find((user) => user.email.toLowerCase() === normalizedEmail)
 
@@ -31,7 +33,7 @@ export async function registerAccount(data) {
     return { success: false, error: 'El email ya esta registrado' }
   }
 
-  const newUser = {
+  const newUser: AuthUser = {
     id: `user-${Date.now()}`,
     email: normalizedEmail,
     name: data.name,
@@ -44,6 +46,6 @@ export async function registerAccount(data) {
   return { success: true, user: newUser }
 }
 
-export async function logout() {
+export async function logout(): Promise<AuthResult> {
   return { success: true }
 }

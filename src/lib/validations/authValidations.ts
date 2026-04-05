@@ -1,12 +1,20 @@
-export function isValidEmail(email) {
+import type { RegisterAccountData } from '../../types/auth.types'
+
+export type RegisterField = 'name' | 'email' | 'password' | 'confirmPassword'
+
+export type RegisterValues = Pick<RegisterAccountData, 'name' | 'email' | 'password'> & {
+  confirmPassword: string
+}
+
+export function isValidEmail(email: string): boolean {
   return /.+@.+\..+/.test(email)
 }
 
-export function isValidPassword(password) {
+export function isValidPassword(password: string): boolean {
   return typeof password === 'string' && password.length >= 6
 }
 
-export function getRegisterFieldError(field, values) {
+export function getRegisterFieldError(field: RegisterField, values: RegisterValues): string {
   const { name, email, password, confirmPassword } = values
 
   if (field === 'name') {
@@ -32,8 +40,8 @@ export function getRegisterFieldError(field, values) {
   return ''
 }
 
-export function getRegisterFieldErrors({ name, email, password, confirmPassword }) {
-  const fieldErrors = {}
+export function getRegisterFieldErrors({ name, email, password, confirmPassword }: RegisterValues) {
+  const fieldErrors: Partial<Record<RegisterField, string>> = {}
 
   if (!name.trim()) {
     fieldErrors.name = 'Ingresa tu nombre completo'

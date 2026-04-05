@@ -1,6 +1,7 @@
 import { getProfileState } from '../../store/profile/profileStore'
+import type { ProfileState } from '../../types/profile.types'
 
-export function useProfile() {
+export function useProfile(): ProfileState {
   return getProfileState()
 }
 
