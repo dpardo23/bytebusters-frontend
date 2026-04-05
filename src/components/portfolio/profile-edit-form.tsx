@@ -83,7 +83,7 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-gray-900"
               />
             </div>
             <div className="space-y-2">
@@ -93,7 +93,7 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
                 name="headline"
                 value={formData.headline}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-gray-900"
               />
             </div>
             <div className="space-y-2 mt-2">
@@ -102,7 +102,7 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none bg-white text-gray-900"
               >
                 <option value="active">🟢 Disponible para contratar</option>
                 <option value="busy">🟠 Trabajando actualmente</option>
@@ -127,7 +127,7 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
               value={formData.bio}
               onChange={handleChange}
               rows={5}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none resize-none text-gray-900"
             />
             <p className={`text-[11px] text-right font-medium ${bioCharsLeft <= 50 ? 'text-red-500' : 'text-gray-400'}`}>
               {bioCharsLeft} caracteres restantes
@@ -154,7 +154,7 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
                 value={formData.githubUrl}
                 onChange={handleChange}
                 placeholder="https://github.com/tu-usuario"
-                className={`flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${errors.githubUrl ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'} text-sm`}
+                className={`flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 text-gray-900 text-sm ${errors.githubUrl ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'}`}
               />
             </div>
             {errors.githubUrl && (
@@ -173,7 +173,7 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
                 value={formData.linkedinUrl}
                 onChange={handleChange}
                 placeholder="https://linkedin.com/in/tu-perfil"
-                className={`flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${errors.linkedinUrl ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'} text-sm`}
+                className={`flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 text-gray-900 text-sm ${errors.linkedinUrl ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'}`}
               />
             </div>
             {errors.linkedinUrl && (
@@ -191,7 +191,7 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
               value={formData.websiteUrl}
               onChange={handleChange}
               placeholder="https://tu-sitio.com"
-              className="flex-1 px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-sm border-gray-300"
+              className="flex-1 px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-gray-900 text-sm border-gray-300"
             />
           </div>
 

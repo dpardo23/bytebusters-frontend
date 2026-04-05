@@ -23,7 +23,6 @@ export function EducationForm() {
       setEduData(prev => ({ ...prev, isCurrent: checked, endDate: checked ? "" : prev.endDate }));
       setDateError("");
     } else {
-      // Validación: fecha fin no puede ser anterior a fecha inicio
       if (name === "endDate" && eduData.startDate && value) {
         if (new Date(value) < new Date(eduData.startDate)) {
           setDateError("La fecha de fin no puede ser anterior a la de inicio");
@@ -57,14 +56,14 @@ export function EducationForm() {
           name="school"
           placeholder="Institución Educativa"
           onChange={handleChange}
-          className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
         />
         <input
           type="text"
           name="degree"
           placeholder="Título obtenido"
           onChange={handleChange}
-          className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
         />
 
         <label className="flex items-center gap-2 cursor-pointer group">
@@ -87,7 +86,7 @@ export function EducationForm() {
               type="date"
               name="startDate"
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             />
           </div>
           <div className="w-full space-y-1">
@@ -97,7 +96,7 @@ export function EducationForm() {
               name="endDate"
               onChange={handleChange}
               disabled={eduData.isCurrent || !eduData.startDate}
-              className={`w-full px-3 py-2 border rounded-md outline-none transition-colors
+              className={`w-full px-3 py-2 border rounded-md outline-none transition-colors text-gray-900
                 ${dateError ? "border-red-500 focus:ring-2 focus:ring-red-500" : "focus:ring-2 focus:ring-blue-500"}
                 ${eduData.isCurrent || !eduData.startDate ? "bg-gray-100 text-gray-400 cursor-not-allowed" : ""}`}
             />

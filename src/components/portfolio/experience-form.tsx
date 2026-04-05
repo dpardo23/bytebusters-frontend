@@ -50,14 +50,14 @@ export function ExperienceForm() {
           name="role"
           placeholder="Cargo o Rol"
           onChange={handleChange}
-          className="w-full px-3 py-2 border rounded-md outline-none"
+          className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
         />
         <input
           type="text"
           name="company"
           placeholder="Empresa"
           onChange={handleChange}
-          className="w-full px-3 py-2 border rounded-md outline-none"
+          className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
         />
         <div className="flex gap-4">
           <div className="w-full space-y-1">
@@ -66,7 +66,7 @@ export function ExperienceForm() {
               type="date"
               name="startDate"
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-md outline-none"
+              className="w-full px-3 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             />
           </div>
           <div className="w-full space-y-1">
@@ -76,8 +76,8 @@ export function ExperienceForm() {
               name="endDate"
               onChange={handleChange}
               disabled={!expData.startDate}
-              className={`w-full px-3 py-2 border rounded-md outline-none
-                ${error ? "border-red-500" : ""}
+              className={`w-full px-3 py-2 border rounded-md outline-none text-gray-900
+                ${error ? "border-red-500 focus:ring-2 focus:ring-red-500" : "focus:ring-2 focus:ring-blue-500"}
                 ${!expData.startDate ? "bg-gray-100 text-gray-400 cursor-not-allowed" : ""}`}
             />
             {error && <p className="text-xs text-red-500 mt-1">{error}</p>}

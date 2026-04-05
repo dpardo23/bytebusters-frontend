@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  font-family: Inter, system-ui, sans-serif;
+  font-family: 'Sora', Inter, system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color: #e2e8f0;
@@ -19,4 +19,5 @@ body {
 
 * {
   box-sizing: border-box;
+  font-family: 'Sora', Inter, system-ui, sans-serif;
 }
