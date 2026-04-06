@@ -1,13 +1,20 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { ChevronDown, Code2, Menu, Moon, X } from 'lucide-react'
 import useAuth from '../../hooks/auth/useAuth'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
-  const { user } = useAuth()
+  const navigate = useNavigate()
+  const { user, logout } = useAuth()
   const userAvatar = user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user?.name || 'user')}`
+
+  async function handleLogout(): Promise<void> {
+    await logout()
+    setIsProfileMenuOpen(false)
+    navigate('/')
+  }
 
   return (
     <header className='fixed inset-x-0 top-0 z-50 border-b border-border bg-background/90 backdrop-blur'>
@@ -80,6 +87,7 @@ export default function Navbar() {
                     </button>
                     <button
                       type='button'
+                      onClick={handleLogout}
                       className='w-full rounded-lg px-3 py-2 text-left text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10'
                     >
                       Cerrar sesion

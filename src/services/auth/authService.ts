@@ -1,5 +1,7 @@
 import type { AuthCredentials, AuthResult, AuthUser, RegisterAccountData } from '../../types/auth.types'
 
+const API_BASE_URL = String(import.meta.env.VITE_API_URL || 'http://localhost:8080').replace(/\/$/, '')
+
 const mockUsers: AuthUser[] = [
   {
     id: 'user-1',
@@ -47,5 +49,23 @@ export async function registerAccount(data: RegisterAccountData): Promise<AuthRe
 }
 
 export async function logout(): Promise<AuthResult> {
+  const token = localStorage.getItem('devfolio-token')
+
+  if (!token) {
+    return { success: true }
+  }
+
+  try {
+    await fetch(`${API_BASE_URL}/api/auth/logout`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+  } catch {
+    // If backend is unavailable, frontend still proceeds with local logout.
+  }
+
+  localStorage.removeItem('devfolio-token')
   return { success: true }
 }

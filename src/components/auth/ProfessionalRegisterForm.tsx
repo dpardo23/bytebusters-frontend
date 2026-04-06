@@ -1,10 +1,43 @@
 import { useEffect, useState } from 'react'
-import { Briefcase, CheckCircle2, Eye, EyeOff, LoaderCircle, Network, Webhook } from 'lucide-react'
+import { Briefcase, CheckCircle2, Eye, EyeOff, LoaderCircle } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
 import { getRegisterFieldError } from '../../lib/validations/authValidations'
 import useAuth from '../../hooks/auth/useAuth'
+
+const API_BASE_URL = String(import.meta.env.VITE_API_URL || 'http://localhost:8080').replace(/\/$/, '')
+
+function GoogleIcon() {
+  return (
+    <svg viewBox='0 0 24 24' aria-hidden='true' className='h-5 w-5'>
+      <path
+        fill='#4285F4'
+        d='M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.31h6.44a5.51 5.51 0 0 1-2.39 3.62v3h3.87c2.26-2.08 3.57-5.15 3.57-8.66z'
+      />
+      <path
+        fill='#34A853'
+        d='M12 24c3.24 0 5.96-1.07 7.95-2.9l-3.87-3c-1.07.72-2.44 1.14-4.08 1.14-3.14 0-5.8-2.12-6.75-4.96H1.25v3.11A12 12 0 0 0 12 24z'
+      />
+      <path
+        fill='#FBBC05'
+        d='M5.25 14.28A7.2 7.2 0 0 1 4.87 12c0-.79.14-1.56.38-2.28V6.61H1.25A12 12 0 0 0 0 12c0 1.93.46 3.75 1.25 5.39l4-3.11z'
+      />
+      <path
+        fill='#EA4335'
+        d='M12 4.77c1.76 0 3.34.61 4.58 1.8l3.43-3.43C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.25 6.61l4 3.11c.95-2.84 3.61-4.95 6.75-4.95z'
+      />
+    </svg>
+  )
+}
+
+function GithubIcon() {
+  return (
+    <svg viewBox='0 0 24 24' aria-hidden='true' className='h-5 w-5 fill-current'>
+      <path d='M12 0a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.03c-3.34.72-4.04-1.61-4.04-1.61-.55-1.38-1.33-1.74-1.33-1.74-1.08-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.06 1.83 2.79 1.3 3.47 1 .1-.77.42-1.3.76-1.6-2.67-.3-5.47-1.34-5.47-5.94 0-1.31.47-2.39 1.24-3.23-.12-.3-.54-1.53.12-3.18 0 0 1.01-.33 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.77.84 1.24 1.92 1.24 3.23 0 4.61-2.81 5.64-5.49 5.94.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.83.58A12 12 0 0 0 12 0z' />
+    </svg>
+  )
+}
 
 export default function ProfessionalRegisterForm() {
   const navigate = useNavigate()
@@ -17,6 +50,10 @@ export default function ProfessionalRegisterForm() {
   const [fieldErrors, setFieldErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
+
+  const redirectToOAuthProvider = (provider: 'github' | 'google') => {
+    window.location.replace(`${API_BASE_URL}/api/auth/oauth/${provider}`)
+  }
 
   const updateFieldError = (field, nextValues) => {
     setFieldErrors((currentErrors) => ({
@@ -215,12 +252,22 @@ export default function ProfessionalRegisterForm() {
           </div>
 
           <div className='grid grid-cols-2 gap-4'>
-            <Button variant='outline' className='w-full'>
-              <Webhook className='h-4 w-4' /> GitHub
-            </Button>
-            <Button variant='outline' className='w-full'>
-              <Network className='h-4 w-4' /> LinkedIn
-            </Button>
+            <button
+              type='button'
+              onClick={() => redirectToOAuthProvider('github')}
+              className='inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-[#24292f] px-4 font-medium text-white shadow-sm transition-colors hover:bg-[#1b1f23]'
+            >
+              <GithubIcon />
+              Registrate con GitHub
+            </button>
+            <button
+              type='button'
+              onClick={() => redirectToOAuthProvider('google')}
+              className='inline-flex h-11 w-full items-center justify-center gap-2 rounded-md border border-[#dadce0] bg-white px-4 font-medium text-[#3c4043] shadow-sm transition-colors hover:bg-[#f8f9fa]'
+            >
+              <GoogleIcon />
+              Registrate con Google
+            </button>
           </div>
 
           <p className='mt-6 text-center text-sm text-muted-foreground'>
