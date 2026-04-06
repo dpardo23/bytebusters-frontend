@@ -30,11 +30,11 @@ export function ProfileHeader({ user }: HeroSectionProps) {
   };
 
   return (
-    <section className="py-16 px-4 bg-gradient-to-b from-blue-50 to-white">
+    <section className="py-16 px-4 bg-linear-to-b from-blue-50 to-white">
       <div className="container mx-auto max-w-4xl">
         <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
           
-          <div className="w-32 h-32 flex-shrink-0 rounded-full border-4 border-white shadow-xl overflow-hidden bg-gray-100 flex items-center justify-center">
+          <div className="w-32 h-32 shrink-0 rounded-full border-4 border-white shadow-xl overflow-hidden bg-gray-100 flex items-center justify-center">
             <span className="text-4xl font-bold text-gray-400">{user?.name?.charAt(0) || "U"}</span>
           </div>
 

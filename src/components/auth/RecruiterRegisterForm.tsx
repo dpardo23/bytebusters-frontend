@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { CheckCircle2, Eye, EyeOff, LoaderCircle, Network, Users, Webhook } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
-import { getRegisterFieldError } from '../../lib/validations/authValidations'
+import { getRegisterFieldError, type RegisterField, type RegisterValues } from '../../lib/validations/authValidations'
 import useAuth from '../../hooks/auth/useAuth'
 
 export default function RecruiterRegisterForm() {
@@ -14,11 +14,11 @@ export default function RecruiterRegisterForm() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [fieldErrors, setFieldErrors] = useState({})
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<RegisterField, string>>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
 
-  const updateFieldError = (field, nextValues) => {
+  const updateFieldError = (field: RegisterField, nextValues: RegisterValues) => {
     setFieldErrors((currentErrors) => ({
       ...currentErrors,
       [field]: getRegisterFieldError(field, nextValues),
@@ -35,9 +35,9 @@ export default function RecruiterRegisterForm() {
     return () => window.clearTimeout(timeoutId)
   }, [showSuccessModal, navigate])
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const fieldsInOrder = ['name', 'email', 'password', 'confirmPassword']
+    const fieldsInOrder: RegisterField[] = ['name', 'email', 'password', 'confirmPassword']
     const nextValues = { name, email, password, confirmPassword }
     const firstInvalidField = fieldsInOrder.find((field) => getRegisterFieldError(field, nextValues))
 
@@ -59,7 +59,7 @@ export default function RecruiterRegisterForm() {
     }
 
     setFieldErrors({
-      email: result.error || 'No se pudo crear la cuenta',
+      email: ('error' in result && result.error) || 'No se pudo crear la cuenta',
     })
     setIsSubmitting(false)
   }

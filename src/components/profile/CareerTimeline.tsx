@@ -43,7 +43,7 @@ export function CareerTimeline({ experiences, isGuest = false }: ExperienceSecti
               {experiences.map((exp, index) => (
                 <div
                   key={index}
-                  className={`relative pl-8 before:absolute before:left-[11px] before:top-2 before:bottom-[-32px] before:w-[2px] before:bg-gray-200 last:before:hidden
+                  className={`relative pl-8 before:absolute before:left-[11px] before:top-2 before:-bottom-8 before:w-0.5 before:bg-gray-200 last:before:hidden
                     ${isGuest && index >= 2 ? "blur-sm select-none opacity-50" : ""}`}
                 >
                   <div className="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-blue-50 border-2 border-white flex items-center justify-center shadow-sm">
