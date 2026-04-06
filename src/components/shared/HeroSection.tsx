@@ -28,7 +28,7 @@ export default function HeroSection() {
 
           <div className='mb-14 flex flex-col items-center justify-center gap-4 sm:flex-row'>
             <Link
-              to='/auth/register/professional'
+              to='/auth/register'
               className='inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-8 text-lg font-semibold text-primary-foreground transition-opacity hover:opacity-90'
             >
               Crear mi portafolio

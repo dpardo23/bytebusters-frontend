@@ -39,7 +39,7 @@ export async function registerAccount(data: RegisterAccountData): Promise<AuthRe
     id: `user-${Date.now()}`,
     email: normalizedEmail,
     name: data.name,
-    role: data.role || 'professional',
+    role: data.role || 'basic',
     avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(data.name || normalizedEmail)}`,
     createdAt: new Date().toISOString(),
   }

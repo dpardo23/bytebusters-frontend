@@ -1,5 +1,6 @@
 import React, { useState, ChangeEvent } from "react"
-import { Camera, Save, Loader2, Code, Briefcase, Globe, FileText } from "lucide-react"
+import { Camera, CloudUpload, Loader2, Code, Briefcase, Globe, FileText } from "lucide-react"
+import { useNavigate } from 'react-router-dom'
 import type { UserData } from "./ProfileHeader"
 import { ExperienceForm } from "./ExperienceForm"
 import { EducationForm } from "./EducationForm"
@@ -9,6 +10,7 @@ interface ProfileEditFormProps {
 }
 
 export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
+  const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [formData, setFormData] = useState<UserData>({
     name: initialUser?.name || "",
@@ -56,6 +58,7 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
     setTimeout(() => {
       setIsLoading(false)
       alert("¡Perfil guardado con éxito!")
+      navigate('/')
     }, 1000)
   }
 
@@ -211,7 +214,7 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
           disabled={isLoading}
           className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all shadow-md active:scale-95 disabled:opacity-50"
         >
-          {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+          {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CloudUpload className="w-4 h-4" />}
           Guardar Cambios
         </button>
       </div>

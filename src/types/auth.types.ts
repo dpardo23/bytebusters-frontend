@@ -5,7 +5,7 @@ export const AUTH_STATUS = {
 
 export type AuthStatus = (typeof AUTH_STATUS)[keyof typeof AUTH_STATUS]
 
-export type AuthRole = 'professional' | 'recruiter' | 'admin'
+export type AuthRole = 'basic' | 'professional' | 'recruiter' | 'admin'
 
 export interface AuthUser {
   id: string

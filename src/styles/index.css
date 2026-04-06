@@ -99,3 +99,9 @@ h3,
 h4 {
   font-family: var(--font-heading);
 }
+
+/* Hide native password reveal icons when we need custom behavior per field. */
+.hide-native-password-toggle::-ms-reveal,
+.hide-native-password-toggle::-ms-clear {
+  display: none;
+}

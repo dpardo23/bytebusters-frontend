@@ -1,17 +1,19 @@
 import { useEffect, useMemo, useState } from 'react'
 import { login, logout, registerAccount } from '../../services/auth/authService'
-import type { AuthCredentials, AuthResult, AuthState, RegisterAccountData } from '../../types/auth.types'
+import type { AuthCredentials, AuthResult, AuthRole, AuthState, RegisterAccountData } from '../../types/auth.types'
 import {
   clearAuthenticatedUser,
   getAuthState,
   initializeAuthState,
   markRegisteredUser,
   setAuthenticatedUser,
+  updateAuthenticatedUser,
 } from '../../store/auth/authStore'
 
 interface AuthActions {
   login(credentials: AuthCredentials): Promise<AuthResult>
   register(data: RegisterAccountData): Promise<AuthResult>
+  updateRole(role: Extract<AuthRole, 'basic' | 'professional' | 'recruiter'>): void
   logout(): Promise<void>
 }
 
@@ -41,6 +43,10 @@ export function useAuth(): AuthState & AuthActions {
           setAuthSnapshot({ ...getAuthState() })
         }
         return result
+      },
+      updateRole(role) {
+        updateAuthenticatedUser({ role })
+        setAuthSnapshot({ ...getAuthState() })
       },
       async logout() {
         await logout()

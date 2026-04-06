@@ -40,6 +40,20 @@ export function setAuthenticatedUser(user: AuthUser): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(user))
 }
 
+export function updateAuthenticatedUser(nextUserData: Partial<AuthUser>): AuthUser | null {
+  if (!authState.user) {
+    return null
+  }
+
+  authState.user = {
+    ...authState.user,
+    ...nextUserData,
+  }
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(authState.user))
+  return authState.user
+}
+
 export function markRegisteredUser(): void {
   localStorage.setItem(REGISTERED_KEY, '1')
 }

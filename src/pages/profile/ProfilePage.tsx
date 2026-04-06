@@ -1,51 +1,102 @@
-/*import ProfileHeader from '../../components/profile/ProfileHeader'
+import { BriefcaseBusiness, Building2 } from 'lucide-react'
+import type { ReactNode } from 'react'
+import useAuth from '../../hooks/auth/useAuth'
+import { ProfileHeader } from '../../components/profile/ProfileHeader'
+import { ProfileEditForm } from '../../components/profile/ProfileEditForm'
+import RecruiterProfileSetupForm from '../../components/profile/RecruiterProfileSetupForm'
 
-export default function ProfilePage() {
+function RoleCard({
+  title,
+  description,
+  buttonLabel,
+  onSelect,
+  icon,
+}: {
+  title: string
+  description: string
+  buttonLabel: string
+  onSelect: () => void
+  icon: ReactNode
+}) {
   return (
-    <main>
-      <ProfileHeader name='Mi perfil' />
-    </main>
+    <article className='rounded-2xl border border-border bg-card p-6 shadow-sm'>
+      <span className='mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary'>
+        {icon}
+      </span>
+      <h3 className='text-xl font-semibold text-foreground'>{title}</h3>
+      <p className='mt-2 text-sm text-muted-foreground'>{description}</p>
+      <button
+        type='button'
+        onClick={onSelect}
+        className='mt-5 inline-flex h-10 items-center justify-center rounded-lg bg-primary px-4 font-medium text-primary-foreground transition-opacity hover:opacity-90'
+      >
+        {buttonLabel}
+      </button>
+    </article>
   )
-}*/
-
-import React from 'react';
-import useAuth from '../../hooks/auth/useAuth'; // Importación por defecto igual que en tu Navbar
-import { ProfileHeader } from '../../components/profile/ProfileHeader';
-import { ProfileEditForm } from '../../components/profile/ProfileEditForm';
-import { ExperienceForm } from '../../components/profile/ExperienceForm';
-import { EducationForm } from '../../components/profile/EducationForm';
+}
 
 export default function ProfilePage() {
-  const { user } = useAuth(); // Extraemos al usuario de la sesión
+  const { user, updateRole } = useAuth()
 
-  // Mientras carga la sesión, mostramos un pequeño texto
   if (!user) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p className="text-gray-500 animate-pulse">Cargando perfil...</p>
+      <div className='flex min-h-screen items-center justify-center'>
+        <p className='animate-pulse text-gray-500'>Cargando perfil...</p>
       </div>
-    );
+    )
   }
 
-  return (
-    // Agregamos pt-20 (padding-top) para que el Navbar fijo no tape tu cabecera
-    <div className="min-h-screen bg-gray-50 pb-20 pt-20"> 
-      
-      {/* 1. Cabecera del Perfil */}
-      <ProfileHeader user={user} />
-      
-      <div className="max-w-4xl mx-auto px-4 mt-8 space-y-6">
-        
-        {/* 2. Edición de Información Básica y Redes */}
-        <ProfileEditForm initialUser={user} />
-        
-        {/* 3. Formularios de Experiencia y Educación (Mateo) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <ExperienceForm />
-          <EducationForm />
-        </div>
+  const isBasicRole = user.role === 'basic'
+  const isProfessional = user.role === 'professional'
+  const isRecruiter = user.role === 'recruiter'
 
+  return (
+    <div className='min-h-screen bg-gray-50 pb-20 pt-20'>
+      <ProfileHeader user={user} />
+
+      <div className='mx-auto mt-8 max-w-4xl space-y-6 px-4'>
+        {isBasicRole ? (
+          <section className='rounded-2xl border border-border bg-card p-6 shadow-sm'>
+            <h2 className='text-2xl font-semibold text-foreground'>Elige el tipo de cuenta</h2>
+            <p className='mt-2 text-sm text-muted-foreground'>
+              Tu cuenta ya fue creada. Ahora selecciona si usaras DevFolio como profesional o reclutador.
+            </p>
+
+            <div className='mt-6 grid gap-4 md:grid-cols-2'>
+              <RoleCard
+                title='Cuenta profesional'
+                description='Ideal para mostrar experiencia, educacion, proyectos y disponibilidad laboral.'
+                buttonLabel='Quiero ser profesional'
+                onSelect={() => updateRole('professional')}
+                icon={<BriefcaseBusiness className='h-5 w-5' />}
+              />
+              <RoleCard
+                title='Cuenta reclutador'
+                description='Pensada para empresas que desean gestionar vacantes y encontrar talento.'
+                buttonLabel='Quiero ser reclutador'
+                onSelect={() => updateRole('recruiter')}
+                icon={<Building2 className='h-5 w-5' />}
+              />
+            </div>
+          </section>
+        ) : null}
+
+        {!isBasicRole ? (
+          <div className='flex justify-end'>
+            <button
+              type='button'
+              onClick={() => updateRole('basic')}
+              className='inline-flex h-10 items-center justify-center rounded-lg border border-border bg-background px-4 text-sm font-medium text-foreground transition-colors hover:bg-accent'
+            >
+              Cambiar tipo de cuenta
+            </button>
+          </div>
+        ) : null}
+
+        {isProfessional ? <ProfileEditForm initialUser={user} /> : null}
+        {isRecruiter ? <RecruiterProfileSetupForm /> : null}
       </div>
     </div>
-  );
+  )
 }
