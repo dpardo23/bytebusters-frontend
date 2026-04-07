@@ -60,7 +60,7 @@ export default function ProfilePage() {
           <section className='rounded-2xl border border-border bg-card p-6 shadow-sm'>
             <h2 className='text-2xl font-semibold text-foreground'>Elige el tipo de cuenta</h2>
             <p className='mt-2 text-sm text-muted-foreground'>
-              Tu cuenta ya fue creada. Ahora selecciona si usaras DevFolio como profesional o reclutador.
+              Tu cuenta ya fue creada. Ahora selecciona si usaras EthosHub como profesional o reclutador.
             </p>
 
             <div className='mt-6 grid gap-4 md:grid-cols-2'>
