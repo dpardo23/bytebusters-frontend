@@ -1,5 +1,6 @@
 import { BriefcaseBusiness, Building2 } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { useState } from 'react'
 import useAuth from '../../hooks/auth/useAuth'
 import { ProfileHeader } from '../../components/profile/ProfileHeader'
 import { ProfileEditForm } from '../../components/profile/ProfileEditForm'
@@ -37,7 +38,27 @@ function RoleCard({
 }
 
 export default function ProfilePage() {
-  const { user, updateRole } = useAuth()
+  const { user, updateRole, selectAccountRole } = useAuth()
+  const [isSelectingRecruiter, setIsSelectingRecruiter] = useState(false)
+  const [roleSelectionError, setRoleSelectionError] = useState('')
+
+  const handleSelectRecruiter = async () => {
+    if (isSelectingRecruiter) {
+      return
+    }
+
+    setRoleSelectionError('')
+    setIsSelectingRecruiter(true)
+
+    const result = await selectAccountRole('recruiter')
+    if (!result.success) {
+      setRoleSelectionError(result.error)
+      setIsSelectingRecruiter(false)
+      return
+    }
+
+    setIsSelectingRecruiter(false)
+  }
 
   if (!user) {
     return (
@@ -68,17 +89,22 @@ export default function ProfilePage() {
                 title='Cuenta profesional'
                 description='Ideal para mostrar experiencia, educacion, proyectos y disponibilidad laboral.'
                 buttonLabel='Quiero ser profesional'
-                onSelect={() => updateRole('professional')}
+                onSelect={() => {
+                  setRoleSelectionError('')
+                  updateRole('professional')
+                }}
                 icon={<BriefcaseBusiness className='h-5 w-5' />}
               />
               <RoleCard
                 title='Cuenta reclutador'
                 description='Pensada para empresas que desean gestionar vacantes y encontrar talento.'
-                buttonLabel='Quiero ser reclutador'
-                onSelect={() => updateRole('recruiter')}
+                buttonLabel={isSelectingRecruiter ? 'Actualizando...' : 'Quiero ser reclutador'}
+                onSelect={handleSelectRecruiter}
                 icon={<Building2 className='h-5 w-5' />}
               />
             </div>
+
+            {roleSelectionError ? <p className='mt-4 text-sm text-destructive'>{roleSelectionError}</p> : null}
           </section>
         ) : null}
 

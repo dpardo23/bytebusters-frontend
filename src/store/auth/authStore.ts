@@ -6,6 +6,7 @@ const authState: AuthState = {
 }
 
 const STORAGE_KEY = 'devfolio-user'
+export const AUTH_TOKEN_STORAGE_KEY = 'devfolio-token'
 const REGISTERED_KEY = 'devfolio-has-registered'
 
 export function getAuthState(): AuthState {
@@ -26,18 +27,29 @@ export function initializeAuthState(): void {
     }
 
     const storedUser = localStorage.getItem(STORAGE_KEY)
+    const storedToken = localStorage.getItem(AUTH_TOKEN_STORAGE_KEY)
+
     if (storedUser) {
       authState.user = JSON.parse(storedUser) as AuthUser
     }
+
+    authState.token = storedToken || null
   } catch {
     localStorage.removeItem(STORAGE_KEY)
+    localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY)
     authState.user = null
+    authState.token = null
   }
 }
 
-export function setAuthenticatedUser(user: AuthUser): void {
+export function setAuthenticatedUser(user: AuthUser, token?: string | null): void {
   authState.user = user
   localStorage.setItem(STORAGE_KEY, JSON.stringify(user))
+
+  if (token) {
+    authState.token = token
+    localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, token)
+  }
 }
 
 export function updateAuthenticatedUser(nextUserData: Partial<AuthUser>): AuthUser | null {
@@ -62,5 +74,6 @@ export function clearAuthenticatedUser(): void {
   authState.user = null
   authState.token = null
   localStorage.removeItem(STORAGE_KEY)
+  localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY)
   localStorage.removeItem(REGISTERED_KEY)
 }

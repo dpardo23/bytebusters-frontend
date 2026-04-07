@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Building2, Globe, Loader2, Save, Users } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { completeRecruiterProfile } from '../../services/profile/profileService'
 
 type RecruiterProfileValues = {
   companyName: string
@@ -22,6 +23,7 @@ export default function RecruiterProfileSetupForm() {
   const navigate = useNavigate()
   const [values, setValues] = useState<RecruiterProfileValues>(initialValues)
   const [errors, setErrors] = useState<Partial<Record<keyof RecruiterProfileValues, string>>>({})
+  const [formError, setFormError] = useState<string>('')
   const [isSaving, setIsSaving] = useState(false)
 
   const handleChange = (field: keyof RecruiterProfileValues, value: string) => {
@@ -61,12 +63,34 @@ export default function RecruiterProfileSetupForm() {
       return
     }
 
+    setFormError('')
     setIsSaving(true)
-    window.setTimeout(() => {
-      setIsSaving(false)
-      alert('Perfil de reclutador guardado con exito')
-      navigate('/')
-    }, 900)
+
+    const sizeMap: Record<string, number> = {
+      '1-10': 10,
+      '11-50': 50,
+      '51-200': 200,
+      '201+': 201,
+    }
+
+    completeRecruiterProfile({
+      companyName: values.companyName.trim(),
+      industry: values.industry.trim(),
+      companySize: sizeMap[values.companySize] || 1,
+      websiteUrl: values.website.trim() || undefined,
+      hiringNeeds: values.hiringFocus.trim(),
+    })
+      .then(() => {
+        alert('Perfil de reclutador guardado con exito')
+        navigate('/')
+      })
+      .catch((error: unknown) => {
+        const errorMessage = error instanceof Error ? error.message : 'No se pudo guardar el perfil'
+        setFormError(errorMessage)
+      })
+      .finally(() => {
+        setIsSaving(false)
+      })
   }
 
   return (
@@ -166,6 +190,8 @@ export default function RecruiterProfileSetupForm() {
           Guardar perfil reclutador
         </button>
       </div>
+
+      {formError ? <p className='mt-3 text-sm text-destructive'>{formError}</p> : null}
     </section>
   )
 }
