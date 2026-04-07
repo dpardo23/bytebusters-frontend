@@ -110,7 +110,7 @@ export default function BasicRegisterForm() {
             <span className='inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground'>
               <UserPlus className='h-5 w-5' />
             </span>
-            DevFolio
+            EthosHub
           </Link>
           <p className='text-lg text-muted-foreground'>Crea tu cuenta base y completa tu perfil luego</p>
         </div>
