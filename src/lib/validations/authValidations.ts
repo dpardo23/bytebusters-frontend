@@ -11,7 +11,10 @@ export function isValidEmail(email: string): boolean {
 }
 
 export function isValidPassword(password: string): boolean {
-  return typeof password === 'string' && password.length >= 6
+  return (
+    typeof password === 'string' &&
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])\S{8,}$/.test(password)
+  )
 }
 
 export function getRegisterFieldError(field: RegisterField, values: RegisterValues): string {
@@ -26,7 +29,9 @@ export function getRegisterFieldError(field: RegisterField, values: RegisterValu
   }
 
   if (field === 'password') {
-    return isValidPassword(password) ? '' : 'La contrasena debe tener al menos 6 caracteres'
+    return isValidPassword(password)
+      ? ''
+      : 'Minimo 8 caracteres con mayuscula, minuscula, numero y simbolo'
   }
 
   if (field === 'confirmPassword') {
@@ -52,7 +57,7 @@ export function getRegisterFieldErrors({ name, email, password, confirmPassword 
   }
 
   if (!isValidPassword(password)) {
-    fieldErrors.password = 'La contrasena debe tener al menos 6 caracteres'
+    fieldErrors.password = 'Minimo 8 caracteres con mayuscula, minuscula, numero y simbolo'
   }
 
   if (password !== confirmPassword) {

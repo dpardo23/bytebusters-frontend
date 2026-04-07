@@ -34,7 +34,8 @@ export interface RegisterAccountData extends AuthCredentials {
 export type AuthResult =
   | {
       success: true
-      user: AuthUser
+      user?: AuthUser
+      token?: string
     }
   | {
       success: false
