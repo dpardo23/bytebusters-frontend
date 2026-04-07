@@ -1,5 +1,12 @@
 import type { RegisterAccountData } from '../../types/auth.types'
 
+export type LoginField = 'email' | 'password'
+
+export type LoginValues = {
+  email: string
+  password: string
+}
+
 export type RegisterField = 'name' | 'email' | 'password' | 'confirmPassword'
 
 export type RegisterValues = Pick<RegisterAccountData, 'name' | 'email' | 'password'> & {
@@ -12,6 +19,20 @@ export function isValidEmail(email: string): boolean {
 
 export function isValidPassword(password: string): boolean {
   return typeof password === 'string' && password.length >= 6
+}
+
+export function getLoginFieldError(field: LoginField, values: LoginValues): string {
+  const { email, password } = values
+
+  if (field === 'email') {
+    return isValidEmail(email) ? '' : 'Ingresa un email valido'
+  }
+
+  if (field === 'password') {
+    return isValidPassword(password) ? '' : 'La contrasena debe tener al menos 6 caracteres'
+  }
+
+  return ''
 }
 
 export function getRegisterFieldError(field: RegisterField, values: RegisterValues): string {

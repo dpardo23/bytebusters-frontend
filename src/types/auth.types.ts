@@ -31,10 +31,31 @@ export interface RegisterAccountData extends AuthCredentials {
   role?: AuthRole
 }
 
+export interface ForgotPasswordPayload {
+  email: string
+}
+
+export interface ResetPasswordPayload {
+  email: string
+  code: string
+  newPassword: string
+}
+
 export type AuthResult =
   | {
       success: true
       user: AuthUser
+      token?: string | null
+    }
+  | {
+      success: false
+      error: string
+    }
+
+export type AuthActionResult =
+  | {
+      success: true
+      message: string
     }
   | {
       success: false

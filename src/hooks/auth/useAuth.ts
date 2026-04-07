@@ -28,7 +28,7 @@ export function useAuth(): AuthState & AuthActions {
       async login(credentials) {
         const result = await login(credentials)
         if (result.success) {
-          setAuthenticatedUser(result.user)
+          setAuthenticatedUser(result.user, result.token ?? null)
           setAuthSnapshot({ ...getAuthState() })
         }
         return result

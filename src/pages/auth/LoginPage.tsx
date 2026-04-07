@@ -1,11 +1,9 @@
 import LoginForm from '../../components/auth/LoginForm'
-import OAuthButtons from '../../components/auth/OAuthButtons'
 
 export default function LoginPage() {
   return (
-    <section>
+    <section className='flex min-h-screen items-center justify-center bg-muted/30 py-10'>
       <LoginForm />
-      <OAuthButtons />
     </section>
   )
 }
