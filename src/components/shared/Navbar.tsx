@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ChevronDown, Code2, Menu, Moon, X } from 'lucide-react'
 import useAuth from '../../hooks/auth/useAuth'
@@ -8,13 +8,44 @@ export default function Navbar() {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
   const navigate = useNavigate()
   const { user, logout } = useAuth()
-  const userAvatar = user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user?.name || 'user')}`
+  
+  const [profileData, setProfileData] = useState({
+    name: user?.name || '',
+    photoBase64: ''
+  })
+
+  useEffect(() => {
+    if (user?.id) {
+      fetch(`/api/profile/hero-section/${user.id}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Perfil no encontrado");
+          return res.json();
+        })
+        .then(data => {
+          setProfileData({
+            name: data.name || user.name, 
+            photoBase64: data.photoBase64 || ''
+          });
+        })
+        .catch(err => console.error("Error cargando avatar del navbar:", err));
+    }
+  }, [user?.id, user?.name]);
 
   async function handleLogout(): Promise<void> {
     await logout()
     setIsProfileMenuOpen(false)
     navigate('/')
   }
+
+  // VARIABLES DINÁMICAS
+  const displayName = profileData.name || 'Usuario';
+  
+  // AQUÍ ESTÁ LA MAGIA: Cortamos el nombre hasta el primer espacio
+  const displayFirstName = displayName.split(' ')[0];
+
+  const displayAvatar = profileData.photoBase64 
+    ? profileData.photoBase64 
+    : user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(displayName)}`;
 
   return (
     <header className='fixed inset-x-0 top-0 z-50 border-b border-border bg-background/90 backdrop-blur'>
@@ -60,8 +91,9 @@ export default function Navbar() {
                 onClick={() => setIsProfileMenuOpen((prev) => !prev)}
               >
                 <span className='inline-flex items-center gap-2'>
-                  <img src={userAvatar} alt={user.name} className='h-7 w-7 rounded-full bg-muted' />
-                  <span className='max-w-32 truncate font-medium'>{user.name}</span>
+                  <img src={displayAvatar} alt={displayFirstName} className='h-7 w-7 rounded-full bg-muted object-cover' />
+                  {/* Usamos displayFirstName aquí */}
+                  <span className='max-w-32 truncate font-medium'>{displayFirstName}</span>
                 </span>
                 <ChevronDown className='h-4 w-4 text-muted-foreground' />
               </button>
@@ -72,7 +104,7 @@ export default function Navbar() {
                   <div className='p-2'>
                     
                     <Link
-                       to='/profile'
+                       to={`/profile/${user.id}`} 
                        onClick={() => setIsProfileMenuOpen(false)}
                       className='block w-full rounded-lg px-3 py-2 text-left text-foreground hover:bg-accent'
                     >
@@ -145,8 +177,9 @@ export default function Navbar() {
             ) : null}
             {user ? (
               <div className='inline-flex min-w-52 items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-foreground'>
-                <img src={userAvatar} alt={user.name} className='h-7 w-7 rounded-full bg-muted' />
-                <span className='max-w-36 truncate font-medium'>{user.name}</span>
+                <img src={displayAvatar} alt={displayFirstName} className='h-7 w-7 rounded-full bg-muted object-cover' />
+                {/* Usamos displayFirstName aquí también para móviles */}
+                <span className='max-w-36 truncate font-medium'>{displayFirstName}</span>
               </div>
             ) : (
               <Link
