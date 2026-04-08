@@ -40,6 +40,7 @@ function RoleCard({
 export default function ProfilePage() {
   const { user, updateRole, selectAccountRole } = useAuth()
   const [isSelectingRecruiter, setIsSelectingRecruiter] = useState(false)
+  const [isSelectingProfessional, setIsSelectingProfessional] = useState(false)
   const [roleSelectionError, setRoleSelectionError] = useState('')
 
   const handleSelectRecruiter = async () => {
@@ -52,12 +53,37 @@ export default function ProfilePage() {
 
     const result = await selectAccountRole('recruiter')
     if (!result.success) {
-      setRoleSelectionError(result.error)
+      const errorMessage = 'error' in result && typeof result.error === 'string' 
+        ? result.error 
+        : 'Ocurrió un error al seleccionar el rol de reclutador.'
+      setRoleSelectionError(errorMessage)
       setIsSelectingRecruiter(false)
       return
     }
 
     setIsSelectingRecruiter(false)
+  }
+
+  // NUEVO: Manejador para la cuenta Profesional que se comunica con el backend
+  const handleSelectProfessional = async () => {
+    if (isSelectingProfessional) {
+      return
+    }
+
+    setRoleSelectionError('')
+    setIsSelectingProfessional(true)
+
+    const result = await selectAccountRole('professional')
+    if (!result.success) {
+      const errorMessage = 'error' in result && typeof result.error === 'string' 
+        ? result.error 
+        : 'Ocurrió un error al seleccionar el rol de profesional.'
+      setRoleSelectionError(errorMessage)
+      setIsSelectingProfessional(false)
+      return
+    }
+
+    setIsSelectingProfessional(false)
   }
 
   if (!user) {
@@ -88,11 +114,8 @@ export default function ProfilePage() {
               <RoleCard
                 title='Cuenta profesional'
                 description='Ideal para mostrar experiencia, educacion, proyectos y disponibilidad laboral.'
-                buttonLabel='Quiero ser profesional'
-                onSelect={() => {
-                  setRoleSelectionError('')
-                  updateRole('professional')
-                }}
+                buttonLabel={isSelectingProfessional ? 'Actualizando...' : 'Quiero ser profesional'}
+                onSelect={handleSelectProfessional} // MODIFICADO: Usamos el nuevo manejador
                 icon={<BriefcaseBusiness className='h-5 w-5' />}
               />
               <RoleCard

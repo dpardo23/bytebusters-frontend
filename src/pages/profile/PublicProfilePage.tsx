@@ -1,34 +1,27 @@
-/*import GuestProfileView from '../../components/profile/GuestProfileView'
-
-export default function PublicProfilePage() {
-  return (
-    <main>
-      <GuestProfileView />
-    </main>
-  )
-}*/
-
 import React from 'react';
+import { useParams } from 'react-router-dom';
+import useAuth from '../../hooks/auth/useAuth';
 import { ProfileHeader } from '../../components/profile/ProfileHeader';
-import { CareerTimeline } from '../../components/profile/CareerTimeline';
-import { EducationSection } from '../../components/profile/EducationSection';
-import { GuestProfileView } from '../../components/profile/GuestProfileView';
+
+// CORRECCIÓN APLICADA AQUÍ:
+import { ProfileEditForm } from '../../components/profile/ProfileEditFormE'; 
 
 export default function PublicProfilePage() {
-  const isGuestMode = true;
-  
-  const mockUser = { name: "Mauricio Jaimes", headline: "Frontend Developer", isGuest: isGuestMode };
-  const mockExperiences = [];
-  const mockEducation = []; 
+  const { user } = useAuth();
+  const { id } = useParams();
+
+  if (!user) {
+    return (
+      <div className='flex min-h-screen items-center justify-center'>
+        <p className='animate-pulse text-gray-500'>Cargando perfil...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20 pt-6">
-      <GuestProfileView isGuest={isGuestMode} />
-      <ProfileHeader user={mockUser} />
-      <div className="max-w-4xl mx-auto px-4 mt-8">
-        <CareerTimeline experiences={mockExperiences} isGuest={isGuestMode} />
-        <EducationSection education={mockEducation} />
-      </div>
+      <ProfileHeader user={user} />
+      <ProfileEditForm initialUser={user} />
     </div>
   );
 }
