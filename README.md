@@ -38,60 +38,66 @@ bytebusters-frontend/
 				Footer.tsx
 
 		layouts/
-			AuthGuard.tsx
-			RoleGuard.tsx
+				AuthGuard.tsx
+				RoleGuard.tsx
 
 		pages/
-			LandingPage.tsx
+				LandingPage.tsx
 			auth/
-				LoginPage.tsx
-				ProfessionalRegisterPage.tsx
-				RecruiterRegisterPage.tsx
+					LoginPage.tsx
+					ProfessionalRegisterPage.tsx
+					RecruiterRegisterPage.tsx
 			dashboard/
-				DashboardPage.tsx
+					DashboardPage.tsx
 			profile/
-				ProfilePage.tsx
-				PublicProfilePage.tsx
+					ProfilePage.tsx
+					PublicProfilePage.tsx
 
 		store/
 			auth/
-				authStore.ts
+					authStore.ts
 			profile/
-				profileStore.ts
+					profileStore.ts
 
 		hooks/
 			auth/
-				useAuth.ts
+					useAuth.ts
 			profile/
-				useProfile.ts
-			useRoleAccess.ts
+					useProfile.ts
+				useRoleAccess.ts
 
 		services/
 			auth/
-				authService.ts
+					authService.ts
 			profile/
-				profileService.ts
+					profileService.ts
 
 		lib/
 			api/
-				httpClient.ts
+					httpClient.ts
 			constants/
-				roles.ts
+					roles.ts
 			validations/
-				authValidations.ts
+					authValidations.ts
 
 		utils/
-			index.ts
+				index.ts
 
 		styles/
 			themes/
-				light.ts
-				dark.ts
+					light.ts
+					dark.ts
 			index.css
+			tsconfig.json
+			vite.config.ts
 
 		types/
-			auth.types.ts
-			profile.types.ts
+				auth.types.ts
+				profile.types.ts
+
+			App.tsx
+			main.tsx
+			router.tsx
 ```
 
 ## Como leer la estructura

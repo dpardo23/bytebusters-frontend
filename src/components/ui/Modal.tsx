@@ -1,11 +1,4 @@
-import type { ReactNode } from 'react'
-
-type ModalProps = {
-  open: boolean
-  children: ReactNode
-}
-
-export default function Modal({ open, children }: ModalProps) {
+export default function Modal({ open, children }) {
   if (!open) {
     return null
   }

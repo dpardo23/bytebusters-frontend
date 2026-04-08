@@ -1,12 +1,45 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { CheckCircle2, Eye, EyeOff, LoaderCircle, Network, Users, Webhook } from 'lucide-react'
+import { CheckCircle2, Eye, EyeOff, LoaderCircle, UserPlus } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
 import { getRegisterFieldError, type RegisterField, type RegisterValues } from '../../lib/validations/authValidations'
 import useAuth from '../../hooks/auth/useAuth'
 
-export default function RecruiterRegisterForm() {
+const API_BASE_URL = String(import.meta.env.VITE_API_URL || 'http://localhost:8080').replace(/\/$/, '')
+
+function GoogleIcon() {
+  return (
+    <svg viewBox='0 0 24 24' aria-hidden='true' className='h-5 w-5'>
+      <path
+        fill='#4285F4'
+        d='M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.31h6.44a5.51 5.51 0 0 1-2.39 3.62v3h3.87c2.26-2.08 3.57-5.15 3.57-8.66z'
+      />
+      <path
+        fill='#34A853'
+        d='M12 24c3.24 0 5.96-1.07 7.95-2.9l-3.87-3c-1.07.72-2.44 1.14-4.08 1.14-3.14 0-5.8-2.12-6.75-4.96H1.25v3.11A12 12 0 0 0 12 24z'
+      />
+      <path
+        fill='#FBBC05'
+        d='M5.25 14.28A7.2 7.2 0 0 1 4.87 12c0-.79.14-1.56.38-2.28V6.61H1.25A12 12 0 0 0 0 12c0 1.93.46 3.75 1.25 5.39l4-3.11z'
+      />
+      <path
+        fill='#EA4335'
+        d='M12 4.77c1.76 0 3.34.61 4.58 1.8l3.43-3.43C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.25 6.61l4 3.11c.95-2.84 3.61-4.95 6.75-4.95z'
+      />
+    </svg>
+  )
+}
+
+function GithubIcon() {
+  return (
+    <svg viewBox='0 0 24 24' aria-hidden='true' className='h-5 w-5 fill-current'>
+      <path d='M12 0a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.03c-3.34.72-4.04-1.61-4.04-1.61-.55-1.38-1.33-1.74-1.33-1.74-1.08-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.06 1.83 2.79 1.3 3.47 1 .1-.77.42-1.3.76-1.6-2.67-.3-5.47-1.34-5.47-5.94 0-1.31.47-2.39 1.24-3.23-.12-.3-.54-1.53.12-3.18 0 0 1.01-.33 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.77.84 1.24 1.92 1.24 3.23 0 4.61-2.81 5.64-5.49 5.94.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.83.58A12 12 0 0 0 12 0z' />
+    </svg>
+  )
+}
+
+export default function BasicRegisterForm() {
   const navigate = useNavigate()
   const { register } = useAuth()
   const [name, setName] = useState('')
@@ -14,9 +47,14 @@ export default function RecruiterRegisterForm() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<RegisterField, string>>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
+
+  const redirectToOAuthProvider = (provider: 'github' | 'google') => {
+    window.location.replace(`${API_BASE_URL}/api/auth/oauth/${provider}`)
+  }
 
   const updateFieldError = (field: RegisterField, nextValues: RegisterValues) => {
     setFieldErrors((currentErrors) => ({
@@ -29,7 +67,7 @@ export default function RecruiterRegisterForm() {
     if (!showSuccessModal) return undefined
 
     const timeoutId = window.setTimeout(() => {
-      navigate('/')
+      navigate('/profile')
     }, 1200)
 
     return () => window.clearTimeout(timeoutId)
@@ -70,16 +108,16 @@ export default function RecruiterRegisterForm() {
         <div className='mx-auto mb-8 max-w-xl text-center'>
           <Link to='/' className='mb-2 inline-flex items-center gap-2 text-4xl font-bold text-foreground'>
             <span className='inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground'>
-              <Users className='h-5 w-5' />
+              <UserPlus className='h-5 w-5' />
             </span>
-            DevFolio
+            EthosHub
           </Link>
-          <p className='text-lg text-muted-foreground'>Crea tu cuenta de reclutador</p>
+          <p className='text-lg text-muted-foreground'>Crea tu cuenta base y completa tu perfil luego</p>
         </div>
 
         <div className='rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8'>
           <h1 className='text-3xl font-bold text-foreground'>Crear Cuenta</h1>
-          <p className='mt-2 text-muted-foreground'>Completa el formulario para comenzar a buscar talento.</p>
+          <p className='mt-2 text-muted-foreground'>Despues podras elegir si tu perfil sera profesional o reclutador.</p>
 
           <form className='mt-6 space-y-4' onSubmit={handleSubmit}>
             <div>
@@ -99,9 +137,7 @@ export default function RecruiterRegisterForm() {
                 aria-invalid={Boolean(fieldErrors.name)}
                 required
               />
-              <p className='mt-1 min-h-5 text-sm text-destructive'>
-                {fieldErrors.name || ' '}
-              </p>
+              <p className='mt-1 min-h-5 text-sm text-destructive'>{fieldErrors.name || ' '}</p>
             </div>
 
             <div>
@@ -122,20 +158,18 @@ export default function RecruiterRegisterForm() {
                 aria-invalid={Boolean(fieldErrors.email)}
                 required
               />
-              <p className='mt-1 min-h-5 text-sm text-destructive'>
-                {fieldErrors.email || ' '}
-              </p>
+              <p className='mt-1 min-h-5 text-sm text-destructive'>{fieldErrors.email || ' '}</p>
             </div>
 
             <div>
               <label htmlFor='password' className='mb-2 block text-sm font-medium text-foreground'>
-                Contrasena
+                Contraseña
               </label>
               <div className='relative'>
                 <Input
                   id='password'
                   type={showPassword ? 'text' : 'password'}
-                  placeholder='Minimo 6 caracteres'
+                  placeholder='Mínimo 6 caracteres'
                   value={password}
                   onChange={(event) => {
                     const nextPassword = event.target.value
@@ -163,37 +197,43 @@ export default function RecruiterRegisterForm() {
                   {showPassword ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
                 </button>
               </div>
-              <p className='mt-1 min-h-5 text-sm text-destructive'>
-                {fieldErrors.password || ' '}
-              </p>
+              <p className='mt-1 min-h-5 text-sm text-destructive'>{fieldErrors.password || ' '}</p>
             </div>
 
             <div>
               <label htmlFor='confirmPassword' className='mb-2 block text-sm font-medium text-foreground'>
-                Confirmar contrasena
+                Confirmar contraseña
               </label>
-              <Input
-                id='confirmPassword'
-                type='password'
-                placeholder='Repite la contrasena'
-                value={confirmPassword}
-                onChange={(event) => {
-                  const nextConfirmPassword = event.target.value
-                  setConfirmPassword(nextConfirmPassword)
-                  updateFieldError('confirmPassword', {
-                    name,
-                    email,
-                    password,
-                    confirmPassword: nextConfirmPassword,
-                  })
-                }}
-                onBlur={() => updateFieldError('confirmPassword', { name, email, password, confirmPassword })}
-                aria-invalid={Boolean(fieldErrors.confirmPassword)}
-                required
-              />
-              <p className='mt-1 min-h-5 text-sm text-destructive'>
-                {fieldErrors.confirmPassword || ' '}
-              </p>
+              <div className='relative'>
+                <Input
+                  id='confirmPassword'
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  placeholder='Repite la contraseña'
+                  className='hide-native-password-toggle pr-11'
+                  value={confirmPassword}
+                  onChange={(event) => {
+                    const nextConfirmPassword = event.target.value
+                    setConfirmPassword(nextConfirmPassword)
+                    updateFieldError('confirmPassword', {
+                      name,
+                      email,
+                      password,
+                      confirmPassword: nextConfirmPassword,
+                    })
+                  }}
+                  onBlur={() => updateFieldError('confirmPassword', { name, email, password, confirmPassword })}
+                  aria-invalid={Boolean(fieldErrors.confirmPassword)}
+                  required
+                />
+                <button
+                  type='button'
+                  className='absolute right-1 top-1 inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground'
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
+                >
+                  {showConfirmPassword ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
+                </button>
+              </div>
+              <p className='mt-1 min-h-5 text-sm text-destructive'>{fieldErrors.confirmPassword || ' '}</p>
             </div>
 
             <Button type='submit' className='w-full' size='lg' disabled={isSubmitting}>
@@ -215,12 +255,22 @@ export default function RecruiterRegisterForm() {
           </div>
 
           <div className='grid grid-cols-2 gap-4'>
-            <Button variant='outline' className='w-full'>
-              <Webhook className='h-4 w-4' /> GitHub
-            </Button>
-            <Button variant='outline' className='w-full'>
-              <Network className='h-4 w-4' /> LinkedIn
-            </Button>
+            <button
+              type='button'
+              onClick={() => redirectToOAuthProvider('github')}
+              className='inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-[#24292f] px-4 font-medium text-white shadow-sm transition-colors hover:bg-[#1b1f23]'
+            >
+              <GithubIcon />
+              Registrate con GitHub
+            </button>
+            <button
+              type='button'
+              onClick={() => redirectToOAuthProvider('google')}
+              className='inline-flex h-11 w-full items-center justify-center gap-2 rounded-md border border-[#dadce0] bg-white px-4 font-medium text-[#3c4043] shadow-sm transition-colors hover:bg-[#f8f9fa]'
+            >
+              <GoogleIcon />
+              Registrate con Google
+            </button>
           </div>
 
           <p className='mt-6 text-center text-sm text-muted-foreground'>
@@ -242,7 +292,7 @@ export default function RecruiterRegisterForm() {
             </div>
             <h3 className='text-xl font-bold text-foreground'>Cuenta creada</h3>
             <p className='mt-2 text-sm text-muted-foreground'>
-              Tu cuenta se creo con exito. Te estamos llevando al inicio.
+              Tu cuenta se creo con exito. Vamos a completar tu tipo de perfil.
             </p>
           </div>
         </div>
