@@ -28,6 +28,10 @@ type BackendAuthPayload = {
   user: BackendAuthUser
 }
 
+type PasswordRecoveryMessage = {
+  message?: string
+}
+
 function mapRole(userType: BackendAuthUser['userType']): AuthUser['role'] {
   switch (userType) {
     case 'RECLUTADOR':
@@ -190,4 +194,66 @@ export async function logout(): Promise<AuthResult> {
 
   localStorage.removeItem('devfolio-token')
   return { success: true }
+}
+
+export async function requestPasswordResetCode(
+  email: string,
+): Promise<{ success: true; message: string } | { success: false; error: string }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/auth/password-recovery/request-code`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    })
+
+    const payload = (await response.json()) as BackendApiResponse<PasswordRecoveryMessage>
+    if (!response.ok || !payload.success) {
+      return { success: false, error: resolveErrorMessage(payload, 'No se pudo enviar el codigo') }
+    }
+
+    return {
+      success: true,
+      message: payload.message || payload.data?.message || 'Codigo enviado correctamente',
+    }
+  } catch {
+    return { success: false, error: 'No se pudo conectar con el servidor' }
+  }
+}
+
+export async function resetPasswordWithCode({
+  email,
+  code,
+  newPassword,
+}: {
+  email: string
+  code: string
+  newPassword: string
+}): Promise<{ success: true; message: string } | { success: false; error: string }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/auth/password-recovery/reset`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        code,
+        newPassword,
+      }),
+    })
+
+    const payload = (await response.json()) as BackendApiResponse<PasswordRecoveryMessage>
+    if (!response.ok || !payload.success) {
+      return { success: false, error: resolveErrorMessage(payload, 'No se pudo restablecer la contrasena') }
+    }
+
+    return {
+      success: true,
+      message: payload.message || payload.data?.message || 'Contrasena actualizada correctamente',
+    }
+  } catch {
+    return { success: false, error: 'No se pudo conectar con el servidor' }
+  }
 }
