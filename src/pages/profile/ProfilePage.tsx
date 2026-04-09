@@ -2,7 +2,6 @@ import { BriefcaseBusiness, Building2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useState } from 'react'
 import useAuth from '../../hooks/auth/useAuth'
-import { ProfileHeader } from '../../components/profile/ProfileHeader'
 import { ProfileEditForm } from '../../components/profile/ProfileEditForm'
 import RecruiterProfileSetupForm from '../../components/profile/RecruiterProfileSetupForm'
 
@@ -99,10 +98,8 @@ export default function ProfilePage() {
   const isRecruiter = user.role === 'recruiter'
 
   return (
-    <div className='min-h-screen bg-gray-50 pb-20 pt-20'>
-      <ProfileHeader user={user} />
-
-      <div className='mx-auto mt-8 max-w-4xl space-y-6 px-4'>
+    <div className='min-h-screen bg-muted/40 pb-20 pt-24'>
+      <div className='mx-auto max-w-5xl space-y-6 px-4'>
         {isBasicRole ? (
           <section className='rounded-2xl border border-border bg-card p-6 shadow-sm'>
             <h2 className='text-2xl font-semibold text-foreground'>Elige el tipo de cuenta</h2>
