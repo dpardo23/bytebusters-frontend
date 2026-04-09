@@ -31,6 +31,7 @@ export function useAuth(): AuthState & AuthActions {
       async login(credentials) {
         const result = await login(credentials)
         if (result.success && result.user) {
+          markRegisteredUser()
           setAuthenticatedUser(result.user, result.token || null)
           setAuthSnapshot({ ...getAuthState() })
         }

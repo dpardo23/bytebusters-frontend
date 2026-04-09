@@ -79,9 +79,12 @@ export default function Navbar() {
             <Moon className='h-5 w-5' />
           </button>
           {!user ? (
-            <span className='cursor-not-allowed rounded-md px-4 py-2 font-medium text-foreground/60'>
+            <Link
+              to='/auth/login'
+              className='rounded-md px-4 py-2 font-medium text-foreground transition-colors hover:bg-accent'
+            >
               Iniciar Sesion
-            </span>
+            </Link>
           ) : null}
           {user ? (
             <div className='relative'>
@@ -171,9 +174,13 @@ export default function Navbar() {
               Explorar Talento
             </span>
             {!user ? (
-              <span className='cursor-not-allowed rounded-md px-2 py-2 text-muted-foreground/60'>
+              <Link
+                to='/auth/login'
+                className='rounded-md px-2 py-2 text-foreground transition-colors hover:bg-accent'
+                onClick={() => setIsOpen(false)}
+              >
                 Iniciar Sesion
-              </span>
+              </Link>
             ) : null}
             {user ? (
               <div className='inline-flex min-w-52 items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-foreground'>
