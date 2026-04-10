@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import { useState } from 'react'
 import useAuth from '../../hooks/auth/useAuth'
 import { ProfileHeader } from '../../components/profile/ProfileHeader'
-import { ProfileEditForm } from '../../components/profile/ProfileEditForm'
+import { ProfileEditForm } from '../../components/profile/ProfileRegisterForm'
 import RecruiterProfileSetupForm from '../../components/profile/RecruiterProfileSetupForm'
 
 function RoleCard({

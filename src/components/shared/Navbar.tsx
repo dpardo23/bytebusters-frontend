@@ -37,10 +37,8 @@ export default function Navbar() {
     navigate('/')
   }
 
-  // VARIABLES DINÁMICAS
   const displayName = profileData.name || 'Usuario';
   
-  // AQUÍ ESTÁ LA MAGIA: Cortamos el nombre hasta el primer espacio
   const displayFirstName = displayName.split(' ')[0];
 
   const displayAvatar = profileData.photoBase64 
@@ -95,7 +93,6 @@ export default function Navbar() {
               >
                 <span className='inline-flex items-center gap-2'>
                   <img src={displayAvatar} alt={displayFirstName} className='h-7 w-7 rounded-full bg-muted object-cover' />
-                  {/* Usamos displayFirstName aquí */}
                   <span className='max-w-32 truncate font-medium'>{displayFirstName}</span>
                 </span>
                 <ChevronDown className='h-4 w-4 text-muted-foreground' />
@@ -186,7 +183,6 @@ export default function Navbar() {
             {user ? (
               <div className='inline-flex min-w-52 items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-foreground'>
                 <img src={displayAvatar} alt={displayFirstName} className='h-7 w-7 rounded-full bg-muted object-cover' />
-                {/* Usamos displayFirstName aquí también para móviles */}
                 <span className='max-w-36 truncate font-medium'>{displayFirstName}</span>
               </div>
             ) : (

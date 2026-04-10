@@ -1,77 +1,164 @@
-import React, { useState, ChangeEvent, useRef } from "react"
-import { Camera, CloudUpload, Loader2, Code, Briefcase, Globe, FileText, ChevronRight, ChevronLeft, CheckCircle2 } from "lucide-react"
-import { useNavigate } from 'react-router-dom'
-import type { UserData } from "./ProfileHeader" 
-import { ExperienceForm } from "./ExperienceForm"
-import { EducationForm } from "./EducationForm"
+import React, { useState, ChangeEvent, useRef, useEffect } from "react"
+import { Loader2, CloudUpload, CheckCircle2, Edit3, X } from "lucide-react"
 
-interface ExtendedUserData extends UserData {
-  statusMessage?: string;
-  id?: string | number;
-}
+import type { ExtendedUserData, Section } from "../../types/profile.types"
+import { Sidebar } from "./Sidebar"
+import { BasicInfoSection } from "./BasicInfoSection"
+import { PublicViewSection } from "./PublicViewSection"
+import { ExperienceForm } from "./ExperienceForm" 
+import { EducationForm } from "./EducationForm"   
 
 interface ProfileEditFormProps {
   initialUser: ExtendedUserData;
 }
 
 export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
-  const navigate = useNavigate()
-  const [currentStep, setCurrentStep] = useState<number>(1)
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [activeSection, setActiveSection] = useState<Section>('basic');
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isLoadingData, setIsLoadingData] = useState<boolean>(true);
   
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const [photoFile, setPhotoFile] = useState<File | null>(null)
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [originalData, setOriginalData] = useState<ExtendedUserData>(initialUser);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSavingDraft, setIsSavingDraft] = useState<boolean>(false);
+  const [errors, setErrors] = useState<Record<string, string | null>>({});
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState<ExtendedUserData>({
-    name: initialUser?.name || "",
-    headline: initialUser?.headline || "",
-    status: initialUser?.status || "active",
-    bio: initialUser?.bio || "",
-    statusMessage: initialUser?.statusMessage || "",
-    githubUrl: initialUser?.githubUrl || "",
-    linkedinUrl: initialUser?.linkedinUrl || "",
-    websiteUrl: initialUser?.websiteUrl || "",
-  })
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [formData, setFormData] = useState<ExtendedUserData>(initialUser);
 
-  const isStepValid = () => {
-    if (currentStep === 1) {
-      return formData.name.trim() !== "" && formData.headline.trim() !== "" && (photoFile !== null || photoPreview !== null);
-    }
-    if (currentStep === 2) {
-      return formData.bio.trim().length >= 20;
-    }
-    return true;
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const currentUserId = initialUser.id; 
+
+        if (!currentUserId) {
+          console.error("No se encontró el ID del usuario.");
+          setIsLoadingData(false);
+          return;
+        }
+
+        const [statusRes, bioRes, heroRes] = await Promise.all([
+          fetch(`/api/profile/status/${currentUserId}`),
+          fetch(`/api/biography/${currentUserId}`),
+          fetch(`/api/profile/hero-section/${currentUserId}`) 
+        ]);
+
+        let loadedData = { ...initialUser };
+
+        if (statusRes.ok) {
+          const statusData = await statusRes.json();
+          loadedData.status = statusData.status === 'A' ? 'active' : statusData.status === 'B' ? 'busy' : 'incognito';
+          loadedData.statusMessage = statusData.statusMessage || "";
+        }
+
+        if (bioRes.ok) {
+          const bioData = await bioRes.text(); 
+          loadedData.bio = bioData;
+        }
+
+        if (heroRes.ok) {
+          const heroData = await heroRes.json();
+          loadedData.name = heroData.name || "";
+          loadedData.headline = heroData.headline || "";
+          
+          if (heroData.photoBase64) {
+            setPhotoPreview(heroData.photoBase64);
+          }
+        }
+
+        setFormData(loadedData);
+        setOriginalData(loadedData);
+
+      } catch (error) {
+        console.error("Error al cargar los datos del perfil:", error);
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
+    fetchProfileData();
+  }, [initialUser]);
+
+  useEffect(() => {
+    if (!isEditing || !formData.bio || formData.bio === originalData.bio) return;
+
+    const timeoutId = setTimeout(async () => {
+      setIsSavingDraft(true);
+      try {
+        await fetch('/api/biography/draft', {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: formData.bio
+        });
+      } catch (error) {
+        console.error("Error al auto-guardar el borrador", error);
+      } finally {
+        setIsSavingDraft(false);
+      }
+    }, 2000); 
+
+    return () => clearTimeout(timeoutId);
+  }, [formData.bio, originalData.bio, isEditing]);
+
+  const handleCancelEdit = () => {
+    setFormData(originalData);
+    setPhotoFile(null);
+    setPhotoPreview(originalData.photoBase64 || null);
+    setErrors({});
+    setIsEditing(false);
   }
 
   const handlePhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      setPhotoFile(file)
-      setPhotoPreview(URL.createObjectURL(file))
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const maxSize = 5 * 1024 * 1024;
+
+    if (!validTypes.includes(file.type)) {
+      setErrors(prev => ({ ...prev, photo: "Solo se permiten formatos JPG, PNG y WebP" }));
+      return;
     }
+
+    if (file.size > maxSize) {
+      setErrors(prev => ({ ...prev, photo: "El archivo excede el límite permitido de 5MB" }));
+      return;
+    }
+
+    setErrors(prev => ({ ...prev, photo: null }));
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
   }
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+    const { name, value } = e.target;
+    if (name === "bio" && value.length > 500) return;
+    if (name === "statusMessage" && value.length > 50) return; 
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
   }
 
   const handleSave = async () => {
-    if (!isStepValid()) return;
-    
     setIsLoading(true);
+    setSuccessMessage(null);
+    setErrors({});
+
     try {
       const userId = initialUser.id; 
 
-      const heroData = new FormData();
-      heroData.append('data', new Blob([JSON.stringify({ 
+      const formDataToSend = new FormData();
+      formDataToSend.append('data', new Blob([JSON.stringify({ 
         userId: userId, 
         name: formData.name, 
         professionalTitle: formData.headline 
       })], { type: "application/json" }));
-      if (photoFile) heroData.append('photo', photoFile);
-      await fetch(`/api/profile/hero-section`, { method: 'PATCH', body: heroData });
+      
+      if (photoFile) formDataToSend.append('photo', photoFile);
+
+      const responseHero = await fetch('/api/profile/hero-section', { method: 'PATCH', body: formDataToSend });
+      if (!responseHero.ok) throw new Error("Error al guardar la información básica");
 
       const backendStatus = formData.status === 'active' ? 'A' : formData.status === 'busy' ? 'B' : 'N';
       const statusParams = new URLSearchParams({ 
@@ -79,154 +166,89 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
         message: formData.statusMessage || "", 
         incognito: String(formData.status === 'incognito') 
       });
-      await fetch(`/api/profile/status/${userId}?${statusParams.toString()}`, { method: 'PUT' });
 
-      await fetch(`/api/biography/${userId}`, { 
+      const responseStatus = await fetch(`/api/profile/status/${userId}?${statusParams.toString()}`, { 
+        method: 'PUT' 
+      });
+      if (!responseStatus.ok) throw new Error("No se pudo actualizar el estado");
+
+      const responseBio = await fetch(`/api/biography/${userId}`, { 
         method: 'PUT', 
         headers: { 'Content-Type': 'text/plain' }, 
         body: formData.bio 
       });
+      if (!responseBio.ok) throw new Error("No se pudo guardar la biografía");
 
-      alert("¡Perfil completado con éxito!");
-      navigate('/');
+      setSuccessMessage("¡Perfil actualizado con éxito!");
+      setOriginalData(formData);
+      setIsEditing(false);
+      setTimeout(() => setSuccessMessage(null), 3000);
+
     } catch (error: any) {
-      alert("Error al guardar: " + error.message);
+      setErrors(prev => ({ ...prev, global: error.message }));
     } finally {
       setIsLoading(false);
     }
   }
 
-  return (
-    <div className="max-w-3xl mx-auto mb-20">
-      
-      <nav className="flex items-center justify-center gap-4 mb-8">
-        {[1, 2, 3].map((step) => (
-          <div key={step} className="flex items-center">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-colors ${currentStep >= step ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
-              {currentStep > step ? <CheckCircle2 className="w-6 h-6" /> : step}
-            </div>
-            {step < 3 && <div className={`w-12 h-1 ml-4 rounded ${currentStep > step ? 'bg-blue-600' : 'bg-gray-200'}`} />}
-          </div>
-        ))}
-      </nav>
-
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden text-left">
-        
-        {currentStep === 1 && (
-          <section className="p-8 animate-in fade-in slide-in-from-right-4 duration-300">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Información Básica</h2>
-            <p className="text-gray-500 mb-8">Comencemos con lo esencial para que otros te reconozcan.</p>
-            
-            <div className="space-y-6">
-              <div className="flex flex-col items-center gap-4 p-6 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                <input type="file" ref={fileInputRef} onChange={handlePhotoChange} accept="image/*" className="hidden" />
-                <div 
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-28 h-28 rounded-full bg-white shadow-md flex items-center justify-center cursor-pointer hover:ring-4 hover:ring-blue-100 transition-all overflow-hidden"
-                >
-                  {photoPreview ? <img src={photoPreview} className="w-full h-full object-cover" /> : <Camera className="w-10 h-10 text-gray-400" />}
-                </div>
-                <span className="text-sm font-medium text-blue-600">Subir foto obligatoria *</span>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Nombre Completo *</label>
-                  <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Ej. Juan Pérez" className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Titular Profesional *</label>
-                  <input type="text" name="headline" value={formData.headline} onChange={handleChange} placeholder="Ej. Desarrollador Fullstack" className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {currentStep === 2 && (
-          <section className="p-8 animate-in fade-in slide-in-from-right-4 duration-300">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Sobre ti</h2>
-            <p className="text-gray-500 mb-8">Cuéntale al mundo quién eres y cuál es tu situación actual.</p>
-            
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Biografía / Resumen * (mín. 20 caracteres)</label>
-                <textarea name="bio" value={formData.bio} onChange={handleChange} rows={6} placeholder="Escribe algo interesante sobre tu carrera..." className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none transition-all" />
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">¿Estás disponible? *</label>
-                  <select name="status" value={formData.status} onChange={handleChange} className="w-full px-4 py-3 border rounded-xl bg-white outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="active">Disponible</option>
-                    <option value="busy">Ocupado</option>
-                    <option value="incognito">Incógnito</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Mensaje corto</label>
-                  <input type="text" name="statusMessage" value={formData.statusMessage} onChange={handleChange} placeholder="Ej. ¡Buscando retos!" className="w-full px-4 py-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {currentStep === 3 && (
-          <section className="p-8 animate-in fade-in slide-in-from-right-4 duration-300">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Presencia Digital</h2>
-            <p className="text-gray-500 mb-8">Añade tus enlaces para que puedan ver tu trabajo.</p>
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 p-1 border rounded-xl focus-within:ring-2 focus-within:ring-blue-500 transition-all">
-                <div className="p-3 bg-gray-100 rounded-lg"><Code className="w-5 h-5" /></div>
-                <input type="url" name="githubUrl" value={formData.githubUrl} onChange={handleChange} placeholder="GitHub URL" className="flex-1 outline-none text-sm" />
-              </div>
-              <div className="flex items-center gap-3 p-1 border rounded-xl focus-within:ring-2 focus-within:ring-blue-500 transition-all">
-                <div className="p-3 bg-blue-50 rounded-lg"><Briefcase className="w-5 h-5 text-blue-600" /></div>
-                <input type="url" name="linkedinUrl" value={formData.linkedinUrl} onChange={handleChange} placeholder="LinkedIn URL" className="flex-1 outline-none text-sm" />
-              </div>
-            </div>
-            
-            <div className="mt-8 p-4 bg-blue-50 rounded-xl border border-blue-100 flex items-start gap-3">
-              <FileText className="w-5 h-5 text-blue-600 mt-0.5" />
-              <p className="text-xs text-blue-700 leading-relaxed">
-                Al finalizar, tu perfil será público. Podrás añadir tu experiencia laboral y educación detallada desde tu panel de edición en cualquier momento.
-              </p>
-            </div>
-          </section>
-        )}
-
-        <div className="p-6 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
-          <button 
-            type="button"
-            onClick={() => setCurrentStep(prev => prev - 1)}
-            className={`flex items-center gap-2 px-4 py-2 font-medium text-gray-600 hover:text-gray-900 transition-colors ${currentStep === 1 ? 'invisible' : ''}`}
-          >
-            <ChevronLeft className="w-4 h-4" /> Anterior
-          </button>
-
-          {currentStep < 3 ? (
-            <button 
-              type="button"
-              disabled={!isStepValid()}
-              onClick={() => setCurrentStep(prev => prev + 1)}
-              className="flex items-center gap-2 px-8 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md"
-            >
-              Siguiente <ChevronRight className="w-4 h-4" />
-            </button>
-          ) : (
-            <button 
-              type="button"
-              onClick={handleSave}
-              disabled={isLoading}
-              className="flex items-center gap-2 px-8 py-2.5 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 disabled:opacity-50 transition-all shadow-md"
-            >
-              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CloudUpload className="w-4 h-4" />}
-              Finalizar Registro
-            </button>
-          )}
-        </div>
+  if (isLoadingData) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 gap-3 text-gray-500">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <p className="text-sm font-medium">Cargando tu perfil...</p>
       </div>
+    );
+  }
+
+  return (
+    <div className="max-w-6xl mx-auto mt-8 mb-20 flex flex-col md:flex-row gap-8 px-4">
+      
+      <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
+
+      <main className="flex-1 min-w-0 flex flex-col">
+
+        {errors.global && <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50">{errors.global}</div>}
+        {successMessage && <div className="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 flex items-center gap-2"><CheckCircle2 className="w-5 h-5" />{successMessage}</div>}
+
+ 
+        <div className="space-y-6 flex-1">
+          {activeSection === 'basic' && (
+            <BasicInfoSection 
+              formData={formData} isEditing={isEditing} errors={errors} handleChange={handleChange} 
+              fileInputRef={fileInputRef} handlePhotoChange={handlePhotoChange} photoPreview={photoPreview} 
+            />
+          )}
+
+          {activeSection === 'public' && (
+            <PublicViewSection 
+              formData={formData} isEditing={isEditing} isSavingDraft={isSavingDraft} handleChange={handleChange} 
+            />
+          )}
+
+          {activeSection === 'experience' && <ExperienceForm />}
+          {activeSection === 'education' && <EducationForm isEditingProfile={isEditing} />}
+        </div>
+
+        {(activeSection === 'basic' || activeSection === 'public') && (
+          <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
+            {!isEditing ? (
+              <button onClick={() => setIsEditing(true)} className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all shadow-sm">
+                <Edit3 className="w-4 h-4" /> Editar Perfil
+              </button>
+            ) : (
+              <>
+                <button onClick={handleCancelEdit} disabled={isLoading} className="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-all">
+                  <X className="w-4 h-4" /> Cancelar
+                </button>
+                <button onClick={handleSave} disabled={isLoading} className="flex items-center gap-2 px-6 py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-all shadow-sm disabled:opacity-50">
+                  {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CloudUpload className="w-4 h-4" />}
+                  Guardar Cambios
+                </button>
+              </>
+            )}
+          </div>
+        )}
+      </main>
     </div>
   )
 }
