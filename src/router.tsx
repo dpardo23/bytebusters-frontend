@@ -5,6 +5,7 @@ import RegisterPage from './pages/auth/RegisterPage'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import ProfilePage from './pages/profile/ProfilePage'
 import PublicProfilePage from './pages/profile/PublicProfilePage'
+import UserAccountPage from './pages/user/UserAccountPage'
 
 export const routes = [
   { path: '/', name: 'landing' },
@@ -13,6 +14,7 @@ export const routes = [
   { path: '/dashboard', name: 'dashboard' },
   { path: '/profile', name: 'profile' },
   { path: '/profile/:id', name: 'public-profile' },
+  { path: '/user/:id', name: 'user-account' },
 ]
 
 export default function AppRouter() {
@@ -27,6 +29,7 @@ export default function AppRouter() {
         <Route path='/dashboard' element={<DashboardPage />} />
         <Route path='/profile' element={<ProfilePage />} />
         <Route path='/profile/:id' element={<PublicProfilePage />} />
+        <Route path='/user/:id' element={<UserAccountPage />} />
         <Route path='*' element={<Navigate to='/' replace />} />
       </Routes>
     </BrowserRouter>

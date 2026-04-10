@@ -92,7 +92,7 @@ export default function LoginForm() {
       return
     }
 
-    navigate('/profile')
+    navigate(result.user?.id ? `/user/${result.user.id}` : '/profile')
   }
 
   const openRecoveryRequest = () => {
