@@ -225,7 +225,12 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
             />
           )}
 
-          {activeSection === 'experience' && <ExperienceForm />}
+          {activeSection === 'experience' && (
+            <ExperienceForm 
+              profileId={initialUser.id} isEditingProfile={true} 
+            />
+          )}
+
           {activeSection === 'education' && <EducationForm isEditingProfile={isEditing} />}
         </div>
 
