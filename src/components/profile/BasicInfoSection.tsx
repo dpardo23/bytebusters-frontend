@@ -1,5 +1,5 @@
-import React, { ChangeEvent, RefObject } from "react";
-import { Camera } from "lucide-react";
+import React, { ChangeEvent, RefObject, useEffect, useRef, useState } from "react";
+import { Camera, ChevronDown } from "lucide-react";
 import type { ExtendedUserData } from "../../types/profile.types";
 
 interface BasicInfoSectionProps {
@@ -15,10 +15,45 @@ interface BasicInfoSectionProps {
 export function BasicInfoSection({
   formData, isEditing, errors, handleChange, fileInputRef, handlePhotoChange, photoPreview
 }: BasicInfoSectionProps) {
-  const statusMessageCharsLeft = 50 - (formData.statusMessage?.length || 0);
+  const [isStatusOpen, setIsStatusOpen] = useState(false);
+  const statusDropdownRef = useRef<HTMLDivElement>(null);
+
+  const statusOptions = [
+    { value: "active", label: "Disponible para contratar", dotClass: "bg-green-400" },
+    { value: "busy", label: "Trabajando actualmente", dotClass: "bg-orange-400" },
+    { value: "incognito", label: "No disponible (Modo Incognito)", dotClass: "bg-purple-300" },
+  ] as const;
+
+  const selectedStatus = statusOptions.find((option) => option.value === formData.status) || statusOptions[0];
+
+  useEffect(() => {
+    if (!isEditing) {
+      setIsStatusOpen(false);
+    }
+  }, [isEditing]);
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (!statusDropdownRef.current) return;
+      if (!statusDropdownRef.current.contains(event.target as Node)) {
+        setIsStatusOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
+
+  const handleStatusSelect = (nextStatus: string) => {
+    const syntheticEvent = {
+      target: { name: 'status', value: nextStatus },
+    } as ChangeEvent<HTMLInputElement | HTMLSelectElement>;
+    handleChange(syntheticEvent);
+    setIsStatusOpen(false);
+  };
 
   return (
-    <div className={`bg-white border rounded-xl shadow-sm overflow-hidden transition-colors ${isEditing ? 'border-blue-200 ring-1 ring-blue-50' : 'border-gray-200'}`}>
+    <div className={`bg-white border rounded-xl shadow-sm transition-colors ${isEditing ? 'border-blue-200 ring-1 ring-blue-50' : 'border-gray-200'}`}>
       <div className="p-6 border-b border-gray-200 bg-gray-50/50">
         <h3 className="text-lg font-semibold text-gray-900">Información Básica</h3>
       </div>
@@ -71,30 +106,38 @@ export function BasicInfoSection({
 
           <div className="space-y-2 mt-2">
             <label className="block text-sm font-medium text-gray-700">Estado de Disponibilidad</label>
-            <select
-              name="status" value={formData.status} onChange={handleChange} disabled={!isEditing}
-              className={`w-full px-3 py-2 border rounded-md outline-none transition-all ${!isEditing ? 'bg-gray-50 text-gray-600 border-transparent appearance-none font-medium' : 'bg-white border-gray-300 focus:ring-2 focus:ring-blue-500'}`}
-            >
-              <option value="active">🟢 Disponible para contratar</option>
-              <option value="busy">🟠 Trabajando actualmente</option>
-              <option value="incognito">⚪ No disponible (Modo Incógnito)</option>
-            </select>
-          </div>
+            <div className="relative" ref={statusDropdownRef}>
+              <button
+                type="button"
+                disabled={!isEditing}
+                onClick={() => setIsStatusOpen((prev) => !prev)}
+                className={`w-full px-3 py-2 border rounded-xl outline-none transition-all text-left flex items-center justify-between ${!isEditing ? 'bg-gray-50 text-gray-600 border-transparent cursor-default font-medium' : 'bg-white border-gray-300 focus:ring-2 focus:ring-blue-500'}`}
+              >
+                <span className="inline-flex items-center gap-2">
+                  <span className={`h-3 w-3 rounded-full ${selectedStatus.dotClass}`} />
+                  {selectedStatus.label}
+                </span>
+                <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform ${isStatusOpen ? 'rotate-180' : ''}`} />
+              </button>
 
-          {(isEditing || formData.statusMessage) && (
-            <div className="space-y-2 mt-4">
-              <label className="block text-sm font-medium text-gray-700">Mensaje de Estado</label>
-              <input
-                type="text" name="statusMessage" value={formData.statusMessage} onChange={handleChange} disabled={!isEditing} placeholder="Ej: Buscando nuevos retos en React..."
-                className={`w-full px-3 py-2 border rounded-md outline-none transition-all ${!isEditing ? 'bg-gray-50 text-gray-600 border-transparent italic' : 'border-gray-300 focus:ring-2 focus:ring-blue-500 text-sm'}`}
-              />
-              {isEditing && (
-                <p className={`text-[11px] text-right font-medium ${statusMessageCharsLeft <= 10 ? 'text-red-500' : 'text-gray-400'}`}>
-                  {statusMessageCharsLeft} caracteres restantes
-                </p>
-              )}
+              {isEditing && isStatusOpen ? (
+                <ul className="absolute z-20 mt-2 w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
+                  {statusOptions.map((option) => (
+                    <li key={option.value}>
+                      <button
+                        type="button"
+                        onClick={() => handleStatusSelect(option.value)}
+                        className={`w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors inline-flex items-center gap-2 ${formData.status === option.value ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
+                      >
+                        <span className={`h-3 w-3 rounded-full ${option.dotClass}`} />
+                        {option.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
