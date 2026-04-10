@@ -64,7 +64,6 @@ export default function ProfilePage() {
     setIsSelectingRecruiter(false)
   }
 
-  // NUEVO: Manejador para la cuenta Profesional que se comunica con el backend
   const handleSelectProfessional = async () => {
     if (isSelectingProfessional) {
       return
@@ -99,10 +98,10 @@ export default function ProfilePage() {
   const isRecruiter = user.role === 'recruiter'
 
   return (
-    <div className='min-h-screen bg-gray-50 pb-20 pt-20'>
-      <ProfileHeader user={user} />
 
-      <div className='mx-auto mt-8 max-w-4xl space-y-6 px-4'>
+    <div className='min-h-screen bg-gray-50 pb-20 pt-8'>
+      
+      <div className='mx-auto mt-8 max-w-6xl space-y-6 px-4'>
         {isBasicRole ? (
           <section className='rounded-2xl border border-border bg-card p-6 shadow-sm'>
             <h2 className='text-2xl font-semibold text-foreground'>Elige el tipo de cuenta</h2>
@@ -115,7 +114,7 @@ export default function ProfilePage() {
                 title='Cuenta profesional'
                 description='Ideal para mostrar experiencia, educacion, proyectos y disponibilidad laboral.'
                 buttonLabel={isSelectingProfessional ? 'Actualizando...' : 'Quiero ser profesional'}
-                onSelect={handleSelectProfessional} // MODIFICADO: Usamos el nuevo manejador
+                onSelect={handleSelectProfessional}
                 icon={<BriefcaseBusiness className='h-5 w-5' />}
               />
               <RoleCard

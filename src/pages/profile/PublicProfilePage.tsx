@@ -1,9 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import useAuth from '../../hooks/auth/useAuth';
-import { ProfileHeader } from '../../components/profile/ProfileHeader';
 
-// CORRECCIÓN APLICADA AQUÍ:
 import { ProfileEditForm } from '../../components/profile/ProfileEditFormE'; 
 
 export default function PublicProfilePage() {
@@ -20,8 +18,9 @@ export default function PublicProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20 pt-6">
-      <ProfileHeader user={user} />
+      
       <ProfileEditForm initialUser={user} />
+      
     </div>
   );
 }
