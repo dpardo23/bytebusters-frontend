@@ -1,4 +1,4 @@
-export const PROFILE_VISIBILITY = {
+/*export const PROFILE_VISIBILITY = {
   PUBLIC: 'public',
   PRIVATE: 'private',
 } as const
@@ -13,3 +13,19 @@ export interface Profile {
 export interface ProfileState {
   profile: Profile | null
 }
+*/
+
+export interface ExtendedUserData {
+  id?: string | number;
+  name: string;
+  headline?: string;
+  status?: string;
+  statusMessage?: string;
+  bio?: string;
+  githubUrl?: string;
+  linkedinUrl?: string;
+  websiteUrl?: string;
+  photoBase64?: string;
+}
+
+export type Section = 'basic' | 'public' | 'experience' | 'education';
