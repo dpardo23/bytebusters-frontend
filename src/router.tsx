@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/auth/LoginPage'
+import OAuthCallbackPage from './pages/auth/OAuthCallbackPage'
 import RegisterPage from './pages/auth/RegisterPage'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import ProfilePage from './pages/profile/ProfilePage'
@@ -24,6 +25,7 @@ export default function AppRouter() {
         <Route path='/' element={<LandingPage />} />
         <Route path='/auth/login' element={<LoginPage />} />
         <Route path='/auth/register' element={<RegisterPage />} />
+        <Route path='/oauth2/callback' element={<OAuthCallbackPage />} />
         <Route path='/auth/register/professional' element={<Navigate to='/auth/register' replace />} />
         <Route path='/auth/register/recruiter' element={<Navigate to='/auth/register' replace />} />
         <Route path='/dashboard' element={<DashboardPage />} />

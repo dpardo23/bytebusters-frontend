@@ -7,6 +7,7 @@ import { getRegisterFieldError, type RegisterField, type RegisterValues } from '
 import useAuth from '../../hooks/auth/useAuth'
 
 const API_BASE_URL = String(import.meta.env.VITE_API_URL || 'http://localhost:8080').replace(/\/$/, '')
+const OAUTH_INTENT_KEY = 'oauth_intent'
 
 function GoogleIcon() {
   return (
@@ -52,7 +53,8 @@ export default function ProfessionalRegisterForm() {
   const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   const redirectToOAuthProvider = (provider: 'github' | 'google') => {
-    window.location.replace(`${API_BASE_URL}/api/auth/oauth/${provider}`)
+    sessionStorage.setItem(OAUTH_INTENT_KEY, 'register')
+    window.location.replace(`${API_BASE_URL}/api/auth/oauth/${provider}?intent=register`)
   }
 
   const updateFieldError = (field: RegisterField, nextValues: RegisterValues) => {

@@ -63,6 +63,9 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
     setIsLoading(true);
     try {
       const userId = initialUser.id; 
+      if (!userId) {
+        throw new Error("No se pudo identificar el usuario para guardar el perfil");
+      }
 
       const heroData = new FormData();
       heroData.append('data', new Blob([JSON.stringify({ 
@@ -71,7 +74,10 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
         professionalTitle: formData.headline 
       })], { type: "application/json" }));
       if (photoFile) heroData.append('photo', photoFile);
-      await fetch(`/api/profile/hero-section`, { method: 'PATCH', body: heroData });
+      const heroResponse = await fetch(`/api/profile/hero-section`, { method: 'PATCH', body: heroData });
+      if (!heroResponse.ok) {
+        throw new Error("No se pudo guardar la informacion basica");
+      }
 
       const backendStatus = formData.status === 'active' ? 'A' : formData.status === 'busy' ? 'B' : 'N';
       const statusParams = new URLSearchParams({ 
@@ -79,13 +85,19 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
         message: formData.statusMessage || "", 
         incognito: String(formData.status === 'incognito') 
       });
-      await fetch(`/api/profile/status/${userId}?${statusParams.toString()}`, { method: 'PUT' });
+      const statusResponse = await fetch(`/api/profile/status/${userId}?${statusParams.toString()}`, { method: 'PUT' });
+      if (!statusResponse.ok) {
+        throw new Error("No se pudo guardar el estado del perfil");
+      }
 
-      await fetch(`/api/biography/${userId}`, { 
+      const biographyResponse = await fetch(`/api/biography/${userId}`, { 
         method: 'PUT', 
         headers: { 'Content-Type': 'text/plain' }, 
         body: formData.bio 
       });
+      if (!biographyResponse.ok) {
+        throw new Error("No se pudo guardar la biografia");
+      }
 
       alert("¡Perfil completado con éxito!");
       navigate('/');
