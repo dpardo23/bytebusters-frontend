@@ -60,7 +60,7 @@ export function EducationForm({ profileId, isEditingProfile = true }: EducationF
         setRecords(data);
       }
     } catch (err) {
-      console.error("Error al obtener registros académicos:", err);
+      console.error("Error al obtener registros academicos:", err);
     } finally {
       setIsLoadingList(false);
     }
@@ -123,17 +123,17 @@ export function EducationForm({ profileId, isEditingProfile = true }: EducationF
 
       if (!res.ok) throw new Error("Error en el servidor");
       
-      await fetchRecords(); // Recargar la lista después de guardar
+      await fetchRecords(); // Recargar la lista despues de guardar
       setIsModalOpen(false);
     } catch (err) {
-      alert("No se pudo guardar la información académica.");
+      alert("No se pudo guardar la informacion academica.");
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm("¿Estás seguro de que deseas eliminar este estudio?")) return;
+    if (!window.confirm("¿Estas seguro de que deseas eliminar este estudio?")) return;
     try {
       const res = await fetch(`/api/profile/${profileId}/academic-records/${id}`, { method: 'DELETE' });
       if (res.ok) await fetchRecords();
@@ -143,51 +143,51 @@ export function EducationForm({ profileId, isEditingProfile = true }: EducationF
   };
 
   return (
-    <div className={`bg-white border rounded-xl shadow-sm text-left mb-6 transition-colors ${isEditingProfile ? 'border-blue-200 ring-1 ring-blue-50' : 'border-gray-200'}`}>
+    <div className={`bg-white border rounded-xl shadow-sm text-left mb-6 transition-colors ${isEditingProfile ? 'border-indigo-200 ring-1 ring-indigo-50' : 'border-gray-200'}`}>
       
-      {/* HEADER DE LA SECCIÓN */}
+      {/* HEADER DE LA SECCION */}
       <div className="p-6 border-b border-gray-200 flex items-center justify-between bg-gray-50/50 rounded-t-xl">
         <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-          <BookOpen className="w-5 h-5 text-blue-600" /> Formación Académica
+          <BookOpen className="w-5 h-5 text-indigo-600" /> Formacion Academica
         </h3>
         {isEditingProfile && (
-          <button onClick={() => handleOpenModal()} className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-200">
-            <Plus className="w-4 h-4" /> Añadir
+          <button onClick={() => handleOpenModal()} className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors border border-transparent hover:border-indigo-200">
+            <Plus className="w-4 h-4" /> Anadir
           </button>
         )}
       </div>
 
-      {/* LISTA DE REGISTROS (LO QUE ESTÁ EN LA DB) */}
+      {/* LISTA DE REGISTROS (LO QUE ESTA EN LA DB) */}
       <div className="p-6">
         {isLoadingList ? (
-          <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-blue-500" /></div>
+          <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-indigo-500" /></div>
         ) : records.length === 0 ? (
-          <p className="text-sm text-gray-500 italic text-center py-4">No se encontraron registros académicos en tu perfil.</p>
+          <p className="text-sm text-gray-500 italic text-center py-4">No se encontraron registros academicos en tu perfil.</p>
         ) : (
           <div className="space-y-4">
             {records.map((rec) => (
-              <div key={rec.academicrecordsId || rec.id} className="flex items-start gap-4 p-4 rounded-xl border border-gray-100 hover:bg-blue-50/30 transition-all group">
+              <div key={rec.academicrecordsId || rec.id} className="flex items-start gap-4 p-4 rounded-xl border border-gray-100 hover:bg-indigo-50/30 transition-all group">
                 <div className="p-3 bg-white border border-gray-200 rounded-xl shadow-sm">
-                  <GraduationCap className="w-6 h-6 text-blue-600" />
+                  <GraduationCap className="w-6 h-6 text-indigo-600" />
                 </div>
                 <div className="flex-1 flex justify-between items-start">
                   <div>
                     <h4 className="font-bold text-gray-900 leading-tight">{rec.title}</h4>
-                    <p className="text-sm font-medium text-blue-600">{rec.institution}</p>
+                    <p className="text-sm font-medium text-indigo-600">{rec.institution}</p>
                     <div className="flex items-center gap-3 mt-1">
                       <p className="text-xs text-gray-500 flex items-center gap-1">
                         <Calendar className="w-3.5 h-3.5" />
-                        {rec.startYear} — {rec.inProgress ? "Actualidad" : rec.endYear}
+                        {rec.startYear} - {rec.inProgress ? "Actualidad" : rec.endYear}
                       </p>
                       {rec.gradePointAverage && (
-                        <span className="text-xs font-bold text-gray-400">• Promedio: {rec.gradePointAverage}</span>
+                        <span className="text-xs font-bold text-gray-400">- Promedio: {rec.gradePointAverage}</span>
                       )}
                     </div>
                   </div>
                   
                   {isEditingProfile && (
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => handleOpenModal(rec)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"><Edit2 className="w-4 h-4" /></button>
+                      <button onClick={() => handleOpenModal(rec)} className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><Edit2 className="w-4 h-4" /></button>
                       <button onClick={() => handleDelete(rec.academicrecordsId || rec.id!)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   )}
@@ -198,7 +198,7 @@ export function EducationForm({ profileId, isEditingProfile = true }: EducationF
         )}
       </div>
 
-      {/* EL MODAL DEBE QUEDAR IGUAL AL QUE TENÍAMOS SEGÚN TU IMAGEN */}
+      {/* EL MODAL DEBE QUEDAR IGUAL AL QUE TENIAMOS SEGUN TU IMAGEN */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
@@ -206,26 +206,26 @@ export function EducationForm({ profileId, isEditingProfile = true }: EducationF
              <div className="p-8 space-y-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-50 rounded-xl"><GraduationCap className="w-6 h-6 text-blue-600" /></div>
-                    <h2 className="text-2xl font-bold text-gray-900">{editingId ? 'Editar' : 'Añadir'} Educación</h2>
+                    <div className="p-2 bg-indigo-50 rounded-xl"><GraduationCap className="w-6 h-6 text-indigo-600" /></div>
+                    <h2 className="text-2xl font-bold text-gray-900">{editingId ? 'Editar' : 'Anadir'} Educacion</h2>
                   </div>
                   <button onClick={() => setIsModalOpen(false)} className="p-2 text-gray-400 hover:bg-gray-100 rounded-full transition-colors"><X className="w-5 h-5" /></button>
                 </div>
 
                 <form onSubmit={handleSave} className="space-y-5 text-left">
                   <label className="flex items-center gap-3 cursor-pointer group">
-                    <input type="checkbox" name="inProgress" checked={formData.inProgress} onChange={handleChange} className="w-5 h-5 text-blue-600 rounded-md border-gray-300 focus:ring-blue-500" />
+                    <input type="checkbox" name="inProgress" checked={formData.inProgress} onChange={handleChange} className="w-5 h-5 text-indigo-600 rounded-md border-gray-300 focus:ring-indigo-500" />
                     <span className="text-sm font-medium text-gray-700">Actualmente cursando</span>
                   </label>
 
                   <div className="space-y-2">
                     <label className="block text-sm font-semibold text-gray-700">Titulo o Certificado *</label>
-                    <input required type="text" name="title" value={formData.title} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
+                    <input required type="text" name="title" value={formData.title} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-gray-700">Institución *</label>
-                    <input required type="text" name="institution" value={formData.institution} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
+                    <label className="block text-sm font-semibold text-gray-700">Institucion *</label>
+                    <input required type="text" name="institution" value={formData.institution} onChange={handleChange} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
@@ -254,20 +254,20 @@ export function EducationForm({ profileId, isEditingProfile = true }: EducationF
 
                   {/* Subida de Archivos */}
                   <div className="space-y-3">
-                    <div onClick={() => certInputRef.current?.click()} className="border-2 border-dashed border-gray-200 rounded-2xl p-6 flex flex-col items-center gap-1 cursor-pointer hover:bg-blue-50 transition-all">
+                    <div onClick={() => certInputRef.current?.click()} className="border-2 border-dashed border-gray-200 rounded-2xl p-6 flex flex-col items-center gap-1 cursor-pointer hover:bg-indigo-50 transition-all">
                       <input type="file" ref={certInputRef} className="hidden" accept="image/*" onChange={(e) => setCertFile(e.target.files?.[0] || null)} />
                       <ImageIcon className="w-6 h-6 text-gray-400" />
                       <p className="text-sm font-semibold text-gray-600">{certFile ? certFile.name : 'Subir certificado'}</p>
                     </div>
-                    <div onClick={() => logoInputRef.current?.click()} className="border-2 border-dashed border-gray-200 rounded-2xl p-6 flex flex-col items-center gap-1 cursor-pointer hover:bg-blue-50 transition-all">
+                    <div onClick={() => logoInputRef.current?.click()} className="border-2 border-dashed border-gray-200 rounded-2xl p-6 flex flex-col items-center gap-1 cursor-pointer hover:bg-indigo-50 transition-all">
                       <input type="file" ref={logoInputRef} className="hidden" accept="image/*" onChange={(e) => setLogoFile(e.target.files?.[0] || null)} />
                       <School className="w-6 h-6 text-gray-400" />
                       <p className="text-sm font-semibold text-gray-600">{logoFile ? logoFile.name : 'Subir logo'}</p>
                     </div>
                   </div>
 
-                  <button type="submit" disabled={isSaving} className="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 shadow-lg disabled:opacity-50">
-                    {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : "Guardar Educación"}
+                  <button type="submit" disabled={isSaving} className="w-full py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 shadow-lg disabled:opacity-50">
+                    {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : "Guardar Educacion"}
                   </button>
                 </form>
              </div>

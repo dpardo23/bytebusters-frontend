@@ -4,7 +4,7 @@ import { Briefcase, Plus, Edit2, Trash2, X, Loader2, Calendar, Building, Link as
 // 1. Interfaz sincronizada con WorkExperienceResponse/Request del Backend
 export interface ExperienceData {
   id?: number;
-  jobPosition: string; // ¡Actualizado de 'role' a 'jobPosition'!
+  jobPosition: string; // Actualizado de 'role' a 'jobPosition'.
   company: string;
   startDate: string;
   endDate?: string;
@@ -69,7 +69,7 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
     if (exp) {
       setFormData({
         ...exp,
-        // Asegurar que nulls del backend se manejen como strings vacíos en inputs
+        // Asegurar que nulls del backend se manejen como strings vacios en inputs
         endDate: exp.endDate || "",
         companyUrl: exp.companyUrl || ""
       });
@@ -102,12 +102,12 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
     }
   };
 
-  // 4. Guardar datos (AHORA CON FORMDATA PARA SOPORTAR IMÁGENES)
+  // 4. Guardar datos (AHORA CON FORMDATA PARA SOPORTAR IMAGENES)
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!profileId) return alert("Falta el ID del perfil");
     
-    // Validación de imágenes obligatorias (solo al crear)
+    // Validacion de imagenes obligatorias (solo al crear)
     if (!editingId && (!logoFile || !companyImageFile)) {
       setError("El Logo y la Imagen de la Empresa son obligatorios.");
       return;
@@ -122,7 +122,7 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
       // 1. El JSON como String (Lo que espera el @RequestPart("data"))
       formDataToSend.append('data', JSON.stringify(formData));
       
-      // 2. Los archivos físicos
+      // 2. Los archivos fisicos
       if (logoFile) formDataToSend.append('logo', logoFile);
       if (companyImageFile) formDataToSend.append('companyImage', companyImageFile);
 
@@ -132,8 +132,8 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
 
       const res = await fetch(url, {
         method: editingId ? 'PUT' : 'POST',
-        // ¡OJO! Al usar FormData, NO debes poner el header 'Content-Type'. 
-        // El navegador lo calcula automáticamente con el "boundary" correcto.
+        // OJO: al usar FormData, no pongas el header 'Content-Type'.
+        // El navegador lo calcula automaticamente con el boundary correcto.
         body: formDataToSend
       });
 
@@ -162,34 +162,34 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
   };
 
   return (
-    <div className={`bg-white border rounded-xl shadow-sm text-left mb-6 transition-colors ${isEditingProfile ? 'border-blue-200 ring-1 ring-blue-50' : 'border-gray-200'}`}>
+    <div className={`bg-white border rounded-xl shadow-sm text-left mb-6 transition-colors ${isEditingProfile ? 'border-indigo-200 ring-1 ring-indigo-50' : 'border-gray-200'}`}>
       
       {/* CABECERA */}
       <div className="p-6 border-b border-gray-200 flex items-center justify-between bg-gray-50/50 rounded-t-xl">
         <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-          <Briefcase className="w-5 h-5 text-blue-600" /> Experiencia Laboral
+          <Briefcase className="w-5 h-5 text-indigo-600" /> Experiencia Laboral
         </h3>
         {isEditingProfile && (
-          <button onClick={() => handleOpenModal()} className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-200">
-            <Plus className="w-4 h-4" /> Añadir
+          <button onClick={() => handleOpenModal()} className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors border border-transparent hover:border-indigo-200">
+            <Plus className="w-4 h-4" /> Anadir
           </button>
         )}
       </div>
 
-      {/* LÍNEA DE TIEMPO */}
+      {/* LINEA DE TIEMPO */}
       <div className="p-6">
         {isLoadingList ? (
-          <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-blue-500" /></div>
+          <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-indigo-500" /></div>
         ) : experiences.length === 0 ? (
-          <p className="text-sm text-gray-500 italic text-center py-4">Aún no hay experiencia registrada.</p>
+          <p className="text-sm text-gray-500 italic text-center py-4">Aun no hay experiencia registrada.</p>
         ) : (
-          <div className="relative border-l-2 border-blue-100 ml-3 md:ml-4 space-y-8 pb-4 pt-2">
+          <div className="relative border-l-2 border-indigo-100 ml-3 md:ml-4 space-y-8 pb-4 pt-2">
             {experiences.map((exp, index) => (
               <div key={exp.id} className="relative pl-6 md:pl-8 group">
                 
                 {/* Punto y efecto Radar */}
                 <div className={`absolute w-4 h-4 rounded-full -left-[9px] top-1.5 ring-4 ring-white shadow-sm z-10 
-                  ${exp.isCurrent ? 'bg-green-500' : 'bg-blue-300'}`}
+                  ${exp.isCurrent ? 'bg-green-500' : 'bg-indigo-300'}`}
                 >
                   {exp.isCurrent && <span className="absolute inset-0 w-full h-full rounded-full bg-green-400 animate-ping opacity-75"></span>}
                 </div>
@@ -206,7 +206,7 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
                       
                       <div className="flex items-center gap-2 mt-1 text-sm text-gray-700 font-medium">
                         {exp.isFreelance ? (
-                          <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-xs font-bold border border-blue-100">Freelance</span>
+                          <span className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs font-bold border border-indigo-100">Freelance</span>
                         ) : (
                           <Building className="w-4 h-4 text-gray-400" />
                         )}
@@ -216,17 +216,17 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
                       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs text-gray-500">
                         <div className={`flex items-center gap-1 font-medium ${exp.isCurrent ? 'text-green-600' : ''}`}>
                           <Calendar className="w-3.5 h-3.5" />
-                          {exp.startDate} — {exp.isCurrent ? "Actualidad" : exp.endDate}
+                          {exp.startDate} - {exp.isCurrent ? "Actualidad" : exp.endDate}
                         </div>
                         {exp.durationFormatted && (
-                          <span className="text-gray-400 font-medium">• {exp.durationFormatted}</span>
+                          <span className="text-gray-400 font-medium">- {exp.durationFormatted}</span>
                         )}
                       </div>
                     </div>
 
                     {isEditingProfile && (
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => handleOpenModal(exp)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md"><Edit2 className="w-4 h-4" /></button>
+                        <button onClick={() => handleOpenModal(exp)} className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md"><Edit2 className="w-4 h-4" /></button>
                         <button onClick={() => handleDelete(exp.id!)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md"><Trash2 className="w-4 h-4" /></button>
                       </div>
                     )}
@@ -235,7 +235,7 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
                   <p className="mt-4 text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{exp.description}</p>
                   
                   {exp.companyUrl && (
-                    <a href={exp.companyUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 mt-3 text-xs font-medium text-blue-600 hover:text-blue-800 hover:underline">
+                    <a href={exp.companyUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 mt-3 text-xs font-medium text-indigo-600 hover:text-indigo-800 hover:underline">
                       <LinkIcon className="w-3 h-3" /> Ver sitio web
                     </a>
                   )}
@@ -246,13 +246,13 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
         )}
       </div>
 
-      {/* MODAL PARA AÑADIR / EDITAR */}
+      {/* MODAL PARA ANADIR / EDITAR */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between z-10">
               <h2 className="text-xl font-bold flex items-center gap-2">
-                <Briefcase className="w-5 h-5 text-blue-600" /> {editingId ? 'Editar' : 'Añadir'} Experiencia
+                <Briefcase className="w-5 h-5 text-indigo-600" /> {editingId ? 'Editar' : 'Anadir'} Experiencia
               </h2>
               <button onClick={() => setIsModalOpen(false)} className="p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-900 rounded-full transition-colors"><X className="w-5 h-5" /></button>
             </div>
@@ -266,9 +266,9 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
                 </div>
               )}
 
-              <div className="p-4 bg-blue-50/50 rounded-xl border border-blue-100/50">
+              <div className="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100/50">
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" name="isFreelance" checked={formData.isFreelance} onChange={handleChange} className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" />
+                  <input type="checkbox" name="isFreelance" checked={formData.isFreelance} onChange={handleChange} className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500" />
                   <span className="text-sm text-gray-800 font-bold">Trabajo Freelance / Proyecto Independiente</span>
                 </label>
               </div>
@@ -276,47 +276,47 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1 md:col-span-2">
                   <label className="block text-xs font-bold text-gray-500 uppercase">Cargo o Rol *</label>
-                  <input required type="text" name="jobPosition" value={formData.jobPosition} onChange={handleChange} placeholder="Ej: Desarrollador Backend" className="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                  <input required type="text" name="jobPosition" value={formData.jobPosition} onChange={handleChange} placeholder="Ej: Desarrollador Backend" className="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500" />
                 </div>
 
                 <div className="space-y-1 md:col-span-2">
                   <label className="block text-xs font-bold text-gray-500 uppercase">Empresa {!formData.isFreelance && '*'}</label>
-                  <input required={!formData.isFreelance} type="text" name="company" value={formData.company} onChange={handleChange} placeholder={formData.isFreelance ? "Opcional para Freelancers" : "Nombre de la empresa"} disabled={formData.isFreelance} className="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-400" />
+                  <input required={!formData.isFreelance} type="text" name="company" value={formData.company} onChange={handleChange} placeholder={formData.isFreelance ? "Opcional para Freelancers" : "Nombre de la empresa"} disabled={formData.isFreelance} className="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-50 disabled:text-gray-400" />
                 </div>
               </div>
 
               <div className="p-5 bg-gray-50 rounded-xl border border-gray-200 space-y-4">
                 <label className="flex items-center gap-2 cursor-pointer mb-2">
-                  <input type="checkbox" name="isCurrent" checked={formData.isCurrent} onChange={handleChange} className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" />
-                  <span className="text-sm text-gray-800 font-medium">Trabajo aquí actualmente</span>
+                  <input type="checkbox" name="isCurrent" checked={formData.isCurrent} onChange={handleChange} className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500" />
+                  <span className="text-sm text-gray-800 font-medium">Trabajo aqui actualmente</span>
                 </label>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="block text-xs font-bold text-gray-500 uppercase">Fecha de inicio *</label>
-                    <input required type="date" name="startDate" value={formData.startDate} onChange={handleChange} className="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500" />
+                    <input required type="date" name="startDate" value={formData.startDate} onChange={handleChange} className="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500" />
                   </div>
                   <div className="space-y-1">
                     <label className="block text-xs font-bold text-gray-500 uppercase">Fecha final</label>
-                    <input required={!formData.isCurrent} disabled={formData.isCurrent || !formData.startDate} type="date" name="endDate" value={formData.endDate || ""} onChange={handleChange} className={`w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-400`} />
+                    <input required={!formData.isCurrent} disabled={formData.isCurrent || !formData.startDate} type="date" name="endDate" value={formData.endDate || ""} onChange={handleChange} className={`w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-400`} />
                   </div>
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="block text-xs font-bold text-gray-500 uppercase">Descripción de responsabilidades *</label>
-                <textarea required name="description" value={formData.description} onChange={handleChange} rows={4} placeholder="Describe tus logros y tareas principales..." className="w-full px-4 py-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
+                <label className="block text-xs font-bold text-gray-500 uppercase">Descripcion de responsabilidades *</label>
+                <textarea required name="description" value={formData.description} onChange={handleChange} rows={4} placeholder="Describe tus logros y tareas principales..." className="w-full px-4 py-3 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 resize-none" />
               </div>
 
               <div className="space-y-1">
                 <label className="block text-xs font-bold text-gray-500 uppercase">Enlace de la empresa (Opcional)</label>
-                <div className="flex items-center gap-2 border rounded-xl px-4 focus-within:ring-2 focus-within:ring-blue-500 transition-shadow">
+                <div className="flex items-center gap-2 border rounded-xl px-4 focus-within:ring-2 focus-within:ring-indigo-500 transition-shadow">
                   <LinkIcon className="w-4 h-4 text-gray-400" />
                   <input type="url" name="companyUrl" value={formData.companyUrl || ""} onChange={handleChange} placeholder="https://empresa.com" className="w-full py-2.5 outline-none text-sm" />
                 </div>
               </div>
 
-              {/* SECCIÓN DE IMÁGENES OBLIGATORIAS */}
+              {/* SECCION DE IMAGENES OBLIGATORIAS */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-xl border-dashed bg-gray-50">
                 <div className="space-y-2">
                   <label className="block text-xs font-bold text-gray-700 uppercase">Logo Empresa {!editingId && '*'}</label>
@@ -332,13 +332,13 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
                     <ImageIcon className="w-4 h-4 text-gray-500" /> {companyImageFile ? companyImageFile.name : 'Subir Imagen'}
                   </button>
                 </div>
-                {!editingId && <p className="col-span-2 text-[10px] text-gray-500 text-center">Ambas imágenes son obligatorias para crear un nuevo registro.</p>}
+                {!editingId && <p className="col-span-2 text-[10px] text-gray-500 text-center">Ambas imagenes son obligatorias para crear un nuevo registro.</p>}
               </div>
 
               {/* FOOTER MODAL */}
               <div className="pt-4 border-t border-gray-100 flex justify-end gap-3">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition-colors">Cancelar</button>
-                <button type="submit" disabled={isSaving} className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all disabled:opacity-50">
+                <button type="submit" disabled={isSaving} className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all disabled:opacity-50">
                   {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Guardar Experiencia"}
                 </button>
               </div>

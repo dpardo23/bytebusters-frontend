@@ -97,7 +97,7 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
 
   const handleSave = async () => {
     setIsLoading(true);
-    // ... tu lógica de save se mantiene igual ...
+    // ... tu logica de save se mantiene igual ...
     setIsLoading(false);
     setIsEditing(false);
   }
@@ -105,7 +105,7 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
   if (isLoadingData) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-3 text-gray-500">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
         <p className="text-sm font-medium">Cargando tu perfil...</p>
       </div>
     );
@@ -147,13 +147,13 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
               isEditingProfile={true} 
             />
           )}
-        </div> {/* <--- AQUÍ FALTABA CERRAR ESTE DIV */}
+        </div> {/* <--- AQUI FALTABA CERRAR ESTE DIV */}
 
-        {/* BOTONES DE ACCIÓN (FOOTER) */}
+        {/* BOTONES DE ACCION (FOOTER) */}
         {(activeSection === 'basic' || activeSection === 'public') && (
           <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
             {!isEditing ? (
-              <button onClick={() => setIsEditing(true)} className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all shadow-sm">
+              <button onClick={() => setIsEditing(true)} className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-all shadow-sm">
                 <Edit3 className="w-4 h-4" /> Editar Perfil
               </button>
             ) : (

@@ -1,4 +1,4 @@
-import React, { ChangeEvent, RefObject, useEffect, useRef, useState } from "react";
+﻿import React, { ChangeEvent, RefObject, useEffect, useRef, useState } from "react";
 import { Camera, ChevronDown } from "lucide-react";
 import type { ExtendedUserData } from "../../types/profile.types";
 
@@ -53,9 +53,9 @@ export function BasicInfoSection({
   };
 
   return (
-    <div className={`bg-white border rounded-xl shadow-sm transition-colors ${isEditing ? 'border-blue-200 ring-1 ring-blue-50' : 'border-gray-200'}`}>
+    <div className={`bg-white border rounded-xl shadow-sm transition-colors ${isEditing ? 'border-indigo-200 ring-1 ring-indigo-50' : 'border-gray-200'}`}>
       <div className="p-6 border-b border-gray-200 bg-gray-50/50">
-        <h3 className="text-lg font-semibold text-gray-900">Información Básica</h3>
+        <h3 className="text-lg font-semibold text-gray-900">Informacion Basica</h3>
       </div>
       <div className="p-6 space-y-6 text-left">
         
@@ -90,16 +90,16 @@ export function BasicInfoSection({
             <label className="block text-sm font-medium text-gray-700">Nombre Completo {isEditing && <span className="text-red-500">*</span>}</label>
             <input
               type="text" name="name" value={formData.name} onChange={handleChange} disabled={!isEditing}
-              className={`w-full px-3 py-2 border rounded-md outline-none transition-all ${!isEditing ? 'bg-gray-50 text-gray-600 border-transparent font-medium' : errors.name ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-blue-500'}`}
+              className={`w-full px-3 py-2 border rounded-md outline-none transition-all ${!isEditing ? 'bg-gray-50 text-gray-600 border-transparent font-medium' : errors.name ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-indigo-500'}`}
             />
             {errors.name && isEditing && <p className="text-red-500 text-xs">{errors.name}</p>}
           </div>
           
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Titular / Profesión</label>
+            <label className="block text-sm font-medium text-gray-700">Titular / Profesion</label>
             <input
               type="text" name="headline" value={formData.headline} onChange={handleChange} disabled={!isEditing}
-              className={`w-full px-3 py-2 border rounded-md outline-none transition-all ${!isEditing ? 'bg-gray-50 text-gray-600 border-transparent font-medium' : errors.headline ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-blue-500'}`}
+              className={`w-full px-3 py-2 border rounded-md outline-none transition-all ${!isEditing ? 'bg-gray-50 text-gray-600 border-transparent font-medium' : errors.headline ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-indigo-500'}`}
             />
             {errors.headline && isEditing && <p className="text-red-500 text-xs">{errors.headline}</p>}
           </div>
@@ -111,7 +111,7 @@ export function BasicInfoSection({
                 type="button"
                 disabled={!isEditing}
                 onClick={() => setIsStatusOpen((prev) => !prev)}
-                className={`w-full px-3 py-2 border rounded-xl outline-none transition-all text-left flex items-center justify-between ${!isEditing ? 'bg-gray-50 text-gray-600 border-transparent cursor-default font-medium' : 'bg-white border-gray-300 focus:ring-2 focus:ring-blue-500'}`}
+                className={`w-full px-3 py-2 border rounded-xl outline-none transition-all text-left flex items-center justify-between ${!isEditing ? 'bg-gray-50 text-gray-600 border-transparent cursor-default font-medium' : 'bg-white border-gray-300 focus:ring-2 focus:ring-indigo-500'}`}
               >
                 <span className="inline-flex items-center gap-2">
                   <span className={`h-3 w-3 rounded-full ${selectedStatus.dotClass}`} />
@@ -127,7 +127,7 @@ export function BasicInfoSection({
                       <button
                         type="button"
                         onClick={() => handleStatusSelect(option.value)}
-                        className={`w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors inline-flex items-center gap-2 ${formData.status === option.value ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}
+                        className={`w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors inline-flex items-center gap-2 ${formData.status === option.value ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700'}`}
                       >
                         <span className={`h-3 w-3 rounded-full ${option.dotClass}`} />
                         {option.label}
