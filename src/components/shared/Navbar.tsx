@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ChevronDown, Code2, Menu, Moon, X } from 'lucide-react'
+import { ChevronDown, Code2, Menu, Moon, Sun, X } from 'lucide-react'
 import useAuth from '../../hooks/auth/useAuth'
+import { getPreferredTheme, persistTheme, type Theme } from '../../lib/theme'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
+  const [theme, setTheme] = useState<Theme>(() => getPreferredTheme())
   const navigate = useNavigate()
   const { user, logout } = useAuth()
   
@@ -45,6 +47,15 @@ export default function Navbar() {
     ? profileData.photoBase64 
     : user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(displayName)}`;
 
+  function handleThemeToggle() {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark'
+    setTheme(nextTheme)
+    persistTheme(nextTheme)
+  }
+
+  const ThemeIcon = theme === 'dark' ? Sun : Moon
+  const themeLabel = theme === 'dark' ? 'Activar modo claro' : 'Activar modo oscuro'
+
   return (
     <header className='fixed inset-x-0 top-0 z-50 border-b border-border bg-background/90 backdrop-blur'>
       <nav className='mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4'>
@@ -70,11 +81,12 @@ export default function Navbar() {
         <div className='hidden items-center gap-3 md:flex'>
           <button
             type='button'
-            disabled
-            className='inline-flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-md text-foreground/50'
-            aria-label='Cambiar tema'
+            onClick={handleThemeToggle}
+            className='inline-flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-colors hover:bg-accent'
+            aria-label={themeLabel}
+            title={themeLabel}
           >
-            <Moon className='h-5 w-5' />
+            <ThemeIcon className='h-5 w-5' />
           </button>
           {!user ? (
             <Link
@@ -142,11 +154,12 @@ export default function Navbar() {
         <div className='flex items-center gap-2 md:hidden'>
           <button
             type='button'
-            disabled
-            className='inline-flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-md text-foreground/50'
-            aria-label='Cambiar tema'
+            onClick={handleThemeToggle}
+            className='inline-flex h-10 w-10 items-center justify-center rounded-md text-foreground transition-colors hover:bg-accent'
+            aria-label={themeLabel}
+            title={themeLabel}
           >
-            <Moon className='h-5 w-5' />
+            <ThemeIcon className='h-5 w-5' />
           </button>
           <button
             type='button'
