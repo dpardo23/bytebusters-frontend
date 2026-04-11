@@ -1,13 +1,14 @@
 import React, { useState, ChangeEvent, useRef } from "react"
-import { Camera, CloudUpload, Loader2, Code, Briefcase, Globe, FileText, ChevronRight, ChevronLeft, CheckCircle2 } from "lucide-react"
+import { Camera, CloudUpload, Loader2, FileText, ChevronRight, ChevronLeft, CheckCircle2, Share2 } from "lucide-react"
 import { useNavigate } from 'react-router-dom'
 import type { UserData } from "./ProfileHeader" 
-import { ExperienceForm } from "./ExperienceForm"
-import { EducationForm } from "./EducationForm"
+
+import { SocialLinks } from "./SocialLinks"
 
 interface ExtendedUserData extends UserData {
   statusMessage?: string;
   id?: string | number;
+  username?: string; // Añadido para que TS no se queje al leer el username
 }
 
 interface ProfileEditFormProps {
@@ -22,16 +23,16 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const cleanName = initialUser?.name?.toLowerCase() === "usuario" ? "" : (initialUser?.name || "")
 
-  const [formData, setFormData] = useState<ExtendedUserData>({
-    name: initialUser?.name || "",
+  const [formData, setFormData] = useState<ExtendedUserData & { socialLinks: any[] }>({
+    // MODIFICACIÓN 1: Toma el username directamente si el name está vacío
+    name: cleanName,
     headline: initialUser?.headline || "",
     status: initialUser?.status || "active",
     bio: initialUser?.bio || "",
-    statusMessage: initialUser?.statusMessage || "",
-    githubUrl: initialUser?.githubUrl || "",
-    linkedinUrl: initialUser?.linkedinUrl || "",
-    websiteUrl: initialUser?.websiteUrl || "",
+    statusMessage: "", // Ya no se usa en UI, se inicializa vacío
+    socialLinks: [{ plataformId: "", url: "" }] 
   })
 
   const isStepValid = () => {
@@ -40,6 +41,10 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
     }
     if (currentStep === 2) {
       return formData.bio.trim().length >= 20;
+    }
+    if (currentStep === 3) {
+      const validLinks = formData.socialLinks.filter(l => l.plataformId && l.url.trim() !== "");
+      return validLinks.length > 0;
     }
     return true;
   }
@@ -57,46 +62,51 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
+  const handleSocialLinksChange = (newLinks: any[]) => {
+    setFormData(prev => ({ ...prev, socialLinks: newLinks }))
+  }
+
   const handleSave = async () => {
     if (!isStepValid()) return;
     
     setIsLoading(true);
     try {
       const userId = initialUser.id; 
-      if (!userId) {
-        throw new Error("No se pudo identificar el usuario para guardar el perfil");
-      }
+      if (!userId) throw new Error("No se pudo identificar el usuario para guardar el perfil");
 
       const heroData = new FormData();
       heroData.append('data', new Blob([JSON.stringify({ 
-        userId: userId, 
-        name: formData.name, 
-        professionalTitle: formData.headline 
+        userId: userId, name: formData.name, professionalTitle: formData.headline 
       })], { type: "application/json" }));
       if (photoFile) heroData.append('photo', photoFile);
+      
       const heroResponse = await fetch(`/api/profile/hero-section`, { method: 'PATCH', body: heroData });
-      if (!heroResponse.ok) {
-        throw new Error("No se pudo guardar la informacion basica");
-      }
+      if (!heroResponse.ok) throw new Error("No se pudo guardar la información básica");
 
       const backendStatus = formData.status === 'active' ? 'A' : formData.status === 'busy' ? 'B' : 'N';
       const statusParams = new URLSearchParams({ 
-        status: backendStatus, 
-        message: formData.statusMessage || "", 
-        incognito: String(formData.status === 'incognito') 
+        // El mensaje corto ahora se envía vacío por defecto
+        status: backendStatus, message: "", incognito: String(formData.status === 'incognito') 
       });
       const statusResponse = await fetch(`/api/profile/status/${userId}?${statusParams.toString()}`, { method: 'PUT' });
-      if (!statusResponse.ok) {
-        throw new Error("No se pudo guardar el estado del perfil");
-      }
+      if (!statusResponse.ok) throw new Error("No se pudo guardar el estado del perfil");
 
       const biographyResponse = await fetch(`/api/biography/${userId}`, { 
-        method: 'PUT', 
-        headers: { 'Content-Type': 'text/plain' }, 
-        body: formData.bio 
+        method: 'PUT', headers: { 'Content-Type': 'text/plain' }, body: formData.bio 
       });
-      if (!biographyResponse.ok) {
-        throw new Error("No se pudo guardar la biografia");
+      if (!biographyResponse.ok) throw new Error("No se pudo guardar la biografía");
+
+      const validLinks = formData.socialLinks.filter(l => l.plataformId && l.url.trim() !== "");
+      for (const link of validLinks) {
+        const linkResponse = await fetch(`/api/profile/${userId}/social-links`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            plataformId: parseInt(link.plataformId.toString()), 
+            url: link.url 
+          })
+        });
+        if (!linkResponse.ok) throw new Error("Fallo al guardar una de las redes sociales");
       }
 
       alert("¡Perfil completado con éxito!");
@@ -136,7 +146,7 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
                   onClick={() => fileInputRef.current?.click()}
                   className="w-28 h-28 rounded-full bg-white shadow-md flex items-center justify-center cursor-pointer hover:ring-4 hover:ring-primary/20 transition-all overflow-hidden"
                 >
-                  {photoPreview ? <img src={photoPreview} className="w-full h-full object-cover" /> : <Camera className="w-10 h-10 text-gray-400" />}
+                  {photoPreview ? <img src={photoPreview} className="w-full h-full object-cover" alt="Preview" /> : <Camera className="w-10 h-10 text-gray-400" />}
                 </div>
                 <span className="text-sm font-medium text-primary">Subir foto obligatoria *</span>
               </div>
@@ -166,19 +176,14 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
                 <textarea name="bio" value={formData.bio} onChange={handleChange} rows={6} placeholder="Escribe algo interesante sobre tu carrera..." className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary outline-none resize-none transition-all" />
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">¿Estás disponible? *</label>
-                  <select name="status" value={formData.status} onChange={handleChange} className="w-full px-4 py-3 border rounded-xl bg-white outline-none focus:ring-2 focus:ring-primary">
-                    <option value="active">Disponible</option>
-                    <option value="busy">Ocupado</option>
-                    <option value="incognito">Incógnito</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Mensaje corto</label>
-                  <input type="text" name="statusMessage" value={formData.statusMessage} onChange={handleChange} placeholder="Ej. ¡Buscando retos!" className="w-full px-4 py-3 border rounded-xl outline-none focus:ring-2 focus:ring-primary" />
-                </div>
+              {/* MODIFICACIÓN 2: Input de Mensaje Corto eliminado */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">¿Estás disponible? *</label>
+                <select name="status" value={formData.status} onChange={handleChange} className="w-full px-4 py-3 border rounded-xl bg-white outline-none focus:ring-2 focus:ring-primary">
+                  <option value="active">Disponible</option>
+                  <option value="busy">Ocupado</option>
+                  <option value="incognito">Incógnito</option>
+                </select>
               </div>
             </div>
           </section>
@@ -187,16 +192,25 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
         {currentStep === 3 && (
           <section className="p-8 animate-in fade-in slide-in-from-right-4 duration-300">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Presencia Digital</h2>
-            <p className="text-gray-500 mb-8">Añade tus enlaces para que puedan ver tu trabajo.</p>
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 p-1 border rounded-xl focus-within:ring-2 focus-within:ring-primary transition-all">
-                <div className="p-3 bg-gray-100 rounded-lg"><Code className="w-5 h-5" /></div>
-                <input type="url" name="githubUrl" value={formData.githubUrl} onChange={handleChange} placeholder="GitHub URL" className="flex-1 outline-none text-sm" />
+            <p className="text-gray-500 mb-6">Añade al menos un enlace para que puedan ver tu trabajo.</p>
+            
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-inner">
+              <div className="flex items-center gap-2 mb-4">
+                <Share2 className="w-5 h-5 text-gray-700" />
+                <h3 className="text-md font-bold text-gray-900">Configuración de Enlaces *</h3>
               </div>
-              <div className="flex items-center gap-3 p-1 border rounded-xl focus-within:ring-2 focus-within:ring-primary transition-all">
-                <div className="p-3 bg-primary/10 rounded-lg"><Briefcase className="w-5 h-5 text-primary" /></div>
-                <input type="url" name="linkedinUrl" value={formData.linkedinUrl} onChange={handleChange} placeholder="LinkedIn URL" className="flex-1 outline-none text-sm" />
-              </div>
+              
+              <SocialLinks 
+                links={formData.socialLinks} 
+                onChange={handleSocialLinksChange} 
+                isEditing={true} 
+              />
+              
+              {formData.socialLinks.filter((l: any) => l.plataformId && l.url).length === 0 && (
+                <p className="text-red-500 text-sm mt-3 font-medium animate-pulse">
+                  * Debes añadir y seleccionar al menos 1 red social válida.
+                </p>
+              )}
             </div>
             
             <div className="mt-8 p-4 bg-primary/10 rounded-xl border border-primary/20 flex items-start gap-3">
@@ -230,7 +244,7 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
             <button 
               type="button"
               onClick={handleSave}
-              disabled={isLoading}
+              disabled={isLoading || !isStepValid()}
               className="flex items-center gap-2 px-8 py-2.5 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 disabled:opacity-50 transition-all shadow-md"
             >
               {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CloudUpload className="w-4 h-4" />}
