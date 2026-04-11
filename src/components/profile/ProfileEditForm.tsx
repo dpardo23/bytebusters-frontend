@@ -28,7 +28,6 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [formData, setFormData] = useState<ExtendedUserData>(initialUser);
 
-  // Efecto para cargar datos (se mantiene igual)
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
@@ -53,14 +52,18 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
         }
 
         if (bioRes.ok) {
-          loadedData.bio = await bioRes.text();
+          const bioData = await bioRes.text(); 
+          loadedData.bio = bioData;
         }
 
         if (heroRes.ok) {
           const heroData = await heroRes.json();
           loadedData.name = heroData.name || "";
           loadedData.headline = heroData.headline || "";
-          if (heroData.photoBase64) setPhotoPreview(heroData.photoBase64);
+          
+          if (heroData.photoBase64) {
+            setPhotoPreview(heroData.photoBase64);
+          }
         }
 
         setFormData(loadedData);
@@ -74,6 +77,27 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
     fetchProfileData();
   }, [initialUser]);
 
+  useEffect(() => {
+    if (!isEditing || !formData.bio || formData.bio === originalData.bio) return;
+
+    const timeoutId = setTimeout(async () => {
+      setIsSavingDraft(true);
+      try {
+        await fetch('/api/biography/draft', {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: formData.bio
+        });
+      } catch (error) {
+        console.error("Error al auto-guardar el borrador", error);
+      } finally {
+        setIsSavingDraft(false);
+      }
+    }, 2000); 
+
+    return () => clearTimeout(timeoutId);
+  }, [formData.bio, originalData.bio, isEditing]);
+
   // Manejadores (se mantienen igual)
   const handleCancelEdit = () => {
     setFormData(originalData);
@@ -83,24 +107,88 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
     setIsEditing(false);
   }
 
-  const handlePhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
+const handlePhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const maxSize = 5 * 1024 * 1024;
+
+    if (!validTypes.includes(file.type)) {
+      setErrors(prev => ({ ...prev, photo: "Solo se permiten formatos JPG, PNG y WebP" }));
+      return;
+    }
+
+    if (file.size > maxSize) {
+      setErrors(prev => ({ ...prev, photo: "El archivo excede el límite permitido de 5MB" }));
+      return;
+    }
+
+    setErrors(prev => ({ ...prev, photo: null }));
     setPhotoFile(file);
     setPhotoPreview(URL.createObjectURL(file));
   }
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    if (name === "bio" && value.length > 500) return;
+    if (name === "statusMessage" && value.length > 50) return; 
     setFormData(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
   }
 
-  const handleSave = async () => {
+
+const handleSave = async () => {
     setIsLoading(true);
-    // ... tu logica de save se mantiene igual ...
-    setIsLoading(false);
-    setIsEditing(false);
+    setSuccessMessage(null);
+    setErrors({});
+
+    try {
+      const userId = initialUser.id; 
+
+      const formDataToSend = new FormData();
+      formDataToSend.append('data', new Blob([JSON.stringify({ 
+        userId: userId, 
+        name: formData.name, 
+        professionalTitle: formData.headline 
+      })], { type: "application/json" }));
+      
+      if (photoFile) formDataToSend.append('photo', photoFile);
+
+      const responseHero = await fetch('/api/profile/hero-section', { method: 'PATCH', body: formDataToSend });
+      if (!responseHero.ok) throw new Error("Error al guardar la información básica");
+
+      const backendStatus = formData.status === 'active' ? 'A' : formData.status === 'busy' ? 'B' : 'N';
+      const statusParams = new URLSearchParams({ 
+        status: backendStatus, 
+        message: formData.statusMessage || "", 
+        incognito: String(formData.status === 'incognito') 
+      });
+
+      const responseStatus = await fetch(`/api/profile/status/${userId}?${statusParams.toString()}`, { 
+        method: 'PUT' 
+      });
+      if (!responseStatus.ok) throw new Error("No se pudo actualizar el estado");
+
+      const responseBio = await fetch(`/api/biography/${userId}`, { 
+        method: 'PUT', 
+        headers: { 'Content-Type': 'text/plain' }, 
+        body: formData.bio 
+      });
+      if (!responseBio.ok) throw new Error("No se pudo guardar la biografía");
+
+      setSuccessMessage("¡Perfil actualizado con éxito!");
+      setOriginalData(formData);
+      setIsEditing(false);
+      setTimeout(() => setSuccessMessage(null), 3000);
+
+    } catch (error: any) {
+      setErrors(prev => ({ ...prev, global: error.message }));
+    } finally {
+      setIsLoading(false);
+    }
   }
+
 
   if (isLoadingData) {
     return (
