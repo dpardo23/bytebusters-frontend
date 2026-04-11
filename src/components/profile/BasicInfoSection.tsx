@@ -21,7 +21,7 @@ export function BasicInfoSection({
   const statusOptions = [
     { value: "active", label: "Disponible para contratar", dotClass: "bg-green-400" },
     { value: "busy", label: "Trabajando actualmente", dotClass: "bg-orange-400" },
-    { value: "incognito", label: "No disponible (Modo Incognito)", dotClass: "bg-purple-300" },
+    { value: "incognito", label: "No disponible (Modo Incógnito)", dotClass: "bg-purple-300" },
   ] as const;
 
   const selectedStatus = statusOptions.find((option) => option.value === formData.status) || statusOptions[0];
@@ -55,7 +55,7 @@ export function BasicInfoSection({
   return (
     <div className={`bg-white border rounded-xl shadow-sm transition-colors ${isEditing ? 'border-indigo-200 ring-1 ring-indigo-50' : 'border-gray-200'}`}>
       <div className="p-6 border-b border-gray-200 bg-gray-50/50">
-        <h3 className="text-lg font-semibold text-gray-900">Informacion Basica</h3>
+        <h3 className="text-lg font-semibold text-gray-900">Información Básica</h3>
       </div>
       <div className="p-6 space-y-6 text-left">
         
@@ -89,16 +89,20 @@ export function BasicInfoSection({
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Nombre Completo {isEditing && <span className="text-red-500">*</span>}</label>
             <input
-              type="text" name="name" value={formData.name} onChange={handleChange} disabled={!isEditing}
+              type="text" name="name" 
+              value={formData.name || ""} // SOLUCIÓN BUG 2: Evita el bloqueo si viene null
+              onChange={handleChange} disabled={!isEditing}
               className={`w-full px-3 py-2 border rounded-md outline-none transition-all ${!isEditing ? 'bg-gray-50 text-gray-600 border-transparent font-medium' : errors.name ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-indigo-500'}`}
             />
             {errors.name && isEditing && <p className="text-red-500 text-xs">{errors.name}</p>}
           </div>
           
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Titular / Profesion</label>
+            <label className="block text-sm font-medium text-gray-700">Titular / Profesión</label>
             <input
-              type="text" name="headline" value={formData.headline} onChange={handleChange} disabled={!isEditing}
+              type="text" name="headline" 
+              value={formData.headline || ""} // SOLUCIÓN BUG 2: Evita el bloqueo si viene null
+              onChange={handleChange} disabled={!isEditing}
               className={`w-full px-3 py-2 border rounded-md outline-none transition-all ${!isEditing ? 'bg-gray-50 text-gray-600 border-transparent font-medium' : errors.headline ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-indigo-500'}`}
             />
             {errors.headline && isEditing && <p className="text-red-500 text-xs">{errors.headline}</p>}
