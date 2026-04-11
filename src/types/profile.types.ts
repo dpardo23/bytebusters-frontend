@@ -26,6 +26,7 @@ export interface ExtendedUserData {
   linkedinUrl?: string;
   websiteUrl?: string;
   photoBase64?: string;
+  socialLinks?: any[];
 }
 
 export type Section = 'basic' | 'public' | 'experience' | 'education';
