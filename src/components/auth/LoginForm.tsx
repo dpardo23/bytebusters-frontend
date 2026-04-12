@@ -204,7 +204,7 @@ export default function LoginForm() {
   return (
     <div className='w-full max-w-xl px-4'>
       <div className='mb-8 text-center'>
-        <Link to='/' className='inline-flex items-center gap-3 text-4xl font-bold text-foreground'>
+        <Link to='/' className='inline-flex cursor-pointer items-center gap-3 text-4xl font-bold text-foreground'>
           <span className='inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm'>
             <Code2 className='h-6 w-6' />
           </span>
@@ -256,7 +256,7 @@ export default function LoginForm() {
                   </label>
                   <button
                     type='button'
-                    className='text-sm font-medium text-primary transition-opacity hover:opacity-80'
+                    className='cursor-pointer text-sm font-medium text-primary transition-opacity hover:opacity-80'
                     onClick={openRecoveryRequest}
                   >
                     Olvidaste tu contraseña?
@@ -283,7 +283,7 @@ export default function LoginForm() {
                   />
                   <button
                     type='button'
-                    className='absolute right-1 top-1 inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
+                    className='absolute right-1 top-1 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
                     onClick={() => setShowPassword((currentValue) => !currentValue)}
                     aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >
@@ -293,7 +293,7 @@ export default function LoginForm() {
                 <p className='mt-1 min-h-5 text-sm text-destructive'>{fieldErrors.password || ' '}</p>
               </div>
 
-              <Button type='submit' size='lg' className='mt-2 w-full' disabled={isSubmitting}>
+              <Button type='submit' size='lg' className='mt-2 w-full cursor-pointer' disabled={isSubmitting}>
                 <LogIn className='h-4 w-4' />
                 {isSubmitting ? 'Ingresando...' : 'Iniciar Sesion'}
               </Button>
@@ -309,7 +309,7 @@ export default function LoginForm() {
               <button
                 type='button'
                 onClick={() => redirectToOAuthProvider('github')}
-                className='inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#24292f] px-4 font-medium text-white shadow-sm transition-colors hover:bg-[#1b1f23]'
+                className='inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#24292f] px-4 font-medium text-white shadow-sm transition-colors hover:bg-[#1b1f23]'
               >
                 <GithubIcon />
                 Continuar con GitHub
@@ -318,7 +318,7 @@ export default function LoginForm() {
               <button
                 type='button'
                 onClick={() => redirectToOAuthProvider('google')}
-                className='inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#dadce0] bg-[#ffffff] px-4 font-medium text-[#3c4043] shadow-sm transition-colors hover:bg-[#f8f9fa]'
+                className='inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-[#dadce0] bg-[#ffffff] px-4 font-medium text-[#3c4043] shadow-sm transition-colors hover:bg-[#f8f9fa]'
               >
                 <GoogleIcon />
                 Continuar con Google
@@ -327,7 +327,7 @@ export default function LoginForm() {
 
             <p className='mt-6 text-center text-sm text-muted-foreground'>
               No tienes cuenta?{' '}
-              <Link to='/auth/register' className='font-semibold text-primary hover:underline'>
+              <Link to='/auth/register' className='cursor-pointer font-semibold text-primary hover:underline'>
                 Crear Cuenta
               </Link>
             </p>
@@ -365,14 +365,14 @@ export default function LoginForm() {
                 <p className='mt-1 min-h-5 text-sm text-destructive'>{recoveryError || ' '}</p>
               </div>
 
-              <Button type='submit' size='lg' className='w-full' disabled={isRecoverySubmitting}>
+              <Button type='submit' size='lg' className='w-full cursor-pointer' disabled={isRecoverySubmitting}>
                 {isRecoverySubmitting ? 'Enviando codigo...' : 'Enviar codigo'}
               </Button>
             </form>
 
             <button
               type='button'
-              className='mt-4 text-sm font-medium text-primary transition-opacity hover:opacity-80'
+              className='mt-4 cursor-pointer text-sm font-medium text-primary transition-opacity hover:opacity-80'
               onClick={returnToLogin}
             >
               Volver al Login
@@ -428,7 +428,7 @@ export default function LoginForm() {
                   />
                   <button
                     type='button'
-                    className='absolute right-1 top-1 inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
+                    className='absolute right-1 top-1 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
                     onClick={() => setShowNewPassword((currentValue) => !currentValue)}
                     aria-label={showNewPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >
@@ -438,14 +438,14 @@ export default function LoginForm() {
                 <p className='mt-1 min-h-5 text-sm text-destructive'>{recoveryError || ' '}</p>
               </div>
 
-              <Button type='submit' size='lg' className='w-full' disabled={isRecoverySubmitting}>
+              <Button type='submit' size='lg' className='w-full cursor-pointer' disabled={isRecoverySubmitting}>
                 {isRecoverySubmitting ? 'Actualizando...' : 'Guardar nueva contraseña'}
               </Button>
             </form>
 
             <button
               type='button'
-              className='mt-4 text-sm font-medium text-primary transition-opacity hover:opacity-80'
+              className='mt-4 cursor-pointer text-sm font-medium text-primary transition-opacity hover:opacity-80'
               onClick={() => {
                 setRecoveryError('')
                 setRecoverySuccess('')

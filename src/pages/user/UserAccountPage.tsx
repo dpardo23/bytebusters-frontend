@@ -59,6 +59,7 @@ export default function UserAccountPage() {
   const [hasRequestedPasswordChange, setHasRequestedPasswordChange] = useState(false)
   const [isRequestingPasswordChange, setIsRequestingPasswordChange] = useState(false)
   const [isConfirmingPasswordChange, setIsConfirmingPasswordChange] = useState(false)
+  const [activeSecurityTab, setActiveSecurityTab] = useState<'email' | 'password'>('email')
 
   async function loadUserAccount(nextUserId: string) {
     setIsLoading(true)
@@ -91,7 +92,7 @@ export default function UserAccountPage() {
         }
 
         setAccount(nextAccount)
-        setEmailValue(nextAccount.email)
+        setEmailValue('')
       } catch (loadError) {
         if (!isMounted) {
           return
@@ -330,7 +331,7 @@ export default function UserAccountPage() {
                           {account?.email || 'Sin correo disponible'}
                         </p>
                         <p className='mt-2 text-sm text-muted-foreground'>
-                          Este dato viene del endpoint protegido `GET /api/user/{id}`.
+                          Este es el correo principal asociado a tu cuenta para accesos y verificaciones.
                         </p>
                       </>
                     )}
@@ -341,141 +342,178 @@ export default function UserAccountPage() {
               <div className='mt-6 flex flex-wrap gap-3'>
                 <Link
                   to={user ? `/profile/${user.id}` : '/profile'}
-                  className='inline-flex h-11 items-center justify-center rounded-xl border border-border bg-background px-5 font-medium text-foreground transition-colors hover:bg-accent'
+                  className='inline-flex h-11 cursor-pointer items-center justify-center rounded-xl border border-border bg-background px-5 font-medium text-foreground transition-colors hover:bg-accent'
                 >
                   Ver mi perfil
                 </Link>
               </div>
             </article>
 
-            <div className='grid gap-6'>
+            <div>
               <SecurityCard
-                icon={<Mail className='h-5 w-5' />}
-                title='Cambiar correo'
-                description='Solicita un codigo al nuevo correo, ingresa ese codigo y confirma el cambio.'
+                icon={activeSecurityTab === 'email' ? <Mail className='h-5 w-5' /> : <KeyRound className='h-5 w-5' />}
+                title={activeSecurityTab === 'email' ? 'Cambiar correo' : 'Cambiar contraseña'}
+                description={
+                  activeSecurityTab === 'email'
+                    ? 'Solicita un codigo al nuevo correo, ingresa ese codigo y confirma el cambio.'
+                    : 'Solicita un codigo a tu correo actual y luego confirma la nueva contraseña.'
+                }
               >
-                <form className='space-y-4' onSubmit={handleEmailChangeRequest}>
-                  <div>
-                    <label htmlFor='newEmail' className='mb-2 block text-sm font-medium text-foreground'>
-                      Nuevo correo
-                    </label>
-                    <Input
-                      id='newEmail'
-                      type='email'
-                      placeholder='nuevo@email.com'
-                      value={emailValue}
-                      onChange={(event) => {
-                        setEmailValue(event.target.value)
-                        setEmailFormError('')
-                      }}
-                    />
+                <div className='rounded-2xl border border-border bg-background/80 p-1'>
+                  <div className='grid grid-cols-2 gap-1'>
+                    <button
+                      type='button'
+                      onClick={() => setActiveSecurityTab('email')}
+                      className={`cursor-pointer rounded-xl px-4 py-2.5 text-sm font-medium transition-colors ${
+                        activeSecurityTab === 'email'
+                          ? 'bg-primary text-primary-foreground shadow-sm'
+                          : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                      }`}
+                    >
+                      Correo
+                    </button>
+                    <button
+                      type='button'
+                      onClick={() => setActiveSecurityTab('password')}
+                      className={`cursor-pointer rounded-xl px-4 py-2.5 text-sm font-medium transition-colors ${
+                        activeSecurityTab === 'password'
+                          ? 'bg-primary text-primary-foreground shadow-sm'
+                          : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                      }`}
+                    >
+                      Contraseña
+                    </button>
                   </div>
+                </div>
 
-                  <Button type='submit' className='w-full' disabled={isRequestingEmailChange}>
-                    {isRequestingEmailChange ? 'Enviando codigo...' : 'Enviar codigo al nuevo correo'}
-                  </Button>
-                </form>
+                {activeSecurityTab === 'email' ? (
+                  <>
+                    <form className='mt-5 space-y-4' onSubmit={handleEmailChangeRequest}>
+                      <div>
+                        <label htmlFor='newEmail' className='mb-2 block text-sm font-medium text-foreground'>
+                          Nuevo correo
+                        </label>
+                        <Input
+                          id='newEmail'
+                          type='email'
+                          placeholder='Introduce el nuevo correo'
+                          value={emailValue}
+                          onChange={(event) => {
+                            setEmailValue(event.target.value)
+                            setEmailFormError('')
+                          }}
+                        />
+                      </div>
 
-                {hasRequestedEmailChange ? (
-                  <form className='mt-5 space-y-4 border-t border-border pt-5' onSubmit={handleEmailChangeConfirm}>
-                    <div>
-                      <label htmlFor='emailCode' className='mb-2 block text-sm font-medium text-foreground'>
-                        Codigo de verificacion
-                      </label>
-                      <Input
-                        id='emailCode'
-                        placeholder='123456'
-                        value={emailCode}
-                        onChange={(event) => {
-                          setEmailCode(event.target.value)
-                          setEmailFormError('')
-                        }}
-                      />
-                    </div>
+                      <Button type='submit' className='w-full cursor-pointer' disabled={isRequestingEmailChange}>
+                        {isRequestingEmailChange ? 'Enviando codigo...' : 'Enviar codigo al nuevo correo'}
+                      </Button>
+                    </form>
 
-                    <Button type='submit' variant='outline' className='w-full' disabled={isConfirmingEmailChange}>
-                      {isConfirmingEmailChange ? 'Confirmando...' : 'Confirmar cambio de correo'}
+                    {hasRequestedEmailChange ? (
+                      <form className='mt-5 space-y-4 border-t border-border pt-5' onSubmit={handleEmailChangeConfirm}>
+                        <div>
+                          <label htmlFor='emailCode' className='mb-2 block text-sm font-medium text-foreground'>
+                            Codigo de verificacion
+                          </label>
+                          <Input
+                            id='emailCode'
+                            placeholder='123456'
+                            value={emailCode}
+                            onChange={(event) => {
+                              setEmailCode(event.target.value)
+                              setEmailFormError('')
+                            }}
+                          />
+                        </div>
+
+                        <Button type='submit' variant='outline' className='w-full cursor-pointer' disabled={isConfirmingEmailChange}>
+                          {isConfirmingEmailChange ? 'Confirmando...' : 'Confirmar cambio de correo'}
+                        </Button>
+                      </form>
+                    ) : null}
+
+                    {emailFormError ? <p className='mt-4 text-sm text-destructive'>{emailFormError}</p> : null}
+                    {emailFormSuccess ? (
+                      <p className='mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700'>
+                        {emailFormSuccess}
+                      </p>
+                    ) : null}
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      type='button'
+                      className='mt-5 w-full cursor-pointer'
+                      onClick={handlePasswordChangeRequest}
+                      disabled={isRequestingPasswordChange}
+                    >
+                      {isRequestingPasswordChange ? 'Enviando codigo...' : 'Enviar codigo a mi correo actual'}
                     </Button>
-                  </form>
-                ) : null}
 
-                {emailFormError ? <p className='mt-4 text-sm text-destructive'>{emailFormError}</p> : null}
-                {emailFormSuccess ? (
-                  <p className='mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700'>
-                    {emailFormSuccess}
-                  </p>
-                ) : null}
-              </SecurityCard>
-              <SecurityCard
-                icon={<KeyRound className='h-5 w-5' />}
-                title='Cambiar contraseña'
-                description='Solicita un codigo a tu correo actual y luego confirma la nueva contraseña.'
-              >
-                <Button type='button' className='w-full' onClick={handlePasswordChangeRequest} disabled={isRequestingPasswordChange}>
-                  {isRequestingPasswordChange ? 'Enviando codigo...' : 'Enviar codigo a mi correo actual'}
-                </Button>
+                    {hasRequestedPasswordChange ? (
+                      <form className='mt-5 space-y-4 border-t border-border pt-5' onSubmit={handlePasswordChangeConfirm}>
+                        <div>
+                          <label htmlFor='passwordCode' className='mb-2 block text-sm font-medium text-foreground'>
+                            Codigo de verificacion
+                          </label>
+                          <Input
+                            id='passwordCode'
+                            placeholder='123456'
+                            value={passwordCode}
+                            onChange={(event) => {
+                              setPasswordCode(event.target.value)
+                              setPasswordFormError('')
+                            }}
+                          />
+                        </div>
 
-                {hasRequestedPasswordChange ? (
-                  <form className='mt-5 space-y-4 border-t border-border pt-5' onSubmit={handlePasswordChangeConfirm}>
-                    <div>
-                      <label htmlFor='passwordCode' className='mb-2 block text-sm font-medium text-foreground'>
-                        Codigo de verificacion
-                      </label>
-                      <Input
-                        id='passwordCode'
-                        placeholder='123456'
-                        value={passwordCode}
-                        onChange={(event) => {
-                          setPasswordCode(event.target.value)
-                          setPasswordFormError('')
-                        }}
-                      />
-                    </div>
+                        <div>
+                          <label htmlFor='newPassword' className='mb-2 block text-sm font-medium text-foreground'>
+                            Nueva contraseña
+                          </label>
+                          <Input
+                            id='newPassword'
+                            type='password'
+                            placeholder='NuevaClave123@'
+                            value={newPassword}
+                            onChange={(event) => {
+                              setNewPassword(event.target.value)
+                              setPasswordFormError('')
+                            }}
+                          />
+                        </div>
 
-                    <div>
-                      <label htmlFor='newPassword' className='mb-2 block text-sm font-medium text-foreground'>
-                        Nueva contraseña
-                      </label>
-                      <Input
-                        id='newPassword'
-                        type='password'
-                        placeholder='NuevaClave123@'
-                        value={newPassword}
-                        onChange={(event) => {
-                          setNewPassword(event.target.value)
-                          setPasswordFormError('')
-                        }}
-                      />
-                    </div>
+                        <div>
+                          <label htmlFor='confirmPassword' className='mb-2 block text-sm font-medium text-foreground'>
+                            Confirmar contraseña
+                          </label>
+                          <Input
+                            id='confirmPassword'
+                            type='password'
+                            placeholder='Repite la nueva contraseña'
+                            value={confirmPassword}
+                            onChange={(event) => {
+                              setConfirmPassword(event.target.value)
+                              setPasswordFormError('')
+                            }}
+                          />
+                        </div>
 
-                    <div>
-                      <label htmlFor='confirmPassword' className='mb-2 block text-sm font-medium text-foreground'>
-                        Confirmar contraseña
-                      </label>
-                      <Input
-                        id='confirmPassword'
-                        type='password'
-                        placeholder='Repite la nueva contraseña'
-                        value={confirmPassword}
-                        onChange={(event) => {
-                          setConfirmPassword(event.target.value)
-                          setPasswordFormError('')
-                        }}
-                      />
-                    </div>
+                        <Button type='submit' variant='outline' className='w-full cursor-pointer' disabled={isConfirmingPasswordChange}>
+                          {isConfirmingPasswordChange ? 'Actualizando...' : 'Confirmar cambio de contraseña'}
+                        </Button>
+                      </form>
+                    ) : null}
 
-                    <Button type='submit' variant='outline' className='w-full' disabled={isConfirmingPasswordChange}>
-                      {isConfirmingPasswordChange ? 'Actualizando...' : 'Confirmar cambio de contraseña'}
-                    </Button>
-                  </form>
-                ) : null}
-
-                {passwordFormError ? <p className='mt-4 text-sm text-destructive'>{passwordFormError}</p> : null}
-                {passwordFormSuccess ? (
-                  <p className='mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700'>
-                    {passwordFormSuccess}
-                  </p>
-                ) : null}
+                    {passwordFormError ? <p className='mt-4 text-sm text-destructive'>{passwordFormError}</p> : null}
+                    {passwordFormSuccess ? (
+                      <p className='mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700'>
+                        {passwordFormSuccess}
+                      </p>
+                    ) : null}
+                  </>
+                )}
               </SecurityCard>
             </div>
           </section>
