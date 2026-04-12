@@ -32,13 +32,13 @@ export default function Footer() {
             <p className='max-w-xs text-sm text-muted-foreground'>
               La plataforma para profesionales tech que quieren destacar.
             </p>
-            <div className='mt-4 flex items-center gap-2 text-muted-foreground'>
+            <div className='mt-4 grid grid-cols-1 gap-2 text-muted-foreground sm:grid-cols-2 lg:grid-cols-3'>
               <a
                 href='https://www.facebook.com'
                 target='_blank'
                 rel='noreferrer'
                 aria-label='Facebook'
-                className='inline-flex items-center gap-2 rounded-md border border-border bg-background/60 px-3 py-2 text-sm text-foreground transition-colors hover:border-primary/40 hover:bg-background/90'
+                className='inline-flex w-full items-center gap-2 rounded-md border border-border bg-background/60 px-3 py-2 text-sm text-foreground transition-colors hover:border-primary/40 hover:bg-background/90'
               >
                 <span className='inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/15 text-primary'>
                   <svg viewBox='0 0 24 24' aria-hidden='true' className='h-3.5 w-3.5 fill-current'>
@@ -52,7 +52,7 @@ export default function Footer() {
                 target='_blank'
                 rel='noreferrer'
                 aria-label='TikTok'
-                className='inline-flex items-center gap-2 rounded-md border border-border bg-background/60 px-3 py-2 text-sm text-foreground transition-colors hover:border-primary/40 hover:bg-background/90'
+                className='inline-flex w-full items-center gap-2 rounded-md border border-border bg-background/60 px-3 py-2 text-sm text-foreground transition-colors hover:border-primary/40 hover:bg-background/90'
               >
                 <span className='inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/15 text-primary'>
                   <svg viewBox='0 0 24 24' aria-hidden='true' className='h-3.5 w-3.5 fill-current'>
@@ -66,7 +66,7 @@ export default function Footer() {
                 target='_blank'
                 rel='noreferrer'
                 aria-label='Instagram'
-                className='inline-flex items-center gap-2 rounded-md border border-border bg-background/60 px-3 py-2 text-sm text-foreground transition-colors hover:border-primary/40 hover:bg-background/90'
+                className='inline-flex w-full items-center gap-2 rounded-md border border-border bg-background/60 px-3 py-2 text-sm text-foreground transition-colors hover:border-primary/40 hover:bg-background/90'
               >
                 <span className='inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/15 text-primary'>
                   <svg viewBox='0 0 24 24' aria-hidden='true' className='h-3.5 w-3.5 fill-current'>

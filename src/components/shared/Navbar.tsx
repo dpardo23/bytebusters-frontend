@@ -66,7 +66,7 @@ export default function Navbar() {
           EthosHub
         </Link>
 
-        <div className='hidden items-center gap-8 md:flex'>
+        <div className='hidden items-center gap-8 lg:flex'>
           <span className='cursor-not-allowed text-muted-foreground/60'>
             Caracteristicas
           </span>
@@ -88,7 +88,7 @@ export default function Navbar() {
           {!user ? (
             <Link
               to='/auth/login'
-              className='inline-flex h-10 items-center rounded-xl border border-border bg-background px-5 font-semibold text-foreground transition-colors hover:bg-accent'
+              className='inline-flex h-10 items-center rounded-xl border border-border bg-background px-4 lg:px-5 font-semibold text-foreground transition-colors hover:bg-accent'
             >
               Iniciar Sesion
             </Link>
@@ -141,7 +141,7 @@ export default function Navbar() {
           ) : (
             <Link
               to='/auth/register'
-              className='rounded-xl bg-primary px-5 py-2 font-semibold text-primary-foreground transition-opacity hover:opacity-90'
+              className='rounded-xl bg-primary px-4 py-2 lg:px-5 font-semibold text-primary-foreground transition-opacity hover:opacity-90'
             >
               Crear Cuenta
             </Link>
@@ -191,7 +191,7 @@ export default function Navbar() {
               </Link>
             ) : null}
             {user ? (
-              <div className='inline-flex min-w-52 items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-foreground'>
+              <div className='inline-flex w-full min-w-0 items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-foreground'>
                 <img src={displayAvatar} alt={displayFirstName} className='h-7 w-7 rounded-full bg-muted object-cover' />
                 <span className='max-w-36 truncate font-medium'>{displayFirstName}</span>
               </div>

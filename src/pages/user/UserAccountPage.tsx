@@ -216,7 +216,7 @@ export default function UserAccountPage() {
     }
 
     if (newPassword !== confirmPassword) {
-      setPasswordFormError('Las contrasenas no coinciden')
+      setPasswordFormError('Las contraseñas no coinciden')
       setPasswordFormSuccess('')
       return
     }
@@ -227,7 +227,7 @@ export default function UserAccountPage() {
 
     const result = await confirmPasswordChange(normalizedCode, newPassword)
     if (!result.success) {
-      setPasswordFormError('error' in result ? result.error : 'No se pudo cambiar la contrasena')
+      setPasswordFormError('error' in result ? result.error : 'No se pudo cambiar la contraseña')
       setIsConfirmingPasswordChange(false)
       return
     }
@@ -245,10 +245,10 @@ export default function UserAccountPage() {
       <Navbar />
 
       <main className='relative overflow-hidden px-4 pb-16 pt-24'>
-        <div className='pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(circle_at_top,_rgba(79,70,229,0.14),_transparent_55%),radial-gradient(circle_at_right,_rgba(34,211,238,0.12),_transparent_35%)]' />
+        <div className='pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(circle_at_top,rgba(79,70,229,0.14),transparent_55%),radial-gradient(circle_at_right,rgba(34,211,238,0.12),transparent_35%)]' />
 
         <div className='relative mx-auto max-w-6xl'>
-          <section className='rounded-[2rem] border border-border bg-card/90 p-8 shadow-sm backdrop-blur md:p-10'>
+          <section className='rounded-4xl border border-border bg-card/90 p-8 shadow-sm backdrop-blur md:p-10'>
             <div className='flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between'>
               <div className='max-w-2xl'>
                 <span className='inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/8 px-4 py-2 text-sm font-medium text-primary'>
@@ -260,7 +260,7 @@ export default function UserAccountPage() {
                 </h1>
                 <p className='mt-4 text-base leading-7 text-muted-foreground md:text-lg'>
                   Aqui centralizamos la informacion basica de tu usuario y las acciones de seguridad de la cuenta.
-                  Desde esta vista puedes consultar el correo actual y gestionar los cambios de correo y contrasena
+                  Desde esta vista puedes consultar el correo actual y gestionar los cambios de correo y contraseña
                   mediante codigos de verificacion.
                 </p>
               </div>
@@ -282,7 +282,7 @@ export default function UserAccountPage() {
           </section>
 
           <section className='mt-8 grid gap-6 xl:grid-cols-[1.4fr_0.9fr]'>
-            <article className='rounded-[2rem] border border-border bg-card p-7 shadow-sm md:p-8'>
+            <article className='rounded-4xl border border-border bg-card p-7 shadow-sm md:p-8'>
               <div className='flex flex-col gap-5 border-b border-border pb-6 sm:flex-row sm:items-center sm:justify-between'>
                 <div>
                   <p className='text-sm font-semibold uppercase tracking-[0.24em] text-muted-foreground'>
@@ -408,8 +408,8 @@ export default function UserAccountPage() {
               </SecurityCard>
               <SecurityCard
                 icon={<KeyRound className='h-5 w-5' />}
-                title='Cambiar contrasena'
-                description='Solicita un codigo a tu correo actual y luego confirma la nueva contrasena.'
+                title='Cambiar contraseña'
+                description='Solicita un codigo a tu correo actual y luego confirma la nueva contraseña.'
               >
                 <Button type='button' className='w-full' onClick={handlePasswordChangeRequest} disabled={isRequestingPasswordChange}>
                   {isRequestingPasswordChange ? 'Enviando codigo...' : 'Enviar codigo a mi correo actual'}
@@ -434,7 +434,7 @@ export default function UserAccountPage() {
 
                     <div>
                       <label htmlFor='newPassword' className='mb-2 block text-sm font-medium text-foreground'>
-                        Nueva contrasena
+                        Nueva contraseña
                       </label>
                       <Input
                         id='newPassword'
@@ -450,12 +450,12 @@ export default function UserAccountPage() {
 
                     <div>
                       <label htmlFor='confirmPassword' className='mb-2 block text-sm font-medium text-foreground'>
-                        Confirmar contrasena
+                        Confirmar contraseña
                       </label>
                       <Input
                         id='confirmPassword'
                         type='password'
-                        placeholder='Repite la nueva contrasena'
+                        placeholder='Repite la nueva contraseña'
                         value={confirmPassword}
                         onChange={(event) => {
                           setConfirmPassword(event.target.value)
@@ -465,7 +465,7 @@ export default function UserAccountPage() {
                     </div>
 
                     <Button type='submit' variant='outline' className='w-full' disabled={isConfirmingPasswordChange}>
-                      {isConfirmingPasswordChange ? 'Actualizando...' : 'Confirmar cambio de contrasena'}
+                      {isConfirmingPasswordChange ? 'Actualizando...' : 'Confirmar cambio de contraseña'}
                     </Button>
                   </form>
                 ) : null}

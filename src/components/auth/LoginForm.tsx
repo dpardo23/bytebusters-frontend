@@ -87,7 +87,7 @@ export default function LoginForm() {
     }
 
     if (!String(password || '').trim()) {
-      nextErrors.password = 'Ingresa tu contrasena'
+      nextErrors.password = 'Ingresa tu contraseña'
     }
 
     if (nextErrors.email || nextErrors.password) {
@@ -185,7 +185,7 @@ export default function LoginForm() {
     })
 
     if (!result.success) {
-      setRecoveryError('error' in result ? result.error : 'No se pudo restablecer la contrasena')
+      setRecoveryError('error' in result ? result.error : 'No se pudo restablecer la contraseña')
       setIsRecoverySubmitting(false)
       return
     }
@@ -194,7 +194,7 @@ export default function LoginForm() {
     setIsRecoverySubmitting(false)
     window.setTimeout(() => {
       setView(LOGIN_VIEW)
-      setLoginNotice('Tu contrasena fue actualizada. Ya puedes iniciar sesion.')
+      setLoginNotice('Tu contraseña fue actualizada. Ya puedes iniciar sesion.')
       setEmail(recoveryEmail.trim())
       setPassword('')
       resetRecoveryState()
@@ -210,13 +210,13 @@ export default function LoginForm() {
           </span>
           EthosHub
         </Link>
-        <p className='mt-3 text-lg text-muted-foreground'>Bienvenido de vuelta</p>
+        <p className='mt-3 text-lg text-muted-foreground'>Bienvenido de Vuelta</p>
       </div>
 
       <div className='rounded-3xl border border-border bg-card p-6 shadow-sm md:p-8'>
         {view === LOGIN_VIEW ? (
           <>
-            <h1 className='text-3xl font-bold text-foreground'>Iniciar sesion</h1>
+            <h1 className='text-3xl font-bold text-foreground'>Iniciar Sesion</h1>
             <p className='mt-2 text-muted-foreground'>Ingresa tus credenciales para acceder a tu cuenta.</p>
 
             {loginNotice ? (
@@ -252,14 +252,14 @@ export default function LoginForm() {
               <div>
                 <div className='mb-2 flex items-center justify-between gap-3'>
                   <label htmlFor='password' className='text-sm font-medium text-foreground'>
-                    Contrasena
+                    Contraseña
                   </label>
                   <button
                     type='button'
                     className='text-sm font-medium text-primary transition-opacity hover:opacity-80'
                     onClick={openRecoveryRequest}
                   >
-                    Olvidaste tu contrasena?
+                    Olvidaste tu contraseña?
                   </button>
                 </div>
 
@@ -268,7 +268,7 @@ export default function LoginForm() {
                     id='password'
                     type={showPassword ? 'text' : 'password'}
                     autoComplete='current-password'
-                    placeholder='Ingresa tu contrasena'
+                    placeholder='Ingresa tu contraseña'
                     value={password}
                     onChange={(event) => {
                       setPassword(event.target.value)
@@ -285,7 +285,7 @@ export default function LoginForm() {
                     type='button'
                     className='absolute right-1 top-1 inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
                     onClick={() => setShowPassword((currentValue) => !currentValue)}
-                    aria-label={showPassword ? 'Ocultar contrasena' : 'Mostrar contrasena'}
+                    aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >
                     {showPassword ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
                   </button>
@@ -295,7 +295,7 @@ export default function LoginForm() {
 
               <Button type='submit' size='lg' className='mt-2 w-full' disabled={isSubmitting}>
                 <LogIn className='h-4 w-4' />
-                {isSubmitting ? 'Ingresando...' : 'Iniciar sesion'}
+                {isSubmitting ? 'Ingresando...' : 'Iniciar Sesion'}
               </Button>
             </form>
 
@@ -318,7 +318,7 @@ export default function LoginForm() {
               <button
                 type='button'
                 onClick={() => redirectToOAuthProvider('google')}
-                className='inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#dadce0] bg-white px-4 font-medium text-[#3c4043] shadow-sm transition-colors hover:bg-[#f8f9fa]'
+                className='inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#dadce0] bg-[#ffffff] px-4 font-medium text-[#3c4043] shadow-sm transition-colors hover:bg-[#f8f9fa]'
               >
                 <GoogleIcon />
                 Continuar con Google
@@ -328,7 +328,7 @@ export default function LoginForm() {
             <p className='mt-6 text-center text-sm text-muted-foreground'>
               No tienes cuenta?{' '}
               <Link to='/auth/register' className='font-semibold text-primary hover:underline'>
-                Crear cuenta
+                Crear Cuenta
               </Link>
             </p>
           </>
@@ -336,7 +336,7 @@ export default function LoginForm() {
 
         {view === RECOVERY_REQUEST_VIEW ? (
           <>
-            <h1 className='text-3xl font-bold text-foreground'>Recuperar contrasena</h1>
+            <h1 className='text-3xl font-bold text-foreground'>Recuperar contraseña</h1>
             <p className='mt-2 text-muted-foreground'>Ingresa tu correo y te enviaremos un codigo de recuperacion.</p>
 
             {recoverySuccess ? (
@@ -375,15 +375,15 @@ export default function LoginForm() {
               className='mt-4 text-sm font-medium text-primary transition-opacity hover:opacity-80'
               onClick={returnToLogin}
             >
-              Volver al login
+              Volver al Login
             </button>
           </>
         ) : null}
 
         {view === RECOVERY_RESET_VIEW ? (
           <>
-            <h1 className='text-3xl font-bold text-foreground'>Nueva contrasena</h1>
-            <p className='mt-2 text-muted-foreground'>Ingresa el codigo recibido y tu nueva contrasena.</p>
+            <h1 className='text-3xl font-bold text-foreground'>Nueva contraseña</h1>
+            <p className='mt-2 text-muted-foreground'>Ingresa el codigo recibido y tu nueva contraseña.</p>
 
             {recoverySuccess ? (
               <p className='mt-6 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700'>
@@ -410,14 +410,14 @@ export default function LoginForm() {
 
               <div>
                 <label htmlFor='newPassword' className='mb-2 block text-sm font-medium text-foreground'>
-                  Nueva contrasena
+                  Nueva contraseña
                 </label>
                 <div className='relative'>
                   <Input
                     id='newPassword'
                     type={showNewPassword ? 'text' : 'password'}
                     autoComplete='new-password'
-                    placeholder='Nueva contrasena'
+                    placeholder='Nueva contraseña'
                     value={newPassword}
                     onChange={(event) => {
                       setNewPassword(event.target.value)
@@ -430,7 +430,7 @@ export default function LoginForm() {
                     type='button'
                     className='absolute right-1 top-1 inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
                     onClick={() => setShowNewPassword((currentValue) => !currentValue)}
-                    aria-label={showNewPassword ? 'Ocultar contrasena' : 'Mostrar contrasena'}
+                    aria-label={showNewPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >
                     {showNewPassword ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
                   </button>
@@ -439,7 +439,7 @@ export default function LoginForm() {
               </div>
 
               <Button type='submit' size='lg' className='w-full' disabled={isRecoverySubmitting}>
-                {isRecoverySubmitting ? 'Actualizando...' : 'Guardar nueva contrasena'}
+                {isRecoverySubmitting ? 'Actualizando...' : 'Guardar nueva contraseña'}
               </Button>
             </form>
 
