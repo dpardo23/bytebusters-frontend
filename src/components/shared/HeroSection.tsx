@@ -1,7 +1,12 @@
 import { ArrowRight, BriefcaseBusiness, Sparkles, UserRoundSearch } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import useAuth from '../../hooks/auth/useAuth'
 
 export default function HeroSection() {
+  const { user } = useAuth()
+  const primaryCtaHref = user?.id ? `/profile/${user.id}` : '/auth/register'
+  const primaryCtaLabel = user ? 'Ir a mi perfil' : 'Crear mi portafolio'
+
   return (
     <section className='relative overflow-hidden px-4 pb-20 pt-28'>
       <div className='absolute inset-0 -z-10'>
@@ -28,10 +33,10 @@ export default function HeroSection() {
 
           <div className='mb-14 flex flex-col items-center justify-center gap-4 sm:flex-row'>
             <Link
-              to='/auth/register'
+              to={primaryCtaHref}
               className='inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-8 text-lg font-semibold text-primary-foreground transition-opacity hover:opacity-90'
             >
-              Crear mi portafolio
+              {primaryCtaLabel}
               <ArrowRight className='h-5 w-5' />
             </Link>
             <button
@@ -68,35 +73,51 @@ export default function HeroSection() {
           </div>
         </div>
 
-        <div className='relative mx-auto max-w-5xl overflow-hidden rounded-2xl border border-border bg-card shadow-2xl'>
-          <div className='flex items-center gap-2 border-b border-border bg-muted/60 px-4 py-3'>
-            <span className='h-3 w-3 rounded-full bg-red-500' />
-            <span className='h-3 w-3 rounded-full bg-yellow-500' />
-            <span className='h-3 w-3 rounded-full bg-green-500' />
-            <span className='ml-3 text-sm text-muted-foreground'>devfolio.com/ana-garcia</span>
+        <div className='relative mx-auto max-w-5xl overflow-hidden rounded-2xl border border-border/80 bg-card shadow-2xl'>
+          <div className='flex items-center justify-between border-b border-border bg-muted/40 px-4 py-3'>
+            <span className='text-sm text-muted-foreground'>ethoshub.com/u/ana-garcia</span>
+            <span className='rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary'>
+              Perfil verificado
+            </span>
           </div>
-          <div className='grid gap-6 p-6 md:grid-cols-[220px,1fr] md:p-8'>
-            <div className='flex flex-col items-center gap-4 md:items-start'>
-              <img
-                src='https://api.dicebear.com/7.x/avataaars/svg?seed=Ana'
-                alt='Ana Garcia'
-                className='h-24 w-24 rounded-full bg-primary/20'
-              />
-              <div className='text-center md:text-left'>
-                <h3 className='text-xl font-bold text-foreground'>Ana Garcia</h3>
-                <p className='text-sm text-muted-foreground'>Full Stack Developer</p>
+
+          <div className='grid gap-5 p-6 text-left md:grid-cols-[220px,1fr] md:p-8'>
+            <aside className='rounded-xl border border-border bg-background/60 p-5'>
+              <div className='mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-xl font-bold text-primary'>
+                AG
               </div>
-            </div>
-            <div className='grid gap-4 sm:grid-cols-2'>
-              {[{ title: 'E-Commerce Platform', tech: 'Next.js, Stripe' }, { title: 'Task Manager', tech: 'React, Socket.io' }].map(
-                (project) => (
-                  <article key={project.title} className='rounded-xl border border-border bg-background p-4'>
-                    <div className='mb-3 h-24 rounded-md bg-muted' />
-                    <h4 className='text-sm font-semibold text-foreground'>{project.title}</h4>
-                    <p className='text-xs text-muted-foreground'>{project.tech}</p>
+              <h3 className='text-lg font-bold text-foreground'>Ana Garcia</h3>
+              <p className='mt-1 text-sm text-muted-foreground'>Senior Full Stack Engineer</p>
+              <p className='mt-3 text-sm text-muted-foreground'>Cochabamba, Bolivia • +8 años</p>
+            </aside>
+
+            <div className='space-y-4'>
+              <section className='rounded-xl border border-border bg-background/70 p-4'>
+                <p className='text-sm text-foreground'>
+                  Construye productos SaaS escalables con foco en experiencia de usuario,
+                  arquitectura frontend y calidad tecnica.
+                </p>
+                <div className='mt-3 flex flex-wrap gap-2'>
+                  {['React', 'TypeScript', 'Node.js', 'PostgreSQL'].map((skill) => (
+                    <span key={skill} className='rounded-md border border-border bg-background px-2 py-1 text-xs text-foreground'>
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </section>
+
+              <section className='grid gap-3 sm:grid-cols-3'>
+                {[
+                  { label: 'Proyectos', value: '34' },
+                  { label: 'Recomendaciones', value: '18' },
+                  { label: 'Respuesta', value: '97%' },
+                ].map((item) => (
+                  <article key={item.label} className='rounded-xl border border-border bg-background/70 p-4'>
+                    <p className='text-2xl font-bold text-foreground'>{item.value}</p>
+                    <p className='mt-1 text-xs text-muted-foreground'>{item.label}</p>
                   </article>
-                ),
-              )}
+                ))}
+              </section>
             </div>
           </div>
         </div>

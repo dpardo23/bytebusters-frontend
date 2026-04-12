@@ -72,7 +72,7 @@ export default function RecruiterRegisterForm() {
             <span className='inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground'>
               <Users className='h-5 w-5' />
             </span>
-            DevFolio
+            EthosHub
           </Link>
           <p className='text-lg text-muted-foreground'>Crea tu cuenta de reclutador</p>
         </div>
@@ -84,7 +84,7 @@ export default function RecruiterRegisterForm() {
           <form className='mt-6 space-y-4' onSubmit={handleSubmit}>
             <div>
               <label htmlFor='fullName' className='mb-2 block text-sm font-medium text-foreground'>
-                Nombre completo
+                Nombre Completo
               </label>
               <Input
                 id='fullName'
@@ -129,7 +129,7 @@ export default function RecruiterRegisterForm() {
 
             <div>
               <label htmlFor='password' className='mb-2 block text-sm font-medium text-foreground'>
-                Contrasena
+                Contraseña
               </label>
               <div className='relative'>
                 <Input
@@ -170,12 +170,12 @@ export default function RecruiterRegisterForm() {
 
             <div>
               <label htmlFor='confirmPassword' className='mb-2 block text-sm font-medium text-foreground'>
-                Confirmar contrasena
+                Confirmar contraseña
               </label>
               <Input
                 id='confirmPassword'
                 type='password'
-                placeholder='Repite la contrasena'
+                placeholder='Repite la contraseña'
                 value={confirmPassword}
                 onChange={(event) => {
                   const nextConfirmPassword = event.target.value

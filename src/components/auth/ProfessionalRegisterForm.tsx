@@ -168,7 +168,7 @@ export default function ProfessionalRegisterForm() {
 
             <div>
               <label htmlFor='password' className='mb-2 block text-sm font-medium text-foreground'>
-                Contrasena
+                Contraseña
               </label>
               <div className='relative'>
                 <Input
@@ -209,12 +209,12 @@ export default function ProfessionalRegisterForm() {
 
             <div>
               <label htmlFor='confirmPassword' className='mb-2 block text-sm font-medium text-foreground'>
-                Confirmar contrasena
+                Confirmar contraseña
               </label>
               <Input
                 id='confirmPassword'
                 type='password'
-                placeholder='Repite la contrasena'
+                placeholder='Repite la contraseña'
                 value={confirmPassword}
                 onChange={(event) => {
                   const nextConfirmPassword = event.target.value
@@ -253,11 +253,11 @@ export default function ProfessionalRegisterForm() {
             <span className='h-px flex-1 bg-border' />
           </div>
 
-          <div className='grid grid-cols-2 gap-4'>
+          <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
             <button
               type='button'
               onClick={() => redirectToOAuthProvider('github')}
-              className='inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-[#24292f] px-4 font-medium text-white shadow-sm transition-colors hover:bg-[#1b1f23]'
+              className='inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#24292f] px-4 font-medium text-white shadow-sm transition-colors hover:bg-[#1b1f23]'
             >
               <GithubIcon />
               Registrate con GitHub
@@ -265,7 +265,7 @@ export default function ProfessionalRegisterForm() {
             <button
               type='button'
               onClick={() => redirectToOAuthProvider('google')}
-              className='inline-flex h-11 w-full items-center justify-center gap-2 rounded-md border border-[#dadce0] bg-white px-4 font-medium text-[#3c4043] shadow-sm transition-colors hover:bg-[#f8f9fa]'
+              className='inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#dadce0] bg-white px-4 font-medium text-[#3c4043] shadow-sm transition-colors hover:bg-[#f8f9fa]'
             >
               <GoogleIcon />
               Registrate con Google
@@ -275,7 +275,7 @@ export default function ProfessionalRegisterForm() {
           <p className='mt-6 text-center text-sm text-muted-foreground'>
             Ya tienes cuenta?{' '}
             <Link to='/auth/login' className='font-semibold text-primary hover:underline'>
-              Iniciar sesion
+              Iniciar Sesion
             </Link>
           </p>
         </div>

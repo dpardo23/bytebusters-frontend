@@ -124,7 +124,7 @@ export default function BasicRegisterForm() {
           <form className='mt-6 space-y-4' onSubmit={handleSubmit}>
             <div>
               <label htmlFor='fullName' className='mb-2 block text-sm font-medium text-foreground'>
-                Nombre completo
+                Nombre Completo
               </label>
               <Input
                 id='fullName'
@@ -171,7 +171,7 @@ export default function BasicRegisterForm() {
                 <Input
                   id='password'
                   type={showPassword ? 'text' : 'password'}
-                  placeholder='Mínimo 6 caracteres'
+                  placeholder='Mínimo 8 caracteres'
                   value={password}
                   onChange={(event) => {
                     const nextPassword = event.target.value
@@ -204,7 +204,7 @@ export default function BasicRegisterForm() {
 
             <div>
               <label htmlFor='confirmPassword' className='mb-2 block text-sm font-medium text-foreground'>
-                Confirmar contraseña
+                Confirmar Contraseña
               </label>
               <div className='relative'>
                 <Input
@@ -256,11 +256,11 @@ export default function BasicRegisterForm() {
             <span className='h-px flex-1 bg-border' />
           </div>
 
-          <div className='grid grid-cols-2 gap-4'>
+          <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
             <button
               type='button'
               onClick={() => redirectToOAuthProvider('github')}
-              className='inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-[#24292f] px-4 font-medium text-white shadow-sm transition-colors hover:bg-[#1b1f23]'
+              className='inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#24292f] px-4 font-medium text-white shadow-sm transition-colors hover:bg-[#1b1f23]'
             >
               <GithubIcon />
               Registrate con GitHub
@@ -268,7 +268,7 @@ export default function BasicRegisterForm() {
             <button
               type='button'
               onClick={() => redirectToOAuthProvider('google')}
-              className='inline-flex h-11 w-full items-center justify-center gap-2 rounded-md border border-[#dadce0] bg-white px-4 font-medium text-[#3c4043] shadow-sm transition-colors hover:bg-[#f8f9fa]'
+              className='inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#dadce0] bg-[#ffffff] px-4 font-medium text-[#3c4043] shadow-sm transition-colors hover:bg-[#f8f9fa]'
             >
               <GoogleIcon />
               Registrate con Google
@@ -278,7 +278,7 @@ export default function BasicRegisterForm() {
           <p className='mt-6 text-center text-sm text-muted-foreground'>
             Ya tienes cuenta?{' '}
             <Link to='/auth/login' className='font-semibold text-primary hover:underline'>
-              Iniciar sesion
+              Iniciar Sesion
             </Link>
           </p>
         </div>
