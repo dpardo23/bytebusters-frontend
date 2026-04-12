@@ -72,7 +72,7 @@ export default function RecruiterRegisterForm() {
             <span className='inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground'>
               <Users className='h-5 w-5' />
             </span>
-            DevFolio
+            EthosHub
           </Link>
           <p className='text-lg text-muted-foreground'>Crea tu cuenta de reclutador</p>
         </div>

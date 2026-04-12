@@ -1,16 +1,6 @@
-import { BarChart3, BriefcaseBusiness, Palette, Search, Shield, UserRoundSearch, Users, Zap } from 'lucide-react'
+import { BriefcaseBusiness, UserRoundSearch, Users } from 'lucide-react'
 
 const features = [
-  {
-    icon: Palette,
-    title: 'Diseno personalizable',
-    description: 'Personaliza colores, tipografias y estilo para reflejar tu marca profesional.',
-  },
-  {
-    icon: BarChart3,
-    title: 'Analiticas detalladas',
-    description: 'Mide visitas, clics e interes de reclutadores con metricas claras.',
-  },
   {
     icon: BriefcaseBusiness,
     title: 'Integracion GitHub',
@@ -20,21 +10,6 @@ const features = [
     icon: UserRoundSearch,
     title: 'Integracion LinkedIn',
     description: 'Sincroniza experiencia y educacion para ahorrar tiempo.',
-  },
-  {
-    icon: Shield,
-    title: 'Control de privacidad',
-    description: 'Configura que partes del perfil son publicas o privadas.',
-  },
-  {
-    icon: Search,
-    title: 'SEO optimizado',
-    description: 'Aumenta visibilidad de tu perfil en buscadores.',
-  },
-  {
-    icon: Zap,
-    title: 'Rendimiento premium',
-    description: 'Carga veloz y experiencia fluida en desktop y mobile.',
   },
   {
     icon: Users,
@@ -56,7 +31,7 @@ export default function FeaturesSection() {
           </p>
         </div>
 
-        <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-4'>
+        <div className='grid gap-6 md:grid-cols-3'>
           {features.map((feature) => (
             <article
               key={feature.title}

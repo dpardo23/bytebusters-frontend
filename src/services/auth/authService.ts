@@ -60,7 +60,7 @@ function splitName(name: string): { firstName: string; lastName: string } {
   const [firstName = '', ...rest] = normalized.split(' ')
   return {
     firstName: firstName || 'Usuario',
-    lastName: rest.join(' ') || 'DevFolio',
+    lastName: rest.join(' ') || 'EthosHub',
   }
 }
 
@@ -175,7 +175,7 @@ export async function selectUserType(userType: 'ESTANDAR' | 'RECLUTADOR'): Promi
 }
 
 export async function logout(): Promise<AuthResult> {
-  const token = localStorage.getItem('devfolio-token')
+  const token = localStorage.getItem('ethoshub-token')
 
   if (!token) {
     return { success: true }
@@ -192,7 +192,7 @@ export async function logout(): Promise<AuthResult> {
     // If backend is unavailable, frontend still proceeds with local logout.
   }
 
-  localStorage.removeItem('devfolio-token')
+  localStorage.removeItem('ethoshub-token')
   return { success: true }
 }
 

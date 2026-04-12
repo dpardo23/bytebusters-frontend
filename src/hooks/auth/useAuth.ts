@@ -7,6 +7,7 @@ import {
   initializeAuthState,
   markRegisteredUser,
   setAuthenticatedUser,
+  subscribeAuthState,
   updateAuthenticatedUser,
 } from '../../store/auth/authStore'
 
@@ -25,6 +26,12 @@ export function useAuth(): AuthState & AuthActions {
   useEffect(() => {
     initializeAuthState()
     setAuthSnapshot({ ...getAuthState() })
+
+    const unsubscribe = subscribeAuthState((nextState) => {
+      setAuthSnapshot({ ...nextState })
+    })
+
+    return unsubscribe
   }, [])
 
   const actions = useMemo<AuthActions>(
@@ -34,7 +41,6 @@ export function useAuth(): AuthState & AuthActions {
         if (result.success && result.user) {
           markRegisteredUser()
           setAuthenticatedUser(result.user, result.token || null)
-          setAuthSnapshot({ ...getAuthState() })
         }
         return result
       },
@@ -43,13 +49,11 @@ export function useAuth(): AuthState & AuthActions {
         if (result.success && result.user) {
           markRegisteredUser()
           setAuthenticatedUser(result.user, result.token || null)
-          setAuthSnapshot({ ...getAuthState() })
         }
         return result
       },
       updateRole(role) {
         updateAuthenticatedUser({ role })
-        setAuthSnapshot({ ...getAuthState() })
       },
       updateUserDetails(nextUserData) {
         if (!nextUserData) {
@@ -57,7 +61,6 @@ export function useAuth(): AuthState & AuthActions {
         }
 
         updateAuthenticatedUser(nextUserData)
-        setAuthSnapshot({ ...getAuthState() })
       },
       async selectAccountRole(role) {
         const targetUserType = role === 'recruiter' ? 'RECLUTADOR' : 'ESTANDAR'
@@ -70,14 +73,12 @@ export function useAuth(): AuthState & AuthActions {
           }
 
           setAuthenticatedUser(nextUser, result.token || null)
-          setAuthSnapshot({ ...getAuthState() })
         }
         return result
       },
       async logout() {
         await logout()
         clearAuthenticatedUser()
-        setAuthSnapshot({ ...getAuthState() })
       },
     }),
     [],

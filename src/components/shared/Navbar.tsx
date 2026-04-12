@@ -71,9 +71,6 @@ export default function Navbar() {
             Caracteristicas
           </span>
           <span className='cursor-not-allowed text-muted-foreground/60'>
-            Precios
-          </span>
-          <span className='cursor-not-allowed text-muted-foreground/60'>
             Explorar Talento
           </span>
         </div>
@@ -91,7 +88,7 @@ export default function Navbar() {
           {!user ? (
             <Link
               to='/auth/login'
-              className='rounded-md px-4 py-2 font-medium text-foreground transition-colors hover:bg-accent'
+              className='inline-flex h-10 items-center rounded-xl border border-border bg-background px-5 font-semibold text-foreground transition-colors hover:bg-accent'
             >
               Iniciar Sesion
             </Link>
@@ -187,7 +184,7 @@ export default function Navbar() {
             {!user ? (
               <Link
                 to='/auth/login'
-                className='rounded-md px-2 py-2 text-foreground transition-colors hover:bg-accent'
+                className='inline-flex h-10 items-center justify-center rounded-xl border border-border bg-background px-4 font-semibold text-foreground transition-colors hover:bg-accent'
                 onClick={() => setIsOpen(false)}
               >
                 Iniciar Sesion

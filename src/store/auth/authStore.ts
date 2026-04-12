@@ -5,16 +5,31 @@ const authState: AuthState = {
   token: null,
 }
 
-const STORAGE_KEY = 'devfolio-user'
-export const AUTH_TOKEN_STORAGE_KEY = 'devfolio-token'
-const REGISTERED_KEY = 'devfolio-has-registered'
+type AuthStateListener = (nextState: AuthState) => void
+const authStateListeners = new Set<AuthStateListener>()
+
+const STORAGE_KEY = 'ethoshub-user'
+export const AUTH_TOKEN_STORAGE_KEY = 'ethoshub-token'
+const REGISTERED_KEY = 'ethoshub-has-registered'
 
 export function getAuthState(): AuthState {
   return authState
 }
 
+function emitAuthState(): void {
+  authStateListeners.forEach((listener) => listener(authState))
+}
+
+export function subscribeAuthState(listener: AuthStateListener): () => void {
+  authStateListeners.add(listener)
+  return () => {
+    authStateListeners.delete(listener)
+  }
+}
+
 export function setAuthState(nextState: Partial<AuthState>): void {
   Object.assign(authState, nextState)
+  emitAuthState()
 }
 
 export function initializeAuthState(): void {
@@ -23,6 +38,8 @@ export function initializeAuthState(): void {
     if (!hasRegistered) {
       localStorage.removeItem(STORAGE_KEY)
       authState.user = null
+      authState.token = null
+      emitAuthState()
       return
     }
 
@@ -34,11 +51,13 @@ export function initializeAuthState(): void {
     }
 
     authState.token = storedToken || null
+    emitAuthState()
   } catch {
     localStorage.removeItem(STORAGE_KEY)
     localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY)
     authState.user = null
     authState.token = null
+    emitAuthState()
   }
 }
 
@@ -50,6 +69,8 @@ export function setAuthenticatedUser(user: AuthUser, token?: string | null): voi
     authState.token = token
     localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, token)
   }
+
+  emitAuthState()
 }
 
 export function updateAuthenticatedUser(nextUserData: Partial<AuthUser>): AuthUser | null {
@@ -63,6 +84,7 @@ export function updateAuthenticatedUser(nextUserData: Partial<AuthUser>): AuthUs
   }
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(authState.user))
+  emitAuthState()
   return authState.user
 }
 
@@ -76,4 +98,5 @@ export function clearAuthenticatedUser(): void {
   localStorage.removeItem(STORAGE_KEY)
   localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY)
   localStorage.removeItem(REGISTERED_KEY)
+  emitAuthState()
 }
