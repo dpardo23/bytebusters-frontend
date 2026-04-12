@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef, ChangeEvent } from "react";
 import { Briefcase, Plus, Edit2, Trash2, X, Loader2, Calendar, Building, Link as LinkIcon, Image as ImageIcon } from "lucide-react";
 
-// 1. Interfaz sincronizada con WorkExperienceResponse/Request del Backend
 export interface ExperienceData {
   id?: number;
-  jobPosition: string; // Actualizado de 'role' a 'jobPosition'.
+  jobPosition: string; 
   company: string;
   startDate: string;
   endDate?: string;
@@ -24,23 +23,23 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
   const [experiences, setExperiences] = useState<ExperienceData[]>([]);
   const [isLoadingList, setIsLoadingList] = useState(false);
   
-  // Control del Modal y Formulario
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [error, setError] = useState<string>("");
+  const [itemToDelete, setItemToDelete] = useState<number | null>(null);
 
-  // Estados para los archivos de imagen
   const logoInputRef = useRef<HTMLInputElement>(null);
   const companyImageInputRef = useRef<HTMLInputElement>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [companyImageFile, setCompanyImageFile] = useState<File | null>(null);
 
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
   const [formData, setFormData] = useState<ExperienceData>({
     jobPosition: "", company: "", startDate: "", endDate: "", description: "", isCurrent: false, isFreelance: false, companyUrl: ""
   });
 
-  // 2. Cargar datos de la BD al iniciar
   useEffect(() => {
     if (profileId) fetchExperiences();
   }, [profileId]);
@@ -60,7 +59,6 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
     }
   };
 
-  // 3. Manejadores del Formulario
   const handleOpenModal = (exp?: ExperienceData) => {
     setError("");
     setLogoFile(null);
@@ -69,7 +67,6 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
     if (exp) {
       setFormData({
         ...exp,
-        // Asegurar que nulls del backend se manejen como strings vacios en inputs
         endDate: exp.endDate || "",
         companyUrl: exp.companyUrl || ""
       });
@@ -102,12 +99,28 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
     }
   };
 
-  // 4. Guardar datos (AHORA CON FORMDATA PARA SOPORTAR IMAGENES)
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>, setFileState: React.Dispatch<React.SetStateAction<File | null>>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        setError(`El archivo ${file.name} supera el límite de 5MB.`);
+        e.target.value = ''; 
+        return;
+      }
+      setError("");
+      setFileState(file);
+    } else {
+      setFileState(null);
+    }
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!profileId) return alert("Falta el ID del perfil");
+    if (!profileId) {
+      setError("Falta el ID del perfil");
+      return;
+    }
     
-    // Validacion de imagenes obligatorias (solo al crear)
     if (!editingId && (!logoFile || !companyImageFile)) {
       setError("El Logo y la Imagen de la Empresa son obligatorios.");
       return;
@@ -116,24 +129,17 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
 
     setIsSaving(true);
     try {
-      // Usamos FormData para empaquetar JSON + Archivos
       const formDataToSend = new FormData();
-      
-      // 1. El JSON como String (Lo que espera el @RequestPart("data"))
       formDataToSend.append('data', JSON.stringify(formData));
-      
-      // 2. Los archivos fisicos
       if (logoFile) formDataToSend.append('logo', logoFile);
       if (companyImageFile) formDataToSend.append('companyImage', companyImageFile);
 
       const url = editingId 
-        ? `/api/profile/${profileId}/work-experience/${editingId}` // PUT
-        : `/api/profile/${profileId}/work-experience`; // POST
+        ? `/api/profile/${profileId}/work-experience/${editingId}`
+        : `/api/profile/${profileId}/work-experience`;
 
       const res = await fetch(url, {
         method: editingId ? 'PUT' : 'POST',
-        // OJO: al usar FormData, no pongas el header 'Content-Type'.
-        // El navegador lo calcula automaticamente con el boundary correcto.
         body: formDataToSend
       });
 
@@ -145,26 +151,27 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
       await fetchExperiences();
       setIsModalOpen(false);
     } catch (err: any) {
-      alert(err.message);
+      setError(err.message);
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!window.confirm("¿Seguro que deseas eliminar esta experiencia?")) return;
+  const confirmDelete = async () => {
+    if (itemToDelete === null) return;
     try {
-      await fetch(`/api/profile/${profileId}/work-experience/${id}`, { method: 'DELETE' });
+      await fetch(`/api/profile/${profileId}/work-experience/${itemToDelete}`, { method: 'DELETE' });
       await fetchExperiences();
     } catch (error) {
-      alert("Error al eliminar");
+      setError("Error al eliminar");
+    } finally {
+      setItemToDelete(null);
     }
   };
 
   return (
     <div className={`bg-white border rounded-xl shadow-sm text-left mb-6 transition-colors ${isEditingProfile ? 'border-indigo-200 ring-1 ring-indigo-50' : 'border-gray-200'}`}>
       
-      {/* CABECERA */}
       <div className="p-6 border-b border-gray-200 flex items-center justify-between bg-gray-50/50 rounded-t-xl">
         <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
           <Briefcase className="w-5 h-5 text-indigo-600" /> Experiencia Laboral
@@ -176,7 +183,6 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
         )}
       </div>
 
-      {/* LINEA DE TIEMPO */}
       <div className="p-6">
         {isLoadingList ? (
           <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-indigo-500" /></div>
@@ -187,7 +193,6 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
             {experiences.map((exp, index) => (
               <div key={exp.id} className="relative pl-6 md:pl-8 group">
                 
-                {/* Punto y efecto Radar */}
                 <div className={`absolute w-4 h-4 rounded-full -left-[9px] top-1.5 ring-4 ring-white shadow-sm z-10 
                   ${exp.isCurrent ? 'bg-green-500' : 'bg-indigo-300'}`}
                 >
@@ -201,7 +206,6 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
                 <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm group-hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start">
                     <div>
-                      {/* Mostrar JobPosition en lugar de Role */}
                       <h4 className="text-lg font-bold text-gray-900">{exp.jobPosition}</h4>
                       
                       <div className="flex items-center gap-2 mt-1 text-sm text-gray-700 font-medium">
@@ -227,7 +231,7 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
                     {isEditingProfile && (
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button onClick={() => handleOpenModal(exp)} className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md"><Edit2 className="w-4 h-4" /></button>
-                        <button onClick={() => handleDelete(exp.id!)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md"><Trash2 className="w-4 h-4" /></button>
+                        <button onClick={() => setItemToDelete(exp.id!)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md"><Trash2 className="w-4 h-4" /></button>
                       </div>
                     )}
                   </div>
@@ -246,7 +250,20 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
         )}
       </div>
 
-      {/* MODAL PARA ANADIR / EDITAR */}
+      {/* Modal de confirmación de borrado */}
+      {itemToDelete !== null && (
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl p-6 max-w-sm w-full text-center shadow-xl">
+            <h3 className="text-lg font-bold text-gray-900 mb-2">¿Eliminar experiencia?</h3>
+            <p className="text-sm text-gray-500 mb-6">Esta acción no se puede deshacer.</p>
+            <div className="flex justify-center gap-3">
+              <button onClick={() => setItemToDelete(null)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">Cancelar</button>
+              <button onClick={confirmDelete} className="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg font-medium">Eliminar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
@@ -259,7 +276,6 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
             
             <form onSubmit={handleSave} className="p-6 space-y-6">
               
-              {/* Error General */}
               {error && (
                 <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl font-medium">
                   {error}
@@ -316,26 +332,24 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
                 </div>
               </div>
 
-              {/* SECCION DE IMAGENES OBLIGATORIAS */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-xl border-dashed bg-gray-50">
                 <div className="space-y-2">
                   <label className="block text-xs font-bold text-gray-700 uppercase">Logo Empresa {!editingId && '*'}</label>
-                  <input type="file" ref={logoInputRef} onChange={(e) => setLogoFile(e.target.files?.[0] || null)} className="hidden" accept="image/*" />
+                  <input type="file" ref={logoInputRef} onChange={(e) => handleFileChange(e, setLogoFile)} className="hidden" accept="image/*" />
                   <button type="button" onClick={() => logoInputRef.current?.click()} className="flex items-center justify-center gap-2 w-full py-2.5 px-3 border border-gray-300 bg-white hover:bg-gray-50 rounded-xl text-sm font-medium text-gray-700 transition-colors">
-                    <ImageIcon className="w-4 h-4 text-gray-500" /> {logoFile ? logoFile.name : 'Subir Logo'}
+                    <ImageIcon className="w-4 h-4 text-gray-500" /> {logoFile ? logoFile.name : 'Subir Logo (Solo Imagen)'}
                   </button>
                 </div>
                 <div className="space-y-2">
                   <label className="block text-xs font-bold text-gray-700 uppercase">Imagen Destacada {!editingId && '*'}</label>
-                  <input type="file" ref={companyImageInputRef} onChange={(e) => setCompanyImageFile(e.target.files?.[0] || null)} className="hidden" accept="image/*" />
+                  <input type="file" ref={companyImageInputRef} onChange={(e) => handleFileChange(e, setCompanyImageFile)} className="hidden" accept="image/*,application/pdf" />
                   <button type="button" onClick={() => companyImageInputRef.current?.click()} className="flex items-center justify-center gap-2 w-full py-2.5 px-3 border border-gray-300 bg-white hover:bg-gray-50 rounded-xl text-sm font-medium text-gray-700 transition-colors">
-                    <ImageIcon className="w-4 h-4 text-gray-500" /> {companyImageFile ? companyImageFile.name : 'Subir Imagen'}
+                    <ImageIcon className="w-4 h-4 text-gray-500" /> {companyImageFile ? companyImageFile.name : 'Subir Imagen/PDF'}
                   </button>
                 </div>
-                {!editingId && <p className="col-span-2 text-[10px] text-gray-500 text-center">Ambas imagenes son obligatorias para crear un nuevo registro.</p>}
+                {!editingId && <p className="col-span-2 text-[10px] text-gray-500 text-center">Ambos archivos son obligatorios para crear un nuevo registro.</p>}
               </div>
 
-              {/* FOOTER MODAL */}
               <div className="pt-4 border-t border-gray-100 flex justify-end gap-3">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition-colors">Cancelar</button>
                 <button type="submit" disabled={isSaving} className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all disabled:opacity-50">
