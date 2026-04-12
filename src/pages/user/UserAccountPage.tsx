@@ -1,9 +1,10 @@
 import { KeyRound, Mail, RefreshCcw, ShieldCheck, Sparkles } from 'lucide-react'
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
-import { Link, Navigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import Navbar from '../../components/shared/Navbar'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
+import Modal from '../../components/ui/Modal'
 import useAuth from '../../hooks/auth/useAuth'
 import { isValidEmail, isValidPassword } from '../../lib/validations/authValidations'
 import {
@@ -40,7 +41,8 @@ function SecurityCard({
 
 export default function UserAccountPage() {
   const { id } = useParams()
-  const { user, updateUserDetails } = useAuth()
+  const navigate = useNavigate()
+  const { user, logout } = useAuth()
   const [account, setAccount] = useState<UserAccount | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
@@ -60,6 +62,19 @@ export default function UserAccountPage() {
   const [isRequestingPasswordChange, setIsRequestingPasswordChange] = useState(false)
   const [isConfirmingPasswordChange, setIsConfirmingPasswordChange] = useState(false)
   const [activeSecurityTab, setActiveSecurityTab] = useState<'email' | 'password'>('email')
+  const [securityModalState, setSecurityModalState] = useState<{
+    open: boolean
+    title: string
+    description: string
+    confirmLabel: string
+    action: null | 'request-email-change' | 'confirm-email-change' | 'request-password-change' | 'confirm-password-change'
+  }>({
+    open: false,
+    title: '',
+    description: '',
+    confirmLabel: '',
+    action: null,
+  })
 
   async function loadUserAccount(nextUserId: string) {
     setIsLoading(true)
@@ -122,9 +137,30 @@ export default function UserAccountPage() {
     await loadUserAccount(id)
   }
 
-  const handleEmailChangeRequest = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+  const openSecurityModal = (
+    action: NonNullable<typeof securityModalState.action>,
+    title: string,
+    description: string,
+    confirmLabel: string,
+  ) => {
+    setSecurityModalState({
+      open: true,
+      title,
+      description,
+      confirmLabel,
+      action,
+    })
+  }
 
+  const closeSecurityModal = () => {
+    setSecurityModalState((currentState) => ({
+      ...currentState,
+      open: false,
+      action: null,
+    }))
+  }
+
+  const requestEmailChangeAction = async () => {
     const normalizedEmail = emailValue.trim().toLowerCase()
     if (!isValidEmail(normalizedEmail)) {
       setEmailFormError('Ingresa un email valido')
@@ -154,9 +190,7 @@ export default function UserAccountPage() {
     setIsRequestingEmailChange(false)
   }
 
-  const handleEmailChangeConfirm = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
+  const confirmEmailChangeAction = async () => {
     const normalizedCode = emailCode.trim()
     if (!normalizedCode) {
       setEmailFormError('Ingresa el codigo enviado al nuevo correo')
@@ -179,11 +213,11 @@ export default function UserAccountPage() {
     setIsConfirmingEmailChange(false)
     setEmailCode('')
     setHasRequestedEmailChange(false)
-    await loadUserAccount(id)
-    updateUserDetails({ email: emailValue.trim().toLowerCase() })
+    await logout()
+    navigate('/auth/login', { replace: true })
   }
 
-  const handlePasswordChangeRequest = async () => {
+  const requestPasswordChangeAction = async () => {
     setPasswordFormError('')
     setPasswordFormSuccess('')
     setIsRequestingPasswordChange(true)
@@ -200,9 +234,7 @@ export default function UserAccountPage() {
     setIsRequestingPasswordChange(false)
   }
 
-  const handlePasswordChangeConfirm = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
+  const confirmPasswordChangeAction = async () => {
     const normalizedCode = passwordCode.trim()
     if (!normalizedCode) {
       setPasswordFormError('Ingresa el codigo enviado a tu correo actual')
@@ -239,6 +271,121 @@ export default function UserAccountPage() {
     setPasswordCode('')
     setNewPassword('')
     setConfirmPassword('')
+    await logout()
+    navigate('/auth/login', { replace: true })
+  }
+
+  const handleEmailChangeRequest = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    const normalizedEmail = emailValue.trim().toLowerCase()
+    if (!isValidEmail(normalizedEmail)) {
+      setEmailFormError('Ingresa un email valido')
+      setEmailFormSuccess('')
+      return
+    }
+
+    if (normalizedEmail === account?.email?.toLowerCase()) {
+      setEmailFormError('Ingresa un correo diferente al actual')
+      setEmailFormSuccess('')
+      return
+    }
+
+    setEmailFormError('')
+    setEmailFormSuccess('')
+    openSecurityModal(
+      'request-email-change',
+      'Confirmacion de seguridad',
+      `Se enviara un codigo de verificacion al correo ${normalizedEmail}. Verifica que sea correcto antes de continuar.`,
+      'Si, enviar codigo',
+    )
+  }
+
+  const handleEmailChangeConfirm = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    const normalizedCode = emailCode.trim()
+    if (!normalizedCode) {
+      setEmailFormError('Ingresa el codigo enviado al nuevo correo')
+      setEmailFormSuccess('')
+      return
+    }
+
+    setEmailFormError('')
+    setEmailFormSuccess('')
+    openSecurityModal(
+      'confirm-email-change',
+      'Confirmacion de seguridad',
+      'Estas a punto de actualizar el correo principal de tu cuenta. Asegurate de tener acceso al nuevo correo antes de continuar.',
+      'Si, cambiar correo',
+    )
+  }
+
+  const handlePasswordChangeRequest = () => {
+    setPasswordFormError('')
+    setPasswordFormSuccess('')
+    openSecurityModal(
+      'request-password-change',
+      'Confirmacion de seguridad',
+      'Se enviara un codigo de seguridad a tu correo actual para autorizar el cambio de contraseña.',
+      'Si, enviar codigo',
+    )
+  }
+
+  const handlePasswordChangeConfirm = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    const normalizedCode = passwordCode.trim()
+    if (!normalizedCode) {
+      setPasswordFormError('Ingresa el codigo enviado a tu correo actual')
+      setPasswordFormSuccess('')
+      return
+    }
+
+    if (!isValidPassword(newPassword)) {
+      setPasswordFormError('Minimo 8 caracteres con mayuscula, minuscula, numero y simbolo')
+      setPasswordFormSuccess('')
+      return
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordFormError('Las contraseñas no coinciden')
+      setPasswordFormSuccess('')
+      return
+    }
+
+    setPasswordFormError('')
+    setPasswordFormSuccess('')
+    openSecurityModal(
+      'confirm-password-change',
+      'Confirmacion de seguridad',
+      'Estas a punto de reemplazar la contraseña de acceso de tu cuenta. Confirma solo si reconoces esta operacion.',
+      'Si, cambiar contraseña',
+    )
+  }
+
+  const handleSecurityConfirmation = async () => {
+    const { action } = securityModalState
+    closeSecurityModal()
+
+    if (action === 'request-email-change') {
+      await requestEmailChangeAction()
+      return
+    }
+
+    if (action === 'confirm-email-change') {
+      await confirmEmailChangeAction()
+      return
+    }
+
+    if (action === 'request-password-change') {
+      await requestPasswordChangeAction()
+      return
+    }
+
+    if (action === 'confirm-password-change') {
+      await confirmPasswordChangeAction()
+    }
   }
 
   return (
@@ -519,6 +666,25 @@ export default function UserAccountPage() {
           </section>
         </div>
       </main>
+
+      <Modal open={securityModalState.open} onClose={closeSecurityModal} title={securityModalState.title}>
+        <div className='space-y-5'>
+          <div className='rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800'>
+            Esta accion afecta la seguridad de tu cuenta.
+          </div>
+
+          <p className='text-sm leading-6 text-muted-foreground'>{securityModalState.description}</p>
+
+          <div className='flex flex-col gap-3 sm:flex-row sm:justify-end'>
+            <Button type='button' variant='outline' className='cursor-pointer' onClick={closeSecurityModal}>
+              Cancelar
+            </Button>
+            <Button type='button' className='cursor-pointer' onClick={handleSecurityConfirmation}>
+              {securityModalState.confirmLabel}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }
