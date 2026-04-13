@@ -66,6 +66,26 @@ function isWrappedResponse<T>(value: unknown): value is BackendApiResponse<T> {
   return Boolean(value) && typeof value === 'object' && ('message' in (value as object) || 'data' in (value as object) || 'errors' in (value as object) || 'success' in (value as object))
 }
 
+function isFailureResponse<T>(response: Response, payload: BackendApiResponse<T> | T | null): boolean {
+  if (!response.ok) {
+    return true
+  }
+
+  if (!isWrappedResponse(payload)) {
+    return false
+  }
+
+  if (payload.success === false) {
+    return true
+  }
+
+  if (typeof payload.status === 'number' && payload.status >= 400) {
+    return true
+  }
+
+  return false
+}
+
 async function performAuthenticatedRequest<T>(
   path: string,
   options: {
@@ -135,7 +155,7 @@ export async function requestEmailChange(newEmail: string): Promise<MessageResul
       body: { newEmail },
     })
 
-    if (!response.ok || (isWrappedResponse(payload) && payload.success === false)) {
+    if (isFailureResponse(response, payload)) {
       return {
         success: false,
         error: resolveErrorMessage(isWrappedResponse(payload) ? payload : null, 'No se pudo enviar el codigo'),
@@ -161,7 +181,7 @@ export async function confirmEmailChange(code: string): Promise<MessageResult> {
       body: { code },
     })
 
-    if (!response.ok || (isWrappedResponse(payload) && payload.success === false)) {
+    if (isFailureResponse(response, payload)) {
       return {
         success: false,
         error: resolveErrorMessage(isWrappedResponse(payload) ? payload : null, 'No se pudo cambiar el correo'),
@@ -186,7 +206,7 @@ export async function requestPasswordChange(): Promise<MessageResult> {
       method: 'POST',
     })
 
-    if (!response.ok || (isWrappedResponse(payload) && payload.success === false)) {
+    if (isFailureResponse(response, payload)) {
       return {
         success: false,
         error: resolveErrorMessage(isWrappedResponse(payload) ? payload : null, 'No se pudo enviar el codigo'),
@@ -212,7 +232,7 @@ export async function confirmPasswordChange(code: string, newPassword: string): 
       body: { code, newPassword },
     })
 
-    if (!response.ok || (isWrappedResponse(payload) && payload.success === false)) {
+    if (isFailureResponse(response, payload)) {
       return {
         success: false,
         error: resolveErrorMessage(isWrappedResponse(payload) ? payload : null, 'No se pudo cambiar la contrasena'),

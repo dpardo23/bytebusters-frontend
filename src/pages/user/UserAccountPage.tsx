@@ -72,6 +72,9 @@ export default function UserAccountPage() {
   const [passwordCode, setPasswordCode] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [passwordCodeError, setPasswordCodeError] = useState('')
+  const [passwordNewError, setPasswordNewError] = useState('')
+  const [passwordConfirmError, setPasswordConfirmError] = useState('')
   const [passwordFormError, setPasswordFormError] = useState('')
   const [passwordFormSuccess, setPasswordFormSuccess] = useState('')
   const [hasRequestedPasswordChange, setHasRequestedPasswordChange] = useState(false)
@@ -234,6 +237,9 @@ export default function UserAccountPage() {
   }
 
   const requestPasswordChangeAction = async () => {
+    setPasswordCodeError('')
+    setPasswordNewError('')
+    setPasswordConfirmError('')
     setPasswordFormError('')
     setPasswordFormSuccess('')
     setIsRequestingPasswordChange(true)
@@ -253,30 +259,51 @@ export default function UserAccountPage() {
   const confirmPasswordChangeAction = async () => {
     const normalizedCode = passwordCode.trim()
     if (!normalizedCode) {
-      setPasswordFormError('Ingresa el codigo enviado a tu correo actual')
+      setPasswordCodeError('Ingresa el codigo enviado a tu correo actual')
+      setPasswordNewError('')
+      setPasswordConfirmError('')
+      setPasswordFormError('')
       setPasswordFormSuccess('')
       return
     }
 
     if (!isValidPassword(newPassword)) {
-      setPasswordFormError('Minimo 8 caracteres con mayuscula, minuscula, numero y simbolo')
+      setPasswordCodeError('')
+      setPasswordNewError('Minimo 8 caracteres con mayuscula, minuscula, numero y simbolo')
+      setPasswordConfirmError('')
+      setPasswordFormError('')
       setPasswordFormSuccess('')
       return
     }
 
     if (newPassword !== confirmPassword) {
-      setPasswordFormError('Las contraseñas no coinciden')
+      setPasswordCodeError('')
+      setPasswordNewError('')
+      setPasswordConfirmError('Las contraseñas no coinciden')
+      setPasswordFormError('')
       setPasswordFormSuccess('')
       return
     }
 
+    setPasswordCodeError('')
+    setPasswordNewError('')
+    setPasswordConfirmError('')
     setPasswordFormError('')
     setPasswordFormSuccess('')
     setIsConfirmingPasswordChange(true)
 
     const result = await confirmPasswordChange(normalizedCode, newPassword)
     if (!result.success) {
-      setPasswordFormError('error' in result ? result.error : 'No se pudo cambiar la contraseña')
+      const backendError = 'error' in result ? result.error : 'No se pudo cambiar la contraseña'
+      const normalizedError = String(backendError || '').toLowerCase()
+
+      if (normalizedError.includes('la nueva contrasena no puede ser igual a la anterior')) {
+        setPasswordNewError('Debes ingresar una contraseña diferente a la actual')
+        setPasswordFormError('')
+      } else {
+        setPasswordFormError(backendError)
+      }
+
       setIsConfirmingPasswordChange(false)
       return
     }
@@ -338,6 +365,9 @@ export default function UserAccountPage() {
   }
 
   const handlePasswordChangeRequest = () => {
+    setPasswordCodeError('')
+    setPasswordNewError('')
+    setPasswordConfirmError('')
     setPasswordFormError('')
     setPasswordFormSuccess('')
     openSecurityModal(
@@ -353,23 +383,35 @@ export default function UserAccountPage() {
 
     const normalizedCode = passwordCode.trim()
     if (!normalizedCode) {
-      setPasswordFormError('Ingresa el codigo enviado a tu correo actual')
+      setPasswordCodeError('Ingresa el codigo enviado a tu correo actual')
+      setPasswordNewError('')
+      setPasswordConfirmError('')
+      setPasswordFormError('')
       setPasswordFormSuccess('')
       return
     }
 
     if (!isValidPassword(newPassword)) {
-      setPasswordFormError('Minimo 8 caracteres con mayuscula, minuscula, numero y simbolo')
+      setPasswordCodeError('')
+      setPasswordNewError('Minimo 8 caracteres con mayuscula, minuscula, numero y simbolo')
+      setPasswordConfirmError('')
+      setPasswordFormError('')
       setPasswordFormSuccess('')
       return
     }
 
     if (newPassword !== confirmPassword) {
-      setPasswordFormError('Las contraseñas no coinciden')
+      setPasswordCodeError('')
+      setPasswordNewError('')
+      setPasswordConfirmError('Las contraseñas no coinciden')
+      setPasswordFormError('')
       setPasswordFormSuccess('')
       return
     }
 
+    setPasswordCodeError('')
+    setPasswordNewError('')
+    setPasswordConfirmError('')
     setPasswordFormError('')
     setPasswordFormSuccess('')
     openSecurityModal(
@@ -711,9 +753,13 @@ export default function UserAccountPage() {
                             value={passwordCode}
                             onChange={(event) => {
                               setPasswordCode(event.target.value)
+                              setPasswordCodeError('')
                               setPasswordFormError('')
                             }}
+                            className={passwordCodeError ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : ''}
+                            aria-invalid={Boolean(passwordCodeError)}
                           />
+                          <p className='mt-2 min-h-5 text-sm text-destructive'>{passwordCodeError || ' '}</p>
                         </div>
 
                         <div>
@@ -727,9 +773,13 @@ export default function UserAccountPage() {
                             value={newPassword}
                             onChange={(event) => {
                               setNewPassword(event.target.value)
+                              setPasswordNewError('')
                               setPasswordFormError('')
                             }}
+                            className={passwordNewError ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : ''}
+                            aria-invalid={Boolean(passwordNewError)}
                           />
+                          <p className='mt-2 min-h-5 text-sm text-destructive'>{passwordNewError || ' '}</p>
                         </div>
 
                         <div>
@@ -743,9 +793,13 @@ export default function UserAccountPage() {
                             value={confirmPassword}
                             onChange={(event) => {
                               setConfirmPassword(event.target.value)
+                              setPasswordConfirmError('')
                               setPasswordFormError('')
                             }}
+                            className={passwordConfirmError ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : ''}
+                            aria-invalid={Boolean(passwordConfirmError)}
                           />
+                          <p className='mt-2 min-h-5 text-sm text-destructive'>{passwordConfirmError || ' '}</p>
                         </div>
 
                         <Button type='submit' variant='outline' className='w-full cursor-pointer' disabled={isConfirmingPasswordChange}>

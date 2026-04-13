@@ -63,12 +63,16 @@ export default function LoginForm() {
   const [recoveryCode, setRecoveryCode] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [showNewPassword, setShowNewPassword] = useState(false)
-  const [recoveryError, setRecoveryError] = useState('')
+  const [recoveryRequestError, setRecoveryRequestError] = useState('')
+  const [recoveryCodeError, setRecoveryCodeError] = useState('')
+  const [recoveryPasswordError, setRecoveryPasswordError] = useState('')
   const [recoverySuccess, setRecoverySuccess] = useState('')
   const [isRecoverySubmitting, setIsRecoverySubmitting] = useState(false)
 
   const resetRecoveryState = () => {
-    setRecoveryError('')
+    setRecoveryRequestError('')
+    setRecoveryCodeError('')
+    setRecoveryPasswordError('')
     setRecoverySuccess('')
     setIsRecoverySubmitting(false)
     setRecoveryCode('')
@@ -134,18 +138,18 @@ export default function LoginForm() {
 
     const trimmedEmail = recoveryEmail.trim()
     if (!isValidEmail(trimmedEmail)) {
-      setRecoveryError('Ingresa un email valido')
+      setRecoveryRequestError('Ingresa un email valido')
       setRecoverySuccess('')
       return
     }
 
-    setRecoveryError('')
+    setRecoveryRequestError('')
     setRecoverySuccess('')
     setIsRecoverySubmitting(true)
 
     const result = await requestPasswordResetCode(trimmedEmail)
     if (!result.success) {
-      setRecoveryError('error' in result ? result.error : 'No se pudo enviar el codigo')
+      setRecoveryRequestError('error' in result ? result.error : 'No se pudo enviar el codigo')
       setIsRecoverySubmitting(false)
       return
     }
@@ -163,18 +167,21 @@ export default function LoginForm() {
     event.preventDefault()
 
     if (!String(recoveryCode || '').trim()) {
-      setRecoveryError('Ingresa el codigo recibido')
+      setRecoveryCodeError('Ingresa el codigo recibido')
+      setRecoveryPasswordError('')
       setRecoverySuccess('')
       return
     }
 
     if (!isValidPassword(newPassword)) {
-      setRecoveryError('Minimo 8 caracteres con mayuscula, minuscula, numero y simbolo')
+      setRecoveryCodeError('')
+      setRecoveryPasswordError('Minimo 8 caracteres con mayuscula, minuscula, numero y simbolo')
       setRecoverySuccess('')
       return
     }
 
-    setRecoveryError('')
+    setRecoveryCodeError('')
+    setRecoveryPasswordError('')
     setRecoverySuccess('')
     setIsRecoverySubmitting(true)
 
@@ -185,7 +192,15 @@ export default function LoginForm() {
     })
 
     if (!result.success) {
-      setRecoveryError('error' in result ? result.error : 'No se pudo restablecer la contraseña')
+      const backendError = 'error' in result ? result.error : 'No se pudo restablecer la contraseña'
+      const normalizedError = String(backendError || '').toLowerCase()
+
+      if (normalizedError.includes('la nueva contrasena no puede ser igual a la anterior')) {
+        setRecoveryPasswordError('Debes ingresar una contraseña diferente a la actual')
+      } else {
+        setRecoveryPasswordError(backendError)
+      }
+
       setIsRecoverySubmitting(false)
       return
     }
@@ -358,11 +373,11 @@ export default function LoginForm() {
                   value={recoveryEmail}
                   onChange={(event) => {
                     setRecoveryEmail(event.target.value)
-                    setRecoveryError('')
+                    setRecoveryRequestError('')
                   }}
                   required
                 />
-                <p className='mt-1 min-h-5 text-sm text-destructive'>{recoveryError || ' '}</p>
+                <p className='mt-1 min-h-5 text-sm text-destructive'>{recoveryRequestError || ' '}</p>
               </div>
 
               <Button type='submit' size='lg' className='w-full cursor-pointer' disabled={isRecoverySubmitting}>
@@ -402,10 +417,13 @@ export default function LoginForm() {
                   value={recoveryCode}
                   onChange={(event) => {
                     setRecoveryCode(event.target.value)
-                    setRecoveryError('')
+                    setRecoveryCodeError('')
                   }}
+                  aria-invalid={Boolean(recoveryCodeError)}
+                  className={recoveryCodeError ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : ''}
                   required
                 />
+                <p className='mt-1 min-h-5 text-sm text-destructive'>{recoveryCodeError || ' '}</p>
               </div>
 
               <div>
@@ -421,9 +439,10 @@ export default function LoginForm() {
                     value={newPassword}
                     onChange={(event) => {
                       setNewPassword(event.target.value)
-                      setRecoveryError('')
+                      setRecoveryPasswordError('')
                     }}
-                    className='pr-11'
+                    className={`pr-11 ${recoveryPasswordError ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : ''}`}
+                    aria-invalid={Boolean(recoveryPasswordError)}
                     required
                   />
                   <button
@@ -435,7 +454,7 @@ export default function LoginForm() {
                     {showNewPassword ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
                   </button>
                 </div>
-                <p className='mt-1 min-h-5 text-sm text-destructive'>{recoveryError || ' '}</p>
+                <p className='mt-1 min-h-5 text-sm text-destructive'>{recoveryPasswordError || ' '}</p>
               </div>
 
               <Button type='submit' size='lg' className='w-full cursor-pointer' disabled={isRecoverySubmitting}>
@@ -447,7 +466,9 @@ export default function LoginForm() {
               type='button'
               className='mt-4 cursor-pointer text-sm font-medium text-primary transition-opacity hover:opacity-80'
               onClick={() => {
-                setRecoveryError('')
+                setRecoveryRequestError('')
+                setRecoveryCodeError('')
+                setRecoveryPasswordError('')
                 setRecoverySuccess('')
                 setView(RECOVERY_REQUEST_VIEW)
               }}

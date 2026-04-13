@@ -80,6 +80,22 @@ function resolveErrorMessage(payload: { message?: string; errors?: string[] }, f
   return payload.message || fallback
 }
 
+function isBackendFailure<T>(response: Response, payload: BackendApiResponse<T>): boolean {
+  if (!response.ok) {
+    return true
+  }
+
+  if (payload.success === false) {
+    return true
+  }
+
+  if (typeof payload.status === 'number' && payload.status >= 400) {
+    return true
+  }
+
+  return false
+}
+
 export async function login(credentials: AuthCredentials): Promise<AuthResult> {
   try {
     const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
@@ -209,7 +225,7 @@ export async function requestPasswordResetCode(
     })
 
     const payload = (await response.json()) as BackendApiResponse<PasswordRecoveryMessage>
-    if (!response.ok || !payload.success) {
+    if (isBackendFailure(response, payload)) {
       return { success: false, error: resolveErrorMessage(payload, 'No se pudo enviar el codigo') }
     }
 
@@ -245,7 +261,7 @@ export async function resetPasswordWithCode({
     })
 
     const payload = (await response.json()) as BackendApiResponse<PasswordRecoveryMessage>
-    if (!response.ok || !payload.success) {
+    if (isBackendFailure(response, payload)) {
       return { success: false, error: resolveErrorMessage(payload, 'No se pudo restablecer la contrasena') }
     }
 
