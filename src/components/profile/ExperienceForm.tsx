@@ -36,6 +36,8 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
 
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
+  const todayStr = new Date().toISOString().split("T")[0];
+
   const [formData, setFormData] = useState<ExperienceData>({
     jobPosition: "", company: "", startDate: "", endDate: "", description: "", isCurrent: false, isFreelance: false, companyUrl: ""
   });
@@ -81,21 +83,18 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     
+    setError("");
+
     if (type === "checkbox") {
       const checked = (e.target as HTMLInputElement).checked;
       setFormData(prev => ({ 
         ...prev, 
         [name]: checked,
-        ...(name === 'isCurrent' && checked ? { endDate: "" } : {})
+        ...(name === 'isCurrent' && checked ? { endDate: "" } : {}),
+        ...(name === 'isFreelance' && checked ? { company: "" } : {})
       }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
-    }
-
-    if (name === "endDate" && formData.startDate && value) {
-      if (new Date(value) < new Date(formData.startDate)) {
-        setError("La fecha final no puede ser anterior a la de inicio.");
-      } else setError("");
     }
   };
 
@@ -125,7 +124,22 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
       setError("El Logo y la Imagen de la Empresa son obligatorios.");
       return;
     }
-    if (error) return;
+
+    if (formData.startDate > todayStr) {
+      setError("La fecha de inicio no puede ser en el futuro.");
+      return;
+    }
+
+    if (!formData.isCurrent && formData.endDate) {
+      if (formData.endDate > todayStr) {
+        setError("La fecha final no puede ser en el futuro.");
+        return;
+      }
+      if (formData.endDate < formData.startDate) {
+        setError("La fecha final no puede ser anterior a la de inicio.");
+        return;
+      }
+    }
 
     setIsSaving(true);
     try {
@@ -178,7 +192,7 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
         </h3>
         {isEditingProfile && (
           <button onClick={() => handleOpenModal()} className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors border border-transparent hover:border-indigo-200">
-            <Plus className="w-4 h-4" /> Anadir
+            <Plus className="w-4 h-4" /> Añadir
           </button>
         )}
       </div>
@@ -187,7 +201,7 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
         {isLoadingList ? (
           <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-indigo-500" /></div>
         ) : experiences.length === 0 ? (
-          <p className="text-sm text-gray-500 italic text-center py-4">Aun no hay experiencia registrada.</p>
+          <p className="text-sm text-gray-500 italic text-center py-4">Aún no hay experiencia registrada.</p>
         ) : (
           <div className="relative border-l-2 border-indigo-100 ml-3 md:ml-4 space-y-8 pb-4 pt-2">
             {experiences.map((exp, index) => (
@@ -250,7 +264,6 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
         )}
       </div>
 
-      {/* Modal de confirmación de borrado */}
       {itemToDelete !== null && (
         <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4">
           <div className="bg-white rounded-xl p-6 max-w-sm w-full text-center shadow-xl">
@@ -269,7 +282,7 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
           <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between z-10">
               <h2 className="text-xl font-bold flex items-center gap-2">
-                <Briefcase className="w-5 h-5 text-indigo-600" /> {editingId ? 'Editar' : 'Anadir'} Experiencia
+                <Briefcase className="w-5 h-5 text-indigo-600" /> {editingId ? 'Editar' : 'Añadir'} Experiencia
               </h2>
               <button onClick={() => setIsModalOpen(false)} className="p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-900 rounded-full transition-colors"><X className="w-5 h-5" /></button>
             </div>
@@ -304,23 +317,25 @@ export function ExperienceForm({ profileId, isEditingProfile = true }: Experienc
               <div className="p-5 bg-gray-50 rounded-xl border border-gray-200 space-y-4">
                 <label className="flex items-center gap-2 cursor-pointer mb-2">
                   <input type="checkbox" name="isCurrent" checked={formData.isCurrent} onChange={handleChange} className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500" />
-                  <span className="text-sm text-gray-800 font-medium">Trabajo aqui actualmente</span>
+                  <span className="text-sm text-gray-800 font-medium">Trabajo aquí actualmente</span>
                 </label>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="block text-xs font-bold text-gray-500 uppercase">Fecha de inicio *</label>
-                    <input required type="date" name="startDate" value={formData.startDate} onChange={handleChange} className="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500" />
+                    {/* CORRECCIÓN 2: Limitamos el calendario HTML usando max={todayStr} */}
+                    <input required type="date" name="startDate" value={formData.startDate} max={todayStr} onChange={handleChange} className="w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500" />
                   </div>
                   <div className="space-y-1">
                     <label className="block text-xs font-bold text-gray-500 uppercase">Fecha final</label>
-                    <input required={!formData.isCurrent} disabled={formData.isCurrent || !formData.startDate} type="date" name="endDate" value={formData.endDate || ""} onChange={handleChange} className={`w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-400`} />
+                    {/* CORRECCIÓN 2 y 3: Limitamos maximo al día de hoy, y minimo a la fecha de inicio */}
+                    <input required={!formData.isCurrent} disabled={formData.isCurrent || !formData.startDate} type="date" name="endDate" value={formData.endDate || ""} max={todayStr} min={formData.startDate} onChange={handleChange} className={`w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-indigo-500 disabled:bg-gray-100 disabled:text-gray-400`} />
                   </div>
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="block text-xs font-bold text-gray-500 uppercase">Descripcion de responsabilidades *</label>
+                <label className="block text-xs font-bold text-gray-500 uppercase">Descripción de responsabilidades *</label>
                 <textarea required name="description" value={formData.description} onChange={handleChange} rows={4} placeholder="Describe tus logros y tareas principales..." className="w-full px-4 py-3 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 resize-none" />
               </div>
 

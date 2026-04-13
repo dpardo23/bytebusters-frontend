@@ -30,7 +30,13 @@ export function PublicViewSection({ formData, isEditing, isSavingDraft, handleCh
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">Resumen Profesional</label>
           <textarea
-            name="bio" value={formData.bio} onChange={handleChange} disabled={!isEditing} rows={5} placeholder={isEditing ? "Cuéntanos sobre ti..." : "Sin información"}
+            name="bio" 
+            value={formData.bio || ""}
+            onChange={handleChange} 
+            disabled={!isEditing} 
+            rows={5} 
+            maxLength={bioLimit} 
+            placeholder={isEditing ? "Cuéntanos sobre ti..." : "Sin información"}
             className={`w-full px-3 py-2 border rounded-md outline-none resize-none transition-all ${!isEditing ? 'bg-gray-50 text-gray-600 border-transparent' : 'border-gray-300 focus:ring-2 focus:ring-indigo-500'}`}
           />
           {isEditing && (

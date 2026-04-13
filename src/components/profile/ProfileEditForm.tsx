@@ -37,7 +37,6 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
     socialLinks: []
   });
 
-  // 1. CARGAR DATOS
   useEffect(() => {
     const fetchAllData = async () => {
       try {
@@ -64,7 +63,6 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
           loadedData.name = h.name || "";
           loadedData.headline = h.headline || "";
           
-          // SOLUCIÓN BUG 1: Guardamos la foto en el backup
           if (h.photoBase64) {
             setPhotoPreview(h.photoBase64);
             loadedData.photoBase64 = h.photoBase64; 
@@ -96,13 +94,17 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
   const handleCancelEdit = () => {
     setFormData(originalData);
     setPhotoFile(null);
-    // Ahora originalData sí tiene la foto guardada
     setPhotoPreview(originalData.photoBase64 || null); 
     setErrors({});
     setIsEditing(false);
   };
 
   const handleSave = async () => {
+    if (!formData.bio || formData.bio.trim() === "") {
+      alert("El Resumen Profesional no puede estar vacío."); 
+      setErrors({ global: "El Resumen Profesional no puede estar vacío." }); 
+      return; 
+    }
     setIsLoading(true);
     setSuccessMessage(null);
     setErrors({});
