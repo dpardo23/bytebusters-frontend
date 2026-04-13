@@ -39,7 +39,18 @@ function isUserAccount(value: unknown): value is UserAccount {
   }
 
   const candidate = value as Partial<UserAccount>
-  return typeof candidate.userId === 'number' && typeof candidate.email === 'string'
+  return (
+    typeof candidate.userId === 'number' &&
+    typeof candidate.email === 'string' &&
+    typeof candidate.userType === 'string' &&
+    typeof candidate.firstName === 'string' &&
+    typeof candidate.lastName === 'string' &&
+    typeof candidate.fullName === 'string' &&
+    typeof candidate.username === 'string' &&
+    typeof candidate.countryId === 'string' &&
+    typeof candidate.authProvider === 'string' &&
+    typeof candidate.createdAt === 'string'
+  )
 }
 
 function getAuthTokenOrThrow(): string {

@@ -39,6 +39,22 @@ function SecurityCard({
   )
 }
 
+function formatAccountDate(value?: string) {
+  if (!value) {
+    return 'Sin fecha disponible'
+  }
+
+  const parsedDate = new Date(value)
+  if (Number.isNaN(parsedDate.getTime())) {
+    return value
+  }
+
+  return new Intl.DateTimeFormat('es-BO', {
+    dateStyle: 'long',
+    timeStyle: 'short',
+  }).format(parsedDate)
+}
+
 export default function UserAccountPage() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -493,6 +509,91 @@ export default function UserAccountPage() {
                 >
                   Ver mi perfil
                 </Link>
+              </div>
+
+              <div className='mt-8 rounded-[1.75rem] border border-border bg-background/80 p-6 shadow-sm'>
+                <div className='flex flex-col gap-2 border-b border-border pb-5'>
+                  <p className='text-sm font-semibold uppercase tracking-[0.24em] text-muted-foreground'>
+                    Informacion actual de la cuenta
+                  </p>
+                  <p className='text-sm leading-6 text-muted-foreground'>
+                    Resumen de los datos principales asociados a tu usuario.
+                  </p>
+                </div>
+
+                {isLoading ? (
+                  <div className='mt-5 grid gap-3 sm:grid-cols-2'>
+                    <div className='h-24 animate-pulse rounded-2xl bg-muted' />
+                    <div className='h-24 animate-pulse rounded-2xl bg-muted' />
+                    <div className='h-24 animate-pulse rounded-2xl bg-muted' />
+                    <div className='h-24 animate-pulse rounded-2xl bg-muted' />
+                  </div>
+                ) : (
+                  <div className='mt-5 grid gap-3 sm:grid-cols-2'>
+                    <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                      <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Nombre completo</p>
+                      <p className='mt-2 text-base font-semibold text-foreground'>
+                        {account?.fullName || 'Sin nombre registrado'}
+                      </p>
+                    </div>
+
+                    <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                      <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Tipo de usuario</p>
+                      <p className='mt-2 text-base font-semibold text-foreground'>
+                        {account?.userType || 'Sin tipo disponible'}
+                      </p>
+                    </div>
+
+                    <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                      <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Nombre</p>
+                      <p className='mt-2 text-base font-semibold text-foreground'>
+                        {account?.firstName || 'Sin dato'}
+                      </p>
+                    </div>
+
+                    <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                      <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Apellido</p>
+                      <p className='mt-2 text-base font-semibold text-foreground'>
+                        {account?.lastName || 'Sin dato'}
+                      </p>
+                    </div>
+
+                    <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                      <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Usuario visible</p>
+                      <p className='mt-2 text-base font-semibold text-foreground'>
+                        {account?.username || 'Sin username'}
+                      </p>
+                    </div>
+
+                    <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                      <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Titulo profesional</p>
+                      <p className='mt-2 text-base font-semibold text-foreground'>
+                        {account?.professionalTitle || 'Sin titulo registrado'}
+                      </p>
+                    </div>
+
+                    <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                      <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Pais</p>
+                      <p className='mt-2 text-base font-semibold text-foreground'>
+                        {account?.countryId || 'Sin pais definido'}
+                      </p>
+                    </div>
+
+                    <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                      <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Proveedor de acceso</p>
+                      <p className='mt-2 text-base font-semibold text-foreground'>
+                        {account?.authProvider || 'Sin proveedor disponible'}
+                      </p>
+                    </div>
+
+                    <div className='rounded-2xl border border-border bg-card px-4 py-4 sm:col-span-2'>
+                      <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Cuenta creada</p>
+                      <p className='mt-2 text-base font-semibold text-foreground'>
+                        {formatAccountDate(account?.createdAt)}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </article>
 
