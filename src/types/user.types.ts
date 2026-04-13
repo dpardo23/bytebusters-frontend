@@ -10,4 +10,11 @@ export interface UserAccount {
   countryId: string
   authProvider: string
   createdAt: string
+  companyName?: string
+  industry?: string
+  companySize?: number
+  websiteUrl?: string
+  nit?: number
+  contactFirstName?: string
+  contactLastName?: string
 }

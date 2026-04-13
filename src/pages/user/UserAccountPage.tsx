@@ -10,6 +10,7 @@ import { isValidEmail, isValidPassword } from '../../lib/validations/authValidat
 import {
   confirmEmailChange,
   confirmPasswordChange,
+  fetchRecruiterAccount,
   fetchUserAccount,
   requestEmailChange,
   requestPasswordChange,
@@ -94,15 +95,16 @@ export default function UserAccountPage() {
     confirmLabel: '',
     action: null,
   })
+  const isRecruiterAccount = user?.role === 'recruiter' || account?.userType === 'RECLUTADOR'
 
   async function loadUserAccount(nextUserId: string) {
     setIsLoading(true)
     setError('')
 
     try {
-      const nextAccount = await fetchUserAccount(nextUserId)
+      const nextAccount = isRecruiterAccount ? await fetchRecruiterAccount() : await fetchUserAccount(nextUserId)
       setAccount(nextAccount)
-      setEmailValue(nextAccount.email)
+      setEmailValue('')
     } catch (loadError) {
       setAccount(null)
       setError(loadError instanceof Error ? loadError.message : 'No se pudo cargar la informacion del usuario')
@@ -120,7 +122,7 @@ export default function UserAccountPage() {
       }
 
       try {
-        const nextAccount = await fetchUserAccount(id)
+        const nextAccount = isRecruiterAccount ? await fetchRecruiterAccount() : await fetchUserAccount(id)
         if (!isMounted) {
           return
         }
@@ -146,7 +148,7 @@ export default function UserAccountPage() {
     return () => {
       isMounted = false
     }
-  }, [id])
+  }, [id, isRecruiterAccount])
 
   if (!id) {
     return <Navigate to='/' replace />
@@ -559,7 +561,9 @@ export default function UserAccountPage() {
                     Informacion actual de la cuenta
                   </p>
                   <p className='text-sm leading-6 text-muted-foreground'>
-                    Resumen de los datos principales asociados a tu usuario.
+                    {isRecruiterAccount
+                      ? 'Resumen de los datos principales asociados a tu cuenta de reclutador y a la empresa registrada.'
+                      : 'Resumen de los datos principales asociados a tu usuario.'}
                   </p>
                 </div>
 
@@ -573,7 +577,9 @@ export default function UserAccountPage() {
                 ) : (
                   <div className='mt-5 grid gap-3 sm:grid-cols-2'>
                     <div className='rounded-2xl border border-border bg-card px-4 py-4'>
-                      <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Nombre completo</p>
+                      <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>
+                        {isRecruiterAccount ? 'Nombre visible' : 'Nombre completo'}
+                      </p>
                       <p className='mt-2 text-base font-semibold text-foreground'>
                         {account?.fullName || 'Sin nombre registrado'}
                       </p>
@@ -586,54 +592,109 @@ export default function UserAccountPage() {
                       </p>
                     </div>
 
-                    <div className='rounded-2xl border border-border bg-card px-4 py-4'>
-                      <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Nombre</p>
-                      <p className='mt-2 text-base font-semibold text-foreground'>
-                        {account?.firstName || 'Sin dato'}
-                      </p>
-                    </div>
+                    {isRecruiterAccount ? (
+                      <>
+                        <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                          <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Empresa</p>
+                          <p className='mt-2 text-base font-semibold text-foreground'>
+                            {account?.companyName || 'Sin empresa registrada'}
+                          </p>
+                        </div>
 
-                    <div className='rounded-2xl border border-border bg-card px-4 py-4'>
-                      <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Apellido</p>
-                      <p className='mt-2 text-base font-semibold text-foreground'>
-                        {account?.lastName || 'Sin dato'}
-                      </p>
-                    </div>
+                        <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                          <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Industria</p>
+                          <p className='mt-2 text-base font-semibold text-foreground'>
+                            {account?.industry || 'Sin industria registrada'}
+                          </p>
+                        </div>
 
-                    <div className='rounded-2xl border border-border bg-card px-4 py-4'>
-                      <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Usuario visible</p>
-                      <p className='mt-2 text-base font-semibold text-foreground'>
-                        {account?.username || 'Sin username'}
-                      </p>
-                    </div>
+                        <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                          <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Contacto principal</p>
+                          <p className='mt-2 text-base font-semibold text-foreground'>
+                            {[account?.contactFirstName, account?.contactLastName].filter(Boolean).join(' ') || 'Sin contacto registrado'}
+                          </p>
+                        </div>
 
-                    <div className='rounded-2xl border border-border bg-card px-4 py-4'>
-                      <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Titulo profesional</p>
-                      <p className='mt-2 text-base font-semibold text-foreground'>
-                        {account?.professionalTitle || 'Sin titulo registrado'}
-                      </p>
-                    </div>
+                        <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                          <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Tamaño de empresa</p>
+                          <p className='mt-2 text-base font-semibold text-foreground'>
+                            {typeof account?.companySize === 'number' ? `${account.companySize} empleados` : 'Sin dato'}
+                          </p>
+                        </div>
 
-                    <div className='rounded-2xl border border-border bg-card px-4 py-4'>
-                      <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Pais</p>
-                      <p className='mt-2 text-base font-semibold text-foreground'>
-                        {account?.countryId || 'Sin pais definido'}
-                      </p>
-                    </div>
+                        <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                          <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>NIT</p>
+                          <p className='mt-2 text-base font-semibold text-foreground'>
+                            {account?.nit ?? 'Sin NIT registrado'}
+                          </p>
+                        </div>
 
-                    <div className='rounded-2xl border border-border bg-card px-4 py-4'>
-                      <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Proveedor de acceso</p>
-                      <p className='mt-2 text-base font-semibold text-foreground'>
-                        {account?.authProvider || 'Sin proveedor disponible'}
-                      </p>
-                    </div>
+                        <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                          <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Sitio web</p>
+                          <p className='mt-2 break-all text-base font-semibold text-foreground'>
+                            {account?.websiteUrl || 'Sin sitio web registrado'}
+                          </p>
+                        </div>
 
-                    <div className='rounded-2xl border border-border bg-card px-4 py-4 sm:col-span-2'>
-                      <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Cuenta creada</p>
-                      <p className='mt-2 text-base font-semibold text-foreground'>
-                        {formatAccountDate(account?.createdAt)}
-                      </p>
-                    </div>
+                        <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                          <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Pais</p>
+                          <p className='mt-2 text-base font-semibold text-foreground'>
+                            {account?.countryId || 'Sin pais definido'}
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                          <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Nombre</p>
+                          <p className='mt-2 text-base font-semibold text-foreground'>
+                            {account?.firstName || 'Sin dato'}
+                          </p>
+                        </div>
+
+                        <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                          <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Apellido</p>
+                          <p className='mt-2 text-base font-semibold text-foreground'>
+                            {account?.lastName || 'Sin dato'}
+                          </p>
+                        </div>
+
+                        <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                          <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Usuario visible</p>
+                          <p className='mt-2 text-base font-semibold text-foreground'>
+                            {account?.username || 'Sin username'}
+                          </p>
+                        </div>
+
+                        <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                          <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Titulo profesional</p>
+                          <p className='mt-2 text-base font-semibold text-foreground'>
+                            {account?.professionalTitle || 'Sin titulo registrado'}
+                          </p>
+                        </div>
+
+                        <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                          <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Pais</p>
+                          <p className='mt-2 text-base font-semibold text-foreground'>
+                            {account?.countryId || 'Sin pais definido'}
+                          </p>
+                        </div>
+
+                        <div className='rounded-2xl border border-border bg-card px-4 py-4'>
+                          <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Proveedor de acceso</p>
+                          <p className='mt-2 text-base font-semibold text-foreground'>
+                            {account?.authProvider || 'Sin proveedor disponible'}
+                          </p>
+                        </div>
+
+                        <div className='rounded-2xl border border-border bg-card px-4 py-4 sm:col-span-2'>
+                          <p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>Cuenta creada</p>
+                          <p className='mt-2 text-base font-semibold text-foreground'>
+                            {formatAccountDate(account?.createdAt)}
+                          </p>
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
               </div>

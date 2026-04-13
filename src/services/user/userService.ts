@@ -11,6 +11,29 @@ type BackendApiResponse<T> = {
   errors?: string[]
 }
 
+type RecruiterProfileResponse = {
+  userId: number
+  profileId?: number
+  email: string
+  userType: string
+  basicInfo?: {
+    fullName?: string
+    firstName?: string
+    lastName?: string
+    professionalTitle?: string
+    countryId?: string
+  }
+  companyInfo?: {
+    companyName?: string
+    industry?: string
+    companySize?: number
+    websiteUrl?: string
+    nit?: number
+    contactFirstName?: string
+    contactLastName?: string
+  }
+}
+
 type MessageResult =
   | {
       success: true
@@ -51,6 +74,48 @@ function isUserAccount(value: unknown): value is UserAccount {
     typeof candidate.authProvider === 'string' &&
     typeof candidate.createdAt === 'string'
   )
+}
+
+function isRecruiterProfileResponse(value: unknown): value is RecruiterProfileResponse {
+  if (!value || typeof value !== 'object') {
+    return false
+  }
+
+  const candidate = value as Partial<RecruiterProfileResponse>
+  return (
+    typeof candidate.userId === 'number' &&
+    typeof candidate.email === 'string' &&
+    typeof candidate.userType === 'string'
+  )
+}
+
+function mapRecruiterProfileToUserAccount(profile: RecruiterProfileResponse): UserAccount {
+  const basicInfo = profile.basicInfo ?? {}
+  const companyInfo = profile.companyInfo ?? {}
+  const firstName = basicInfo.firstName ?? ''
+  const lastName = basicInfo.lastName ?? ''
+  const fullName = basicInfo.fullName || `${firstName} ${lastName}`.trim() || profile.email
+
+  return {
+    userId: profile.userId,
+    email: profile.email,
+    userType: profile.userType,
+    firstName,
+    lastName,
+    fullName,
+    professionalTitle: basicInfo.professionalTitle ?? '',
+    username: basicInfo.fullName ?? profile.email,
+    countryId: basicInfo.countryId ?? '',
+    authProvider: 'LOCAL',
+    createdAt: '',
+    companyName: companyInfo.companyName ?? '',
+    industry: companyInfo.industry ?? '',
+    companySize: companyInfo.companySize,
+    websiteUrl: companyInfo.websiteUrl ?? '',
+    nit: companyInfo.nit,
+    contactFirstName: companyInfo.contactFirstName ?? '',
+    contactLastName: companyInfo.contactLastName ?? '',
+  }
 }
 
 function getAuthTokenOrThrow(): string {
@@ -143,6 +208,31 @@ export async function fetchUserAccount(userId: string): Promise<UserAccount> {
 
   if (isWrappedResponse(payload) && isUserAccount(payload.data)) {
     return payload.data
+  }
+
+  throw new Error('La respuesta del servidor no tiene el formato esperado')
+}
+
+export async function fetchRecruiterAccount(): Promise<UserAccount> {
+  const { response, payload } = await performAuthenticatedRequest<RecruiterProfileResponse>('/api/recruiter/profile', {
+    method: 'GET',
+  })
+
+  if (!response.ok) {
+    throw new Error(
+      resolveErrorMessage(
+        isWrappedResponse(payload) ? payload : null,
+        'No se pudo cargar la informacion del reclutador',
+      ),
+    )
+  }
+
+  if (isRecruiterProfileResponse(payload)) {
+    return mapRecruiterProfileToUserAccount(payload)
+  }
+
+  if (isWrappedResponse(payload) && isRecruiterProfileResponse(payload.data)) {
+    return mapRecruiterProfileToUserAccount(payload.data)
   }
 
   throw new Error('La respuesta del servidor no tiene el formato esperado')
