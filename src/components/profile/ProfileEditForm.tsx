@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent, useRef, useEffect } from "react"
-import { Loader2, CloudUpload, CheckCircle2, Edit3, X, Share2 } from "lucide-react"
+import { Loader2, Upload, CheckCircle2, Edit3, X, Share2 } from "lucide-react"
 
 import type { ExtendedUserData, Section } from "../../types/profile.types"
 import { Sidebar } from "./Sidebar"
@@ -225,7 +225,7 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
                   <X className="w-4 h-4" /> Cancelar
                 </button>
                 <button onClick={handleSave} disabled={isLoading} className="flex items-center gap-2 px-6 py-2.5 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-all">
-                  {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CloudUpload className="w-4 h-4" />}
+                  {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                   Guardar Cambios
                 </button>
               </>

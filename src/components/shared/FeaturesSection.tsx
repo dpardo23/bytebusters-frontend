@@ -1,8 +1,8 @@
-import { BriefcaseBusiness, UserRoundSearch, Users } from 'lucide-react'
+import { Briefcase, UserRoundSearch, Users } from 'lucide-react'
 
 const features = [
   {
-    icon: BriefcaseBusiness,
+    icon: Briefcase,
     title: 'Integracion GitHub',
     description: 'Importa tus repositorios y lenguajes para mostrar evidencia real.',
   },

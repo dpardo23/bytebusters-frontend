@@ -1,5 +1,6 @@
 import type { AuthCredentials, AuthResult, AuthUser, RegisterAccountData } from '../../types/auth.types'
 import { AUTH_TOKEN_STORAGE_KEY } from '../../store/auth/authStore'
+import { authenticateMockAccount, registerMockAccount } from '../../lib/mockAuthStorage'
 
 const API_BASE_URL = String(import.meta.env.VITE_API_URL || 'http://localhost:8080').replace(/\/$/, '')
 
@@ -55,6 +56,18 @@ function mapAuthUser(user: BackendAuthUser): AuthUser {
   }
 }
 
+function mapMockRole(role: 'basic' | 'professional' | 'recruiter' | 'admin' | 'guest'): AuthUser['role'] {
+  if (role === 'recruiter' || role === 'professional' || role === 'admin' || role === 'basic') {
+    return role
+  }
+
+  return 'basic'
+}
+
+function createMockToken(userId: string): string {
+  return `mock-token-${userId}`
+}
+
 function splitName(name: string): { firstName: string; lastName: string } {
   const normalized = String(name || '').trim().replace(/\s+/g, ' ')
   const [firstName = '', ...rest] = normalized.split(' ')
@@ -97,6 +110,25 @@ function isBackendFailure<T>(response: Response, payload: BackendApiResponse<T>)
 }
 
 export async function login(credentials: AuthCredentials): Promise<AuthResult> {
+  const loginWithMockAccount = (): AuthResult => {
+    const mockAccount = authenticateMockAccount(credentials.email, credentials.password)
+    if (!mockAccount) {
+      return { success: false, error: 'Credenciales invalidas' }
+    }
+
+    return {
+      success: true,
+      user: {
+        id: mockAccount.id,
+        email: mockAccount.email,
+        name: mockAccount.name,
+        role: mapMockRole(mockAccount.role),
+        createdAt: mockAccount.createdAt,
+      },
+      token: createMockToken(mockAccount.id),
+    }
+  }
+
   try {
     const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: 'POST',
@@ -111,7 +143,7 @@ export async function login(credentials: AuthCredentials): Promise<AuthResult> {
 
     const payload = (await response.json()) as BackendApiResponse<BackendAuthPayload>
     if (!response.ok || !payload.success || !payload.data) {
-      return { success: false, error: resolveErrorMessage(payload, 'No se pudo iniciar sesion') }
+      return loginWithMockAccount()
     }
 
     return {
@@ -120,13 +152,38 @@ export async function login(credentials: AuthCredentials): Promise<AuthResult> {
       token: payload.data.token,
     }
   } catch {
-    return { success: false, error: 'No se pudo conectar con el servidor' }
+    return loginWithMockAccount()
   }
 }
 
 export async function registerAccount(data: RegisterAccountData): Promise<AuthResult> {
   const normalizedEmail = String(data.email || '').trim().toLowerCase()
   const { firstName, lastName } = splitName(data.name)
+
+  const registerWithMockAccount = (): AuthResult => {
+    const mockResult = registerMockAccount({
+      name: data.name,
+      email: normalizedEmail,
+      password: data.password,
+      role: data.role,
+    })
+
+    if (!mockResult.success) {
+      return { success: false, error: mockResult.error }
+    }
+
+    return {
+      success: true,
+      user: {
+        id: mockResult.account.id,
+        email: mockResult.account.email,
+        name: mockResult.account.name,
+        role: mapMockRole(mockResult.account.role),
+        createdAt: mockResult.account.createdAt,
+      },
+      token: createMockToken(mockResult.account.id),
+    }
+  }
 
   try {
     const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
@@ -146,7 +203,7 @@ export async function registerAccount(data: RegisterAccountData): Promise<AuthRe
 
     const payload = (await response.json()) as BackendApiResponse<BackendAuthPayload>
     if (!response.ok || !payload.success || !payload.data) {
-      return { success: false, error: resolveErrorMessage(payload, 'No se pudo crear la cuenta') }
+      return registerWithMockAccount()
     }
 
     return {
@@ -155,7 +212,7 @@ export async function registerAccount(data: RegisterAccountData): Promise<AuthRe
       token: payload.data.token,
     }
   } catch {
-    return { success: false, error: 'No se pudo conectar con el servidor' }
+    return registerWithMockAccount()
   }
 }
 

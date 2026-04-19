@@ -1,4 +1,4 @@
-import { ArrowRight, BriefcaseBusiness, Sparkles, UserRoundSearch } from 'lucide-react'
+import { ArrowRight, Briefcase, Sparkles, UserRoundSearch } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import useAuth from '../../hooks/auth/useAuth'
 
@@ -64,7 +64,7 @@ export default function HeroSection() {
             </div>
             <div className='flex items-center gap-5'>
               <span className='inline-flex items-center gap-1'>
-                <BriefcaseBusiness className='h-4 w-4' /> Integracion GitHub
+                <Briefcase className='h-4 w-4' /> Integracion GitHub
               </span>
               <span className='inline-flex items-center gap-1'>
                 <UserRoundSearch className='h-4 w-4' /> Integracion LinkedIn

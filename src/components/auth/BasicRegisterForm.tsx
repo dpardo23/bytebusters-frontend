@@ -1,5 +1,5 @@
-import { useEffect, useState, type FormEvent } from 'react'
-import { CheckCircle2, Eye, EyeOff, LoaderCircle, UserPlus } from 'lucide-react'
+import { useEffect, useState, type FormEvent, type ChangeEvent } from 'react'
+import { CheckCircle2, Eye, EyeOff, Loader, UserPlus } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
@@ -69,7 +69,7 @@ export default function BasicRegisterForm() {
     if (!showSuccessModal) return undefined
 
     const timeoutId = window.setTimeout(() => {
-      navigate('/profile')
+      navigate('/role-selection')
     }, 1200)
 
     return () => window.clearTimeout(timeoutId)
@@ -130,7 +130,7 @@ export default function BasicRegisterForm() {
                 id='fullName'
                 placeholder='Tu nombre'
                 value={name}
-                onChange={(event) => {
+                onChange={(event: ChangeEvent<HTMLInputElement>) => {
                   const nextName = event.target.value
                   setName(nextName)
                   updateFieldError('name', { name: nextName, email, password, confirmPassword })
@@ -151,7 +151,7 @@ export default function BasicRegisterForm() {
                 type='email'
                 placeholder='tu@email.com'
                 value={email}
-                onChange={(event) => {
+                onChange={(event: ChangeEvent<HTMLInputElement>) => {
                   const nextEmail = event.target.value
                   setEmail(nextEmail)
                   updateFieldError('email', { name, email: nextEmail, password, confirmPassword })
@@ -173,7 +173,7 @@ export default function BasicRegisterForm() {
                   type={showPassword ? 'text' : 'password'}
                   placeholder='Mínimo 8 caracteres'
                   value={password}
-                  onChange={(event) => {
+                  onChange={(event: ChangeEvent<HTMLInputElement>) => {
                     const nextPassword = event.target.value
                     setPassword(nextPassword)
                     updateFieldError('password', { name, email, password: nextPassword, confirmPassword })
@@ -213,7 +213,7 @@ export default function BasicRegisterForm() {
                   placeholder='Repite la contraseña'
                   className='hide-native-password-toggle pr-11'
                   value={confirmPassword}
-                  onChange={(event) => {
+                  onChange={(event: ChangeEvent<HTMLInputElement>) => {
                     const nextConfirmPassword = event.target.value
                     setConfirmPassword(nextConfirmPassword)
                     updateFieldError('confirmPassword', {
@@ -241,7 +241,7 @@ export default function BasicRegisterForm() {
             <Button type='submit' className='w-full' size='lg' disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
-                  <LoaderCircle className='h-4 w-4 animate-spin' />
+                  <Loader className='h-4 w-4 animate-spin' />
                   Creando cuenta...
                 </>
               ) : (

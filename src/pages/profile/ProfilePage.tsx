@@ -1,10 +1,10 @@
-import { BriefcaseBusiness, Building2 } from 'lucide-react'
+import { Briefcase, Building2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useState } from 'react'
 import useAuth from '../../hooks/auth/useAuth'
 import { ProfileHeader } from '../../components/profile/ProfileHeader'
 import { ProfileEditForm } from '../../components/profile/ProfileRegisterForm'
-import RecruiterProfileSetupForm from '../../components/profile/RecruiterProfileSetupForm'
+import RecruiterOnboardingForm from '../../components/profile/RecruiterOnboardingForm'
 
 function RoleCard({
   title,
@@ -115,7 +115,7 @@ export default function ProfilePage() {
                 description='Ideal para mostrar experiencia, educacion, proyectos y disponibilidad laboral.'
                 buttonLabel={isSelectingProfessional ? 'Actualizando...' : 'Quiero ser profesional'}
                 onSelect={handleSelectProfessional}
-                icon={<BriefcaseBusiness className='h-5 w-5' />}
+                icon={<Briefcase className='h-5 w-5' />}
               />
               <RoleCard
                 title='Cuenta reclutador'
@@ -143,7 +143,7 @@ export default function ProfilePage() {
         ) : null}
 
         {isProfessional ? <ProfileEditForm initialUser={user} /> : null}
-        {isRecruiter ? <RecruiterProfileSetupForm /> : null}
+        {isRecruiter ? <RecruiterOnboardingForm /> : null}
       </div>
     </div>
   )

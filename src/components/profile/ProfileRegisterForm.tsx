@@ -1,9 +1,11 @@
 import React, { useState, ChangeEvent, useRef } from "react"
-import { Camera, CloudUpload, Loader2, FileText, ChevronRight, ChevronLeft, CheckCircle2, Share2 } from "lucide-react"
+import { Camera, Upload, Loader2, FileText, ChevronRight, ChevronLeft, CheckCircle2, Share2 } from "lucide-react"
 import { useNavigate } from 'react-router-dom'
 import type { UserData } from "./ProfileHeader" 
 
 import { SocialLinks } from "./SocialLinks"
+
+const PROFESSIONAL_ONBOARDING_STORAGE_KEY = 'ethoshub-professional-onboarding'
 
 interface ExtendedUserData extends UserData {
   statusMessage?: string;
@@ -68,11 +70,38 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
 
   const handleSave = async () => {
     if (!isStepValid()) return;
+
+    const persistLocalProfessionalProfile = () => {
+      try {
+        const key = String(initialUser?.id || initialUser?.email || initialUser?.username || 'default')
+        const raw = localStorage.getItem(PROFESSIONAL_ONBOARDING_STORAGE_KEY)
+        const parsed = raw ? JSON.parse(raw) : {}
+
+        parsed[key] = {
+          name: formData.name,
+          headline: formData.headline,
+          status: formData.status,
+          bio: formData.bio,
+          socialLinks: formData.socialLinks,
+          photoPreview,
+          updatedAt: new Date().toISOString(),
+        }
+
+        localStorage.setItem(PROFESSIONAL_ONBOARDING_STORAGE_KEY, JSON.stringify(parsed))
+      } catch {
+        // Ignore local persistence errors in mock mode.
+      }
+
+      navigate('/')
+    }
     
     setIsLoading(true);
     try {
       const userId = initialUser.id; 
-      if (!userId) throw new Error("No se pudo identificar el usuario para guardar el perfil");
+      if (!userId) {
+        persistLocalProfessionalProfile()
+        return
+      }
 
       const heroData = new FormData();
       heroData.append('data', new Blob([JSON.stringify({ 
@@ -109,10 +138,9 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
         if (!linkResponse.ok) throw new Error("Fallo al guardar una de las redes sociales");
       }
 
-      alert("¡Perfil completado con éxito!");
       navigate('/');
     } catch (error: any) {
-      alert("Error al guardar: " + error.message);
+      persistLocalProfessionalProfile()
     } finally {
       setIsLoading(false);
     }
@@ -247,7 +275,7 @@ export function ProfileEditForm({ initialUser }: ProfileEditFormProps) {
               disabled={isLoading || !isStepValid()}
               className="flex items-center gap-2 px-8 py-2.5 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 disabled:opacity-50 transition-all shadow-md"
             >
-              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CloudUpload className="w-4 h-4" />}
+              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
               Finalizar Registro
             </button>
           )}

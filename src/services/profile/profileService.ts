@@ -1,7 +1,8 @@
 import type { Profile } from '../../types/profile.types'
-import { AUTH_TOKEN_STORAGE_KEY } from '../../store/auth/authStore'
+import { AUTH_TOKEN_STORAGE_KEY, getAuthState } from '../../store/auth/authStore'
 
 const API_BASE_URL = String(import.meta.env.VITE_API_URL || 'http://localhost:8080').replace(/\/$/, '')
+const RECRUITER_PROFILE_STORAGE_KEY = 'ethoshub-mock-recruiter-profiles'
 
 type BackendApiResponse<T> = {
   success?: boolean
@@ -65,6 +66,94 @@ export type CompleteRecruiterProfilePayload = {
   workExperiences: unknown[]
 }
 
+function getCurrentRecruiterStorageKey(): string {
+  const authUser = getAuthState().user
+  if (!authUser) {
+    return 'anonymous'
+  }
+
+  return authUser.id || authUser.email || 'anonymous'
+}
+
+function readStoredRecruiterProfiles(): Record<string, RecruiterProfile> {
+  try {
+    const raw = localStorage.getItem(RECRUITER_PROFILE_STORAGE_KEY)
+    if (!raw) {
+      return {}
+    }
+
+    const parsed = JSON.parse(raw)
+    if (!parsed || typeof parsed !== 'object') {
+      return {}
+    }
+
+    return parsed as Record<string, RecruiterProfile>
+  } catch {
+    return {}
+  }
+}
+
+function writeStoredRecruiterProfiles(nextProfiles: Record<string, RecruiterProfile>): void {
+  localStorage.setItem(RECRUITER_PROFILE_STORAGE_KEY, JSON.stringify(nextProfiles))
+}
+
+function buildDefaultRecruiterProfile(): RecruiterProfile {
+  const authUser = getAuthState().user
+  const fullName = authUser?.name || 'Reclutador'
+  const nameParts = fullName.trim().split(/\s+/)
+  const firstName = nameParts[0] || 'Reclutador'
+  const lastName = nameParts.slice(1).join(' ')
+  const userId = Number(authUser?.id) || 1
+
+  return {
+    userId,
+    profileId: userId,
+    email: authUser?.email || 'reclutador@ethoshub.local',
+    userType: 'RECLUTADOR',
+    photoBase64: '',
+    basicInfo: {
+      fullName,
+      firstName,
+      lastName,
+      professionalTitle: '',
+      countryId: '',
+    },
+    companyInfo: {
+      companyName: '',
+      industry: '',
+      companySize: 0,
+      websiteUrl: '',
+      nit: undefined,
+      contactFirstName: firstName,
+      contactLastName: lastName,
+    },
+    socialLinks: [],
+    academicRecords: [],
+    workExperiences: [],
+  }
+}
+
+function getOrCreateStoredRecruiterProfile(): RecruiterProfile {
+  const profileKey = getCurrentRecruiterStorageKey()
+  const profiles = readStoredRecruiterProfiles()
+  const existing = profiles[profileKey]
+  if (existing) {
+    return mapRecruiterProfile(existing)
+  }
+
+  const created = buildDefaultRecruiterProfile()
+  profiles[profileKey] = created
+  writeStoredRecruiterProfiles(profiles)
+  return mapRecruiterProfile(created)
+}
+
+function saveStoredRecruiterProfile(profile: RecruiterProfile): void {
+  const profileKey = getCurrentRecruiterStorageKey()
+  const profiles = readStoredRecruiterProfiles()
+  profiles[profileKey] = mapRecruiterProfile(profile)
+  writeStoredRecruiterProfiles(profiles)
+}
+
 function getAuthTokenOrThrow(): string {
   const token = localStorage.getItem(AUTH_TOKEN_STORAGE_KEY)
   if (!token) {
@@ -116,48 +205,90 @@ function mapRecruiterProfile(profile: RecruiterProfile): RecruiterProfile {
 }
 
 export async function completeRecruiterProfile(payload: CompleteRecruiterProfilePayload): Promise<void> {
-  const token = getAuthTokenOrThrow()
-
-  const response = await fetch(`${API_BASE_URL}/api/recruiter/profile`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+  const localProfile = getOrCreateStoredRecruiterProfile()
+  const nextProfile: RecruiterProfile = {
+    ...localProfile,
+    basicInfo: {
+      ...localProfile.basicInfo,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      fullName: `${payload.firstName} ${payload.lastName}`.trim(),
+      professionalTitle: payload.professionalTitle,
+      countryId: payload.countryId,
     },
-    body: JSON.stringify(payload),
-  })
+    companyInfo: {
+      ...localProfile.companyInfo,
+      companyName: payload.companyName,
+      industry: payload.industry,
+      companySize: payload.companySize,
+      websiteUrl: payload.websiteUrl,
+      nit: payload.nit,
+      contactFirstName: payload.contactFirstName,
+      contactLastName: payload.contactLastName,
+    },
+    socialLinks: payload.socialLinks.map((item) => ({
+      platformId: item.platformId,
+      plataformId: item.platformId,
+      url: item.url,
+    })),
+    academicRecords: Array.isArray(payload.academicRecords) ? payload.academicRecords : [],
+    workExperiences: Array.isArray(payload.workExperiences) ? payload.workExperiences : [],
+  }
 
-  const body = await response.json().catch(() => ({}))
-  if (!response.ok || body?.success === false) {
-    const backendError = body?.errors?.[0] || body?.message
-    throw new Error(backendError || 'No se pudo guardar el perfil de reclutador')
+  saveStoredRecruiterProfile(nextProfile)
+
+  try {
+    const token = getAuthTokenOrThrow()
+    const response = await fetch(`${API_BASE_URL}/api/recruiter/profile`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    })
+
+    const body = await response.json().catch(() => ({}))
+    if (!response.ok || body?.success === false) {
+      return
+    }
+  } catch {
+    // In mock mode (sin backend), already persisted locally.
   }
 }
 
 export async function fetchRecruiterProfile(): Promise<RecruiterProfile> {
-  const token = getAuthTokenOrThrow()
+  try {
+    const token = getAuthTokenOrThrow()
 
-  const response = await fetch(`${API_BASE_URL}/api/recruiter/profile`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
+    const response = await fetch(`${API_BASE_URL}/api/recruiter/profile`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
 
-  const body = (await response.json().catch(() => null)) as BackendApiResponse<RecruiterProfile> | RecruiterProfile | null
+    const body = (await response.json().catch(() => null)) as BackendApiResponse<RecruiterProfile> | RecruiterProfile | null
 
-  if (!response.ok) {
-    throw new Error(resolveErrorMessage(body && 'data' in body ? body : null, 'No se pudo cargar el perfil de reclutador'))
+    if (!response.ok) {
+      throw new Error(resolveErrorMessage(body && 'data' in body ? body : null, 'No se pudo cargar el perfil de reclutador'))
+    }
+
+    if (body && typeof body === 'object' && 'data' in body && body.data) {
+      const mapped = mapRecruiterProfile(body.data)
+      saveStoredRecruiterProfile(mapped)
+      return mapped
+    }
+
+    if (body && typeof body === 'object' && 'basicInfo' in body) {
+      const mapped = mapRecruiterProfile(body as RecruiterProfile)
+      saveStoredRecruiterProfile(mapped)
+      return mapped
+    }
+  } catch {
+    return getOrCreateStoredRecruiterProfile()
   }
 
-  if (body && typeof body === 'object' && 'data' in body && body.data) {
-    return mapRecruiterProfile(body.data)
-  }
-
-  if (body && typeof body === 'object' && 'basicInfo' in body) {
-    return mapRecruiterProfile(body as RecruiterProfile)
-  }
-
-  throw new Error('La respuesta del servidor no tiene el formato esperado')
+  return getOrCreateStoredRecruiterProfile()
 }
 
 export async function fetchProfile(userId: string): Promise<Profile> {

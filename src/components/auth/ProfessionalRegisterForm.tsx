@@ -1,5 +1,5 @@
-import { useEffect, useState, type FormEvent } from 'react'
-import { Briefcase, CheckCircle2, Eye, EyeOff, LoaderCircle } from 'lucide-react'
+import { useEffect, useState, type FormEvent, type ChangeEvent } from 'react'
+import { Briefcase, CheckCircle2, Eye, EyeOff, Loader } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
@@ -90,7 +90,7 @@ export default function ProfessionalRegisterForm() {
     setFieldErrors({})
 
     setIsSubmitting(true)
-    const result = await register({ name, email, password })
+    const result = await register({ name, email, password, role: 'professional' })
 
     if (result.success) {
       setShowSuccessModal(true)
@@ -129,7 +129,7 @@ export default function ProfessionalRegisterForm() {
                 id='fullName'
                 placeholder='Tu nombre'
                 value={name}
-                onChange={(event) => {
+                onChange={(event: ChangeEvent<HTMLInputElement>) => {
                   const nextName = event.target.value
                   setName(nextName)
                   updateFieldError('name', { name: nextName, email, password, confirmPassword })
@@ -152,7 +152,7 @@ export default function ProfessionalRegisterForm() {
                 type='email'
                 placeholder='tu@email.com'
                 value={email}
-                onChange={(event) => {
+                onChange={(event: ChangeEvent<HTMLInputElement>) => {
                   const nextEmail = event.target.value
                   setEmail(nextEmail)
                   updateFieldError('email', { name, email: nextEmail, password, confirmPassword })
@@ -176,7 +176,7 @@ export default function ProfessionalRegisterForm() {
                   type={showPassword ? 'text' : 'password'}
                   placeholder='Minimo 6 caracteres'
                   value={password}
-                  onChange={(event) => {
+                  onChange={(event: ChangeEvent<HTMLInputElement>) => {
                     const nextPassword = event.target.value
                     setPassword(nextPassword)
                     updateFieldError('password', { name, email, password: nextPassword, confirmPassword })
@@ -216,7 +216,7 @@ export default function ProfessionalRegisterForm() {
                 type='password'
                 placeholder='Repite la contraseña'
                 value={confirmPassword}
-                onChange={(event) => {
+                  onChange={(event: ChangeEvent<HTMLInputElement>) => {
                   const nextConfirmPassword = event.target.value
                   setConfirmPassword(nextConfirmPassword)
                   updateFieldError('confirmPassword', {
@@ -238,7 +238,7 @@ export default function ProfessionalRegisterForm() {
             <Button type='submit' className='w-full' size='lg' disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
-                  <LoaderCircle className='h-4 w-4 animate-spin' />
+                  <Loader className='h-4 w-4 animate-spin' />
                   Creando cuenta...
                 </>
               ) : (

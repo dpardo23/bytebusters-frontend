@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useState, type FormEvent, type ChangeEvent } from 'react'
 import { Code2, Eye, EyeOff, LogIn } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import useAuth from '../../hooks/auth/useAuth'
@@ -251,7 +251,7 @@ export default function LoginForm() {
                   autoComplete='email'
                   placeholder='tu@email.com'
                   value={email}
-                  onChange={(event) => {
+                  onChange={(event: ChangeEvent<HTMLInputElement>) => {
                     setEmail(event.target.value)
                     setFieldErrors((currentErrors) => ({
                       ...currentErrors,
@@ -285,7 +285,7 @@ export default function LoginForm() {
                     autoComplete='current-password'
                     placeholder='Ingresa tu contraseña'
                     value={password}
-                    onChange={(event) => {
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
                       setPassword(event.target.value)
                       setFieldErrors((currentErrors) => ({
                         ...currentErrors,
@@ -371,7 +371,7 @@ export default function LoginForm() {
                   autoComplete='email'
                   placeholder='tu@email.com'
                   value={recoveryEmail}
-                  onChange={(event) => {
+                  onChange={(event: ChangeEvent<HTMLInputElement>) => {
                     setRecoveryEmail(event.target.value)
                     setRecoveryRequestError('')
                   }}
@@ -415,7 +415,7 @@ export default function LoginForm() {
                   id='recoveryCode'
                   placeholder='Ingresa el codigo'
                   value={recoveryCode}
-                  onChange={(event) => {
+                  onChange={(event: ChangeEvent<HTMLInputElement>) => {
                     setRecoveryCode(event.target.value)
                     setRecoveryCodeError('')
                   }}
@@ -437,7 +437,7 @@ export default function LoginForm() {
                     autoComplete='new-password'
                     placeholder='Nueva contraseña'
                     value={newPassword}
-                    onChange={(event) => {
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
                       setNewPassword(event.target.value)
                       setRecoveryPasswordError('')
                     }}
