@@ -34,8 +34,8 @@ import {
   LoadingSpinner,
   Dropdown,
   EmptyState,
-} from '@/shared/ui';
-import { formatDate } from '@/shared/lib/utils';
+} from '@/components/shared';
+import { formatDate } from '@/lib/utils';
 
 interface User {
   id: string;
@@ -271,7 +271,7 @@ export default function AdminUsersPage() {
 
   const getRoleBadge = (role: User['role']) => {
     const variants = {
-      admin: 'bg-purple-500/10 text-purple-500',
+      admin: 'bg-sky-500/10 text-sky-500',
       moderator: 'bg-blue-500/10 text-blue-500',
       user: 'bg-gray-500/10 text-gray-500',
     };
@@ -601,3 +601,4 @@ export default function AdminUsersPage() {
     </div>
   );
 }
+

@@ -15,8 +15,8 @@ import {
   Users,
   Wand2,
 } from 'lucide-react';
-import { Badge, Button, Card, Progress } from '@/shared/ui';
-import { cn } from '@/shared/lib/utils';
+import { Badge, Button, Card, Progress } from '@/components/shared';
+import { cn } from '@/lib/utils';
 
 type RiskLevel = 'Alto' | 'Medio' | 'Bajo';
 type PortfolioStatus = 'Publicado' | 'En revision' | 'Observado';
@@ -150,7 +150,7 @@ const activityFeed = [
     title: 'Nueva regla activa',
     text: 'Ahora se solicita al menos un proyecto anclado para perfiles con visibilidad publica.',
     icon: Wand2,
-    tone: 'bg-violet-500/10 text-violet-500',
+    tone: 'bg-sky-500/10 text-sky-500',
   },
 ];
 
@@ -408,3 +408,4 @@ export default function AdminPortfoliosPage() {
     </div>
   );
 }
+

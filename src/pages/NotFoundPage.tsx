@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FileQuestion } from 'lucide-react';
-import { Button } from '@/shared/ui';
+import { Button } from '@/components/shared';
 
 export default function NotFoundPage() {
   return (
@@ -22,3 +22,4 @@ export default function NotFoundPage() {
     </div>
   );
 }
+

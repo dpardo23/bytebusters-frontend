@@ -3,54 +3,22 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Eye, EyeOff, LockKeyhole, Mail } from 'lucide-react';
 import { useAuthStore } from '@/store';
-import { Button, Input } from '@/shared/ui';
+import { Button, Input } from '@/components/shared';
 import {
   AuthFooterLink,
   AuthHero,
+  AuthRoleSelector,
   SocialAuthGroup,
 } from '@/components/auth/AuthShared';
+import type { UserRole } from '@/types';
 
 type RegisterPrefills = {
   email?: string;
   password?: string;
-  role?: 'professional' | 'recruiter' | 'admin' | 'guest';
+  role?: UserRole;
   fromRegister?: boolean;
   fullName?: string;
 };
-
-type MockLoginAccount = {
-  label: string;
-  role: 'professional' | 'recruiter' | 'admin' | 'guest';
-  email: string;
-  password: string;
-};
-
-const MOCK_LOGIN_ACCOUNTS: MockLoginAccount[] = [
-  {
-    label: 'Profesional - Carlos Mendoza',
-    role: 'professional',
-    email: 'carlos.dev@email.com',
-    password: 'mock123',
-  },
-  {
-    label: 'Reclutador - Ana Garcia',
-    role: 'recruiter',
-    email: 'ana.recruiter@company.com',
-    password: 'mock123',
-  },
-  {
-    label: 'Admin - EthosHub',
-    role: 'admin',
-    email: 'admin@ethoshub.com',
-    password: 'mock123',
-  },
-  {
-    label: 'Invitado - Explore',
-    role: 'guest',
-    email: 'guest@ethoshub.com',
-    password: 'mock123',
-  },
-];
 
 export default function LoginPage() {
   const location = useLocation();
@@ -58,12 +26,10 @@ export default function LoginPage() {
   const { login, loading } = useAuthStore();
   const prefills = (location.state as { prefills?: RegisterPrefills } | null)?.prefills;
 
-  const [email, setEmail] = useState(MOCK_LOGIN_ACCOUNTS[0].email);
-  const [password, setPassword] = useState(MOCK_LOGIN_ACCOUNTS[0].password);
-  const [selectedRole, setSelectedRole] = useState<'professional' | 'recruiter' | 'admin' | 'guest'>(
-    MOCK_LOGIN_ACCOUNTS[0].role,
-  );
+  const [email, setEmail] = useState('demo@ethoshub.com');
+  const [password, setPassword] = useState('demo123');
   const [showPassword, setShowPassword] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<UserRole>('professional');
 
   useEffect(() => {
     if (!prefills) {
@@ -81,23 +47,16 @@ export default function LoginPage() {
     }
   }, [prefills]);
 
-  const applyMockAccount = (account: MockLoginAccount) => {
-    setEmail(account.email);
-    setPassword(account.password);
-    setSelectedRole(account.role);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const role = prefills?.role ?? selectedRole;
-    await login(email, password, role);
+    await login(email, password, selectedRole);
 
-    if (role === 'admin') {
+    if (selectedRole === 'admin') {
       navigate('/admin/dashboard');
       return;
     }
 
-    if (role === 'guest') {
+    if (selectedRole === 'guest') {
       navigate('/explorar');
       return;
     }
@@ -129,7 +88,7 @@ export default function LoginPage() {
         transition={{ duration: 0.45, ease: 'easeOut' }}
         className="overflow-hidden rounded-[2rem] border border-white/70 bg-white/90 shadow-[0_30px_80px_-45px_rgba(15,23,42,0.45)] backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-950/82"
       >
-        <div className="border-b border-slate-200/80 bg-[radial-gradient(circle_at_top,#eef2ff_0%,rgba(255,255,255,0)_58%)] px-5 py-6 dark:border-slate-800 dark:bg-[radial-gradient(circle_at_top,rgba(99,91,255,0.18)_0%,rgba(2,6,23,0)_60%)] sm:px-8">
+        <div className="border-b border-slate-200/80 bg-[radial-gradient(circle_at_top,#eff6ff_0%,rgba(255,255,255,0)_58%)] px-5 py-6 dark:border-slate-800 dark:bg-[radial-gradient(circle_at_top,rgba(37,99,235,0.2)_0%,rgba(2,6,23,0)_60%)] sm:px-8">
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-sm font-semibold text-primary">Acceso demo</p>
@@ -137,7 +96,7 @@ export default function LoginPage() {
                 Iniciar sesión
               </h2>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400">
-                Usa una cuenta mock predefinida para entrar en segundos o escribe tus propios datos.
+                Usa cualquier combinación visualmente o deja las credenciales demo para entrar de inmediato.
               </p>
             </div>
             <div className="hidden rounded-2xl border border-primary/20 bg-primary/10 p-3 text-primary dark:border-primary/30 dark:bg-primary/15 sm:block">
@@ -147,7 +106,14 @@ export default function LoginPage() {
         </div>
 
         <div className="space-y-6 px-5 py-6 sm:px-8 sm:py-8">
+          <SocialAuthGroup
+            googleLabel="Continuar con Google"
+            githubLabel="Continuar con GitHub"
+          />
+
           <form onSubmit={handleSubmit} className="space-y-6">
+            <AuthRoleSelector selectedRole={selectedRole} onChange={setSelectedRole} />
+
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <div className="mb-2 flex items-center justify-between gap-3">
@@ -212,36 +178,15 @@ export default function LoginPage() {
             <Button
               type="submit"
               loading={loading}
-              className="h-12 w-full rounded-2xl bg-[linear-gradient(135deg,#635bff_0%,#4f46e5_100%)] text-base font-semibold text-white shadow-[0_20px_45px_-24px_rgba(79,70,229,0.9)] transition-transform hover:scale-[1.01] hover:opacity-95 active:scale-[0.99]"
+              className="h-12 w-full rounded-2xl bg-[linear-gradient(135deg,#38bdf8_0%,#2563eb_100%)] text-base font-semibold text-white shadow-[0_20px_45px_-24px_rgba(37,99,235,0.8)] transition-transform hover:scale-[1.01] hover:opacity-95 active:scale-[0.99]"
             >
               Iniciar sesión
             </Button>
 
-            <div className="my-2 flex items-center gap-3 text-xs uppercase tracking-[0.24em] text-slate-400 dark:text-slate-500">
-              <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
-              <span>O continua con</span>
-              <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
-            </div>
-
-            <SocialAuthGroup
-              googleLabel="Continuar con Google"
-              githubLabel="Continuar con GitHub"
-            />
-
-            <div className="grid gap-2 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-300">
-              <p className="font-semibold text-slate-900 dark:text-slate-100">Cuentas mock predefinidas</p>
-              {MOCK_LOGIN_ACCOUNTS.map((account) => (
-                <button
-                  key={`${account.role}-${account.email}`}
-                  type="button"
-                  onClick={() => applyMockAccount(account)}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2 text-left text-xs transition-colors hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-950/50 dark:hover:bg-slate-900"
-                >
-                  <span className="font-medium text-slate-700 dark:text-slate-200">{account.label}</span>
-                  <span className="text-slate-500 dark:text-slate-400">{account.email}</span>
-                </button>
-              ))}
-              <p className="pt-1 text-xs text-slate-500 dark:text-slate-400">Contraseña sugerida para mock: mock123</p>
+            <div className="grid gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-300">
+              <p className="font-semibold text-slate-900 dark:text-slate-100">Credenciales demo sugeridas</p>
+              <p>Email: `demo@ethoshub.com`</p>
+              <p>Contraseña: `demo123`</p>
             </div>
           </form>
 
@@ -255,3 +200,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

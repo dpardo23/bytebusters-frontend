@@ -1,39 +1,219 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import LandingPage from './pages/LandingPage'
-import LoginPage from './pages/auth/LoginPage'
-import OAuthCallbackPage from './pages/auth/OAuthCallbackPage'
-import RegisterPage from './pages/auth/RegisterPage'
-import DashboardPage from './pages/dashboard/DashboardPage'
-import ProfilePage from './pages/profile/ProfilePage'
-import PublicProfilePage from './pages/profile/PublicProfilePage'
-import UserAccountPage from './pages/user/UserAccountPage'
+import { createBrowserRouter } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
+import { DashboardLayout, AdminLayout, AuthLayout, PublicPortfolioLayout } from '@/components/layout';
+import { ProtectedRoute } from '@/components/layout/ProtectedRoute';
+import { Skeleton } from '@/components/shared';
 
-export const routes = [
-  { path: '/', name: 'landing' },
-  { path: '/auth/login', name: 'login' },
-  { path: '/auth/register', name: 'register' },
-  { path: '/dashboard', name: 'dashboard' },
-  { path: '/profile', name: 'profile' },
-  { path: '/profile/:id', name: 'public-profile' },
-  { path: '/user/:id', name: 'user-account' },
-]
+// Lazy loaded pages
+const LoginPage = lazy(() => import('@/pages/auth/LoginPage'));
+const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage'));
+const HomePage = lazy(() => import('@/pages/public/HomePage'));
+const DashboardHomePage = lazy(() => import('@/pages/dashboard/DashboardHomePage'));
+const SkillsPage = lazy(() => import('@/pages/dashboard/SkillsPage'));
+const ProjectsPage = lazy(() => import('@/pages/dashboard/ProjectsPage'));
+const ProjectDetailPage = lazy(() => import('@/pages/dashboard/ProjectDetailPage'));
+const ConnectionsPage = lazy(() => import('@/pages/dashboard/ConnectionsPage'));
+const VisibilityPage = lazy(() => import('@/pages/dashboard/VisibilityPage'));
+const ExperiencePage = lazy(() => import('@/pages/dashboard/ExperiencePage'));
+const PreferencesPage = lazy(() => import('@/pages/dashboard/PreferencesPage'));
+const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
+const AdminSkillsPage = lazy(() => import('@/pages/admin/AdminSkillsPage'));
+const AdminPortfoliosPage = lazy(() => import('@/pages/admin/AdminPortfoliosPage'));
+const ExplorePage = lazy(() => import('@/pages/public/ExplorePage'));
+const PublicPortfolioPage = lazy(() => import('@/pages/public/PublicPortfolioPage'));
+const PasswordPortfolioPage = lazy(() => import('@/pages/public/PasswordPortfolioPage'));
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
+const AccessDeniedPage = lazy(() => import('@/pages/AccessDeniedPage'));
 
-export default function AppRouter() {
+function PageLoader() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<LandingPage />} />
-        <Route path='/auth/login' element={<LoginPage />} />
-        <Route path='/auth/register' element={<RegisterPage />} />
-        <Route path='/oauth2/callback' element={<OAuthCallbackPage />} />
-        <Route path='/auth/register/professional' element={<Navigate to='/auth/register' replace />} />
-        <Route path='/auth/register/recruiter' element={<Navigate to='/auth/register' replace />} />
-        <Route path='/dashboard' element={<DashboardPage />} />
-        <Route path='/profile' element={<ProfilePage />} />
-        <Route path='/profile/:id' element={<PublicProfilePage />} />
-        <Route path='/user/:id' element={<UserAccountPage />} />
-        <Route path='*' element={<Navigate to='/' replace />} />
-      </Routes>
-    </BrowserRouter>
-  )
+    <div className="flex flex-col gap-4 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-64 w-full" />
+    </div>
+  );
 }
+
+export const router = createBrowserRouter([
+  {
+    element: <AuthLayout />,
+    children: [
+      {
+        path: 'login',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <LoginPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'register',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <RegisterPage />
+          </Suspense>
+        ),
+      },
+    ],
+  },
+  {
+    element: (
+      <ProtectedRoute allowedRoles={['professional', 'recruiter', 'admin']}>
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        path: 'dashboard',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <DashboardHomePage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'dashboard/skills',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <SkillsPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'dashboard/projects',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ProjectsPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'dashboard/projects/:projectId',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ProjectDetailPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'dashboard/connections',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ConnectionsPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'dashboard/visibility',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <VisibilityPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'dashboard/experience',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ExperiencePage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'dashboard/preferences',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <PreferencesPage />
+          </Suspense>
+        ),
+      },
+    ],
+  },
+  {
+    element: (
+      <ProtectedRoute allowedRoles={['admin']}>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        path: 'admin/dashboard',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <AdminDashboardPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'admin/skills',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <AdminSkillsPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'admin/portfolios',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <AdminPortfoliosPage />
+          </Suspense>
+        ),
+      },
+    ],
+  },
+  {
+    element: <PublicPortfolioLayout />,
+    children: [
+      {
+        path: '/',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <HomePage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'explorar',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ExplorePage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'p/:slug',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <PublicPortfolioPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'p/:slug/password',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <PasswordPortfolioPage />
+          </Suspense>
+        ),
+      },
+    ],
+  },
+  {
+    path: 'access-denied',
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <AccessDeniedPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: '*',
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <NotFoundPage />
+      </Suspense>
+    ),
+  },
+]);
+

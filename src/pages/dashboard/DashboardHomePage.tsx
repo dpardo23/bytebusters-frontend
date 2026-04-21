@@ -13,13 +13,13 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { useAuthStore, useSkillsStore, useProjectsStore, useNotificationsStore } from '@/store';
-import { Card, CardHeader, CardTitle, CardContent, Badge, Skeleton } from '@/shared/ui';
+import { Card, CardHeader, CardTitle, CardContent, Badge, Skeleton } from '@/components/shared';
 import RecruiterTalentSearchPage from './RecruiterTalentSearchPage';
 
 const quickActions = [
   { to: '/dashboard/skills', icon: Code2, label: 'Habilidades', color: 'bg-blue-500' },
   { to: '/dashboard/projects', icon: FolderKanban, label: 'Proyectos', color: 'bg-green-500' },
-  { to: '/dashboard/connections', icon: Link2, label: 'Conexiones', color: 'bg-purple-500' },
+  { to: '/dashboard/connections', icon: Link2, label: 'Conexiones', color: 'bg-sky-500' },
   { to: '/dashboard/visibility', icon: Eye, label: 'Visibilidad', color: 'bg-orange-500' },
 ];
 
@@ -274,7 +274,7 @@ export default function DashboardHomePage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-purple-500" />
+                <Users className="h-5 w-5 text-sky-500" />
                 Actividad Reciente
               </CardTitle>
             </CardHeader>
@@ -314,3 +314,4 @@ export default function DashboardHomePage() {
     </div>
   );
 }
+

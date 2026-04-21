@@ -1,102 +1,81 @@
-import type { AuthState, AuthUser } from '../../types/auth.types'
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import type { User, UserRole } from '@/types';
+import { authService } from '@/services';
 
-const authState: AuthState = {
-  user: null,
-  token: null,
+interface AuthStore {
+  user: User | null;
+  isAuthenticated: boolean;
+  loading: boolean;
+  error: string | null;
+  login: (email: string, password: string, role: UserRole) => Promise<void>;
+  updateProfile: (data: Partial<User>) => Promise<void>;
+  logout: () => Promise<void>;
+  checkAuth: () => Promise<void>;
+  switchRole: (role: UserRole) => void;
 }
 
-type AuthStateListener = (nextState: AuthState) => void
-const authStateListeners = new Set<AuthStateListener>()
+export const useAuthStore = create<AuthStore>()(
+  persist(
+    (set, get) => ({
+      user: null,
+      isAuthenticated: false,
+      loading: false,
+      error: null,
 
-const STORAGE_KEY = 'ethoshub-user'
-export const AUTH_TOKEN_STORAGE_KEY = 'ethoshub-token'
-const REGISTERED_KEY = 'ethoshub-has-registered'
+      login: async (email: string, password: string, role: UserRole) => {
+        set({ loading: true, error: null });
+        try {
+          const user = await authService.login(email, password, role);
+          set({ user, isAuthenticated: true, loading: false });
+        } catch {
+          set({ error: 'Error al iniciar sesión', loading: false });
+        }
+      },
 
-export function getAuthState(): AuthState {
-  return authState
-}
+      updateProfile: async (data: Partial<User>) => {
+        const { user } = get();
+        if (!user) {
+          set({ error: 'No hay usuario autenticado' });
+          return;
+        }
 
-function emitAuthState(): void {
-  authStateListeners.forEach((listener) => listener(authState))
-}
+        set({ loading: true, error: null });
+        try {
+          const updatedUser = await authService.updateProfile(user.id, data);
+          set({ user: updatedUser, loading: false });
+        } catch {
+          set({ error: 'Error al actualizar perfil', loading: false });
+        }
+      },
 
-export function subscribeAuthState(listener: AuthStateListener): () => void {
-  authStateListeners.add(listener)
-  return () => {
-    authStateListeners.delete(listener)
-  }
-}
+      logout: async () => {
+        set({ loading: true });
+        try {
+          await authService.logout();
+          set({ user: null, isAuthenticated: false, loading: false });
+        } catch {
+          set({ loading: false });
+        }
+      },
 
-export function setAuthState(nextState: Partial<AuthState>): void {
-  Object.assign(authState, nextState)
-  emitAuthState()
-}
+      checkAuth: async () => {
+        const { user } = get();
+        if (user) {
+          set({ isAuthenticated: true });
+        }
+      },
 
-export function initializeAuthState(): void {
-  try {
-    const hasRegistered = localStorage.getItem(REGISTERED_KEY) === '1'
-    if (!hasRegistered) {
-      localStorage.removeItem(STORAGE_KEY)
-      authState.user = null
-      authState.token = null
-      emitAuthState()
-      return
+      switchRole: (role: UserRole) => {
+        const { user } = get();
+        if (user) {
+          set({ user: { ...user, role } });
+        }
+      },
+    }),
+    {
+      name: 'ethoshub_auth',
     }
+  )
+);
 
-    const storedUser = localStorage.getItem(STORAGE_KEY)
-    const storedToken = localStorage.getItem(AUTH_TOKEN_STORAGE_KEY)
-
-    if (storedUser) {
-      authState.user = JSON.parse(storedUser) as AuthUser
-    }
-
-    authState.token = storedToken || null
-    emitAuthState()
-  } catch {
-    localStorage.removeItem(STORAGE_KEY)
-    localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY)
-    authState.user = null
-    authState.token = null
-    emitAuthState()
-  }
-}
-
-export function setAuthenticatedUser(user: AuthUser, token?: string | null): void {
-  authState.user = user
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(user))
-
-  if (token) {
-    authState.token = token
-    localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, token)
-  }
-
-  emitAuthState()
-}
-
-export function updateAuthenticatedUser(nextUserData: Partial<AuthUser>): AuthUser | null {
-  if (!authState.user) {
-    return null
-  }
-
-  authState.user = {
-    ...authState.user,
-    ...nextUserData,
-  }
-
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(authState.user))
-  emitAuthState()
-  return authState.user
-}
-
-export function markRegisteredUser(): void {
-  localStorage.setItem(REGISTERED_KEY, '1')
-}
-
-export function clearAuthenticatedUser(): void {
-  authState.user = null
-  authState.token = null
-  localStorage.removeItem(STORAGE_KEY)
-  localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY)
-  localStorage.removeItem(REGISTERED_KEY)
-  emitAuthState()
-}

@@ -17,8 +17,8 @@ import {
   Star,
   Users,
 } from 'lucide-react';
-import { Badge, Button, Card, EmptyState, Progress } from '@/shared/ui';
-import { useAuthStore } from '@/store/authStore';
+import { Badge, Button, Card, EmptyState, Progress } from '@/components/shared';
+import { useAuthStore } from '@/store/auth/authStore';
 import {
   mockConnections,
   mockHardSkills,
@@ -27,12 +27,12 @@ import {
   mockProjects,
   mockRecommendations,
   mockUsers,
-} from '@/shared/mocks/data';
+} from '@/lib/constants/data';
 import {
   recruiterTalentHardSkills,
   recruiterTalentProjects,
   recruiterTalentUsers,
-} from '@/shared/mocks/recruiterTalent';
+} from '@/lib/constants/recruiterTalent';
 
 type PublicProfile = {
   id: string;
@@ -694,3 +694,5 @@ function ProtectedPreview({
     </div>
   );
 }
+
+

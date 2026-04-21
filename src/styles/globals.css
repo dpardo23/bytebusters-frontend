@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 223 13% 13%;
+  --card: 250 14% 97%;
+  --card-foreground: 223 13% 13%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 223 13% 13%;
+  --primary: 217 91% 60%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 160 84% 39%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 203 89% 53%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 217 91% 60%;
+  --chart-1: 217 91% 60%;
+  --chart-2: 160 84% 39%;
+  --chart-3: 200 98% 39%;
+  --chart-4: 45 96% 56%;
+  --chart-5: 221 83% 53%;
+  --radius: 0.625rem;
+  --sidebar: 250 14% 97%;
+  --sidebar-foreground: 223 13% 13%;
+  --sidebar-primary: 217 91% 60%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 160 84% 39%;
+  --sidebar-accent-foreground: 0 0% 100%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 217 91% 60%;
+}
+
+.dark {
+  --background: 223 63% 10%;
+  --foreground: 210 40% 96%;
+  --card: 215 51% 18%;
+  --card-foreground: 210 40% 96%;
+  --popover: 215 51% 18%;
+  --popover-foreground: 210 40% 96%;
+  --primary: 217 91% 60%;
+  --primary-foreground: 223 63% 10%;
+  --secondary: 160 84% 39%;
+  --secondary-foreground: 210 40% 96%;
+  --muted: 217 33% 33%;
+  --muted-foreground: 210 16% 66%;
+  --accent: 203 89% 53%;
+  --accent-foreground: 210 40% 96%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 210 40% 96%;
+  --border: 217 33% 33%;
+  --input: 217 33% 33%;
+  --ring: 217 91% 60%;
+  --chart-1: 217 91% 60%;
+  --chart-2: 160 84% 39%;
+  --chart-3: 200 98% 39%;
+  --chart-4: 45 96% 56%;
+  --chart-5: 221 83% 53%;
+  --sidebar: 215 51% 18%;
+  --sidebar-foreground: 210 40% 96%;
+  --sidebar-primary: 217 91% 60%;
+  --sidebar-primary-foreground: 223 63% 10%;
+  --sidebar-accent: 160 84% 39%;
+  --sidebar-accent-foreground: 223 63% 10%;
+  --sidebar-border: 217 33% 33%;
+  --sidebar-ring: 217 91% 60%;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+  }
+}

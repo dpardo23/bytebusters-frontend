@@ -11,12 +11,12 @@ import {
   Search,
   Unplug,
 } from 'lucide-react';
-import { Button, Card, Badge, EmptyState, Input, LoadingSpinner } from '@/shared/ui';
-import { useAuthStore } from '@/store/authStore';
+import { Button, Card, Badge, EmptyState, Input, LoadingSpinner } from '@/components/shared';
+import { useAuthStore } from '@/store/auth/authStore';
 import { useConnectionsStore } from '@/store/connectionsStore';
 import { useUiStore } from '@/store/uiStore';
-import { cn, formatDate } from '@/shared/lib/utils';
-import type { OAuthConnection } from '@/shared/types';
+import { cn, formatDate } from '@/lib/utils';
+import type { OAuthConnection } from '@/types';
 
 export default function ConnectionsPage() {
   const { t } = useTranslation();
@@ -295,3 +295,5 @@ function getHealthBadgeClass(health: OAuthConnection['apiHealth']) {
 function getProviderUrl(provider: OAuthConnection['provider']) {
   return provider === 'github' ? 'https://github.com/settings/applications' : 'https://www.linkedin.com';
 }
+
+

@@ -12,11 +12,11 @@ import {
   Tag,
   UserCircle2,
 } from 'lucide-react';
-import { Badge, Button, Card, EmptyState, Input, LoadingSpinner, Select } from '@/shared/ui';
-import { useAuthStore } from '@/store/authStore';
+import { Badge, Button, Card, EmptyState, Input, LoadingSpinner, Select } from '@/components/shared';
+import { useAuthStore } from '@/store/auth/authStore';
 import { useUiStore } from '@/store/uiStore';
 import { useVisibilityStore } from '@/store/visibilityStore';
-import type { PortfolioSection, SectionVisibility } from '@/shared/types';
+import type { PortfolioSection, SectionVisibility } from '@/types';
 
 const sectionLabels: Record<PortfolioSection, string> = {
   bio: 'Biografia',
@@ -337,3 +337,5 @@ export default function VisibilityPage() {
     </div>
   );
 }
+
+

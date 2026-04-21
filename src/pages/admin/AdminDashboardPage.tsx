@@ -40,8 +40,8 @@ import {
   Avatar,
   LoadingSpinner,
   Dropdown,
-} from '@/shared/ui';
-import { cn } from '@/shared/lib/utils';
+} from '@/components/shared';
+import { cn } from '@/lib/utils';
 
 // Mock data
 const platformStats = [
@@ -387,14 +387,14 @@ export default function AdminDashboardPage() {
                     'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0',
                     activity.type === 'user_signup' && 'bg-green-500/10',
                     activity.type === 'portfolio_create' && 'bg-blue-500/10',
-                    activity.type === 'project_add' && 'bg-purple-500/10',
+                    activity.type === 'project_add' && 'bg-sky-500/10',
                     activity.type === 'report' && 'bg-red-500/10',
                     activity.type === 'user_upgrade' && 'bg-yellow-500/10'
                   )}
                 >
                   {activity.type === 'user_signup' && <UserPlus className="w-4 h-4 text-green-500" />}
                   {activity.type === 'portfolio_create' && <Folder className="w-4 h-4 text-blue-500" />}
-                  {activity.type === 'project_add' && <Zap className="w-4 h-4 text-purple-500" />}
+                  {activity.type === 'project_add' && <Zap className="w-4 h-4 text-sky-500" />}
                   {activity.type === 'report' && <AlertCircle className="w-4 h-4 text-red-500" />}
                   {activity.type === 'user_upgrade' && <TrendingUp className="w-4 h-4 text-yellow-500" />}
                 </div>
@@ -434,3 +434,4 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
+

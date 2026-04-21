@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Toast, Theme } from '@/shared/types';
-import { generateId } from '@/shared/lib/utils';
+import type { Toast, Theme } from '@/types';
+import { generateId } from '@/lib/utils';
 
 interface UiStore {
   theme: Theme;
@@ -62,3 +62,4 @@ export const useUiStore = create<UiStore>()(
     }
   )
 );
+

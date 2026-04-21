@@ -11,7 +11,7 @@ import {
   Users,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Button, Badge } from '@/shared/ui';
+import { Button, Badge } from '@/components/shared';
 
 const features = [
   {
@@ -41,7 +41,7 @@ export default function HomePage() {
   return (
     <div className="bg-background">
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(99,91,255,0.14),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(56,189,248,0.10),transparent_24%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(37,99,235,0.16),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(56,189,248,0.12),transparent_24%)]" />
         <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-12 sm:px-6 sm:pb-24 sm:pt-16">
           <div className="mx-auto max-w-4xl text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">
@@ -51,7 +51,7 @@ export default function HomePage() {
 
             <h1 className="mt-8 text-5xl font-black tracking-tight text-slate-950 dark:text-white sm:text-6xl lg:text-7xl">
               Tu portafolio digital
-              <span className="block bg-[linear-gradient(135deg,#635bff_0%,#4f46e5_60%,#4338ca_100%)] bg-clip-text text-transparent">
+              <span className="block bg-[linear-gradient(135deg,#38bdf8_0%,#2563eb_60%,#1d4ed8_100%)] bg-clip-text text-transparent">
                 profesional
               </span>
             </h1>
@@ -62,7 +62,7 @@ export default function HomePage() {
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link to="/register">
-                <Button className="h-12 min-w-56 rounded-2xl bg-[linear-gradient(135deg,#635bff_0%,#4f46e5_100%)] px-6 text-base font-semibold text-white shadow-[0_20px_45px_-24px_rgba(79,70,229,0.9)] transition-transform hover:scale-[1.01] active:scale-[0.99]">
+                <Button className="h-12 min-w-56 rounded-2xl bg-[linear-gradient(135deg,#38bdf8_0%,#2563eb_100%)] px-6 text-base font-semibold text-white shadow-[0_20px_45px_-24px_rgba(37,99,235,0.8)] transition-transform hover:scale-[1.01] active:scale-[0.99]">
                   Crear mi portafolio
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -214,7 +214,7 @@ export default function HomePage() {
 
       <section id="explorar-talento" className="py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-[linear-gradient(135deg,#0f172a_0%,#1e1b4b_52%,#312e81_100%)] px-6 py-10 text-white shadow-[0_30px_80px_-45px_rgba(15,23,42,0.75)] sm:px-10">
+          <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-[linear-gradient(135deg,#0f172a_0%,#1e3a8a_52%,#1d4ed8_100%)] px-6 py-10 text-white shadow-[0_30px_80px_-45px_rgba(15,23,42,0.75)] sm:px-10">
             <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary-foreground/70">
@@ -269,3 +269,4 @@ export default function HomePage() {
     </div>
   );
 }
+

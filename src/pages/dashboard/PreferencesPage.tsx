@@ -12,8 +12,8 @@ import {
   Sparkles,
   UserCircle2,
 } from 'lucide-react';
-import { Badge, Card, EmptyState, LoadingSpinner } from '@/shared/ui';
-import { useAuthStore } from '@/store/authStore';
+import { Badge, Card, EmptyState, LoadingSpinner } from '@/components/shared';
+import { useAuthStore } from '@/store/auth/authStore';
 import { usePreferencesStore } from '@/store/preferencesStore';
 
 const workSignals = [
@@ -289,3 +289,5 @@ function sectionDescription(section: string) {
 
   return map[section] ?? 'Seccion del portafolio.';
 }
+
+

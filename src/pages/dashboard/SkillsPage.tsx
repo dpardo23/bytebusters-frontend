@@ -26,8 +26,8 @@ import {
   AvatarGroup,
   Tooltip,
   ConfirmDialog,
-} from '@/shared/ui';
-import type { SkillLevel, SkillCategory, GlobalSkillTag } from '@/shared/types';
+} from '@/components/shared';
+import type { SkillLevel, SkillCategory, GlobalSkillTag } from '@/types';
 
 const skillLevels: { value: SkillLevel; label: string }[] = [
   { value: 'Junior', label: 'Junior' },
@@ -533,3 +533,4 @@ export default function SkillsPage() {
     </div>
   );
 }
+

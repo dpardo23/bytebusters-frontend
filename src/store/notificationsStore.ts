@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import type { Notification } from '@/shared/types';
-import { notificationsService } from '@/shared/services';
+import type { Notification } from '@/types';
+import { notificationsService } from '@/services';
 
 interface NotificationsStore {
   notifications: Notification[];
@@ -71,3 +71,4 @@ export const useNotificationsStore = create<NotificationsStore>((set) => ({
     }
   },
 }));
+

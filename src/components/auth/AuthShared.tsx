@@ -1,7 +1,7 @@
 import { Code2, ArrowRight, Briefcase, Eye, Shield, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { cn } from '@/shared/lib/utils';
-import type { UserRole } from '@/shared/types';
+import { cn } from '@/lib/utils';
+import type { UserRole } from '@/types';
 
 type RoleOption = {
   role: UserRole;
@@ -19,7 +19,7 @@ export const authRoles: RoleOption[] = [
 
 export function EthosHubMark() {
   return (
-    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#635bff_0%,#4f46e5_55%,#312e81_100%)] text-white shadow-[0_16px_40px_-20px_rgba(79,70,229,0.8)] ring-1 ring-white/40 dark:ring-white/10">
+    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#38bdf8_0%,#2563eb_55%,#1e3a8a_100%)] text-white shadow-[0_16px_40px_-20px_rgba(37,99,235,0.65)] ring-1 ring-white/40 dark:ring-white/10">
       <Code2 className="h-7 w-7" />
     </div>
   );
@@ -76,7 +76,7 @@ export function AuthRoleSelector({
               className={cn(
                 'group flex cursor-pointer items-start gap-3 rounded-2xl border px-4 py-3 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white active:scale-[0.99] dark:focus-visible:ring-offset-slate-950',
                 active
-                  ? 'border-primary/40 bg-primary/10 shadow-[0_14px_40px_-28px_rgba(99,91,255,0.9)] dark:border-primary/50 dark:bg-primary/15'
+                  ? 'border-primary/40 bg-primary/10 shadow-[0_14px_40px_-28px_rgba(37,99,235,0.75)] dark:border-primary/50 dark:bg-primary/15'
                   : 'border-slate-200 bg-white hover:border-primary/30 hover:bg-slate-50 hover:shadow-[0_16px_35px_-28px_rgba(15,23,42,0.5)] dark:border-slate-800 dark:bg-slate-950/55 dark:hover:border-slate-700 dark:hover:bg-slate-900/80',
               )}
             >
@@ -211,3 +211,4 @@ export function AuthFooterLink({
     </p>
   );
 }
+
