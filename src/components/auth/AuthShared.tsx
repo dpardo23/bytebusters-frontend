@@ -143,9 +143,11 @@ const socialStyles = {
 export function SocialAuthButton({
   provider,
   label,
+  onClick,
 }: {
   provider: 'google' | 'github';
   label: string;
+  onClick?: (provider: 'google' | 'github') => void;
 }) {
   const Icon = provider === 'google' ? GoogleIcon : GitHubIcon;
 
@@ -153,6 +155,7 @@ export function SocialAuthButton({
     <button
       type="button"
       aria-label={label}
+      onClick={() => onClick?.(provider)}
       className={cn(
         'inline-flex h-12 w-full cursor-pointer items-center justify-center gap-3 rounded-2xl border px-4 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white active:scale-[0.985] dark:focus-visible:ring-offset-slate-950',
         socialStyles[provider],
@@ -167,9 +170,11 @@ export function SocialAuthButton({
 export function SocialAuthGroup({
   googleLabel,
   githubLabel,
+  onProviderClick,
 }: {
   googleLabel: string;
   githubLabel: string;
+  onProviderClick?: (provider: 'google' | 'github') => void;
 }) {
   return (
     <div className="space-y-4">
@@ -182,8 +187,8 @@ export function SocialAuthGroup({
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <SocialAuthButton provider="github" label={githubLabel} />
-        <SocialAuthButton provider="google" label={googleLabel} />
+        <SocialAuthButton provider="github" label={githubLabel} onClick={onProviderClick} />
+        <SocialAuthButton provider="google" label={googleLabel} onClick={onProviderClick} />
       </div>
     </div>
   );

@@ -12,7 +12,7 @@ type OAuthCallbackParams = {
 }
 
 type JwtPayload = {
-  userId?: number
+  userId?: number | string
   username?: string
   email?: string
   userType?: 'LOCAL' | 'GOOGLE' | 'GITHUB' | 'INVITADO' | 'ESTANDAR' | 'RECLUTADOR' | 'ADMINISTRADOR'
@@ -30,6 +30,15 @@ function mapRole(userType?: JwtPayload['userType']): AuthRole {
       return 'basic'
     default:
       return 'basic'
+  }
+}
+
+function resolveDefaultPathForRole(role: AuthRole): string {
+  switch (role) {
+    case 'admin':
+      return '/admin/dashboard'
+    default:
+      return '/dashboard'
   }
 }
 
@@ -75,6 +84,18 @@ function consumeOAuthIntent(): 'login' | 'register' | null {
   return null
 }
 
+function resolveAuthPathFromIntent(intent: 'login' | 'register' | null): string {
+  return intent === 'register' ? '/register' : '/login'
+}
+
+function decodeOAuthError(errorValue: string): string {
+  try {
+    return decodeURIComponent(errorValue)
+  } catch {
+    return errorValue
+  }
+}
+
 function toTitleCase(value: string): string {
   return value
     .split(' ')
@@ -104,24 +125,34 @@ export default function OAuthCallbackPage() {
   const [hasError, setHasError] = useState(false)
 
   const callbackData = useMemo(() => readOAuthCallbackParams(), [])
+  const oauthIntent = useMemo(() => consumeOAuthIntent(), [])
 
   useEffect(() => {
     if (!callbackData) {
       const errorInHash = new URLSearchParams(window.location.hash.replace(/^#/, '')).get('error')
       if (errorInHash) {
         setHasError(true)
-        setMessage(errorInHash)
+        setMessage(decodeOAuthError(errorInHash))
+        window.setTimeout(() => {
+          navigate(resolveAuthPathFromIntent(oauthIntent), { replace: true })
+        }, 1200)
         return
       }
 
       setHasError(true)
       setMessage('No se pudo completar el inicio de sesion. Intenta de nuevo.')
+      window.setTimeout(() => {
+        navigate(resolveAuthPathFromIntent(oauthIntent), { replace: true })
+      }, 1200)
       return
     }
 
     if (callbackData.error) {
       setHasError(true)
-      setMessage(callbackData.error)
+      setMessage(decodeOAuthError(callbackData.error))
+      window.setTimeout(() => {
+        navigate(resolveAuthPathFromIntent(oauthIntent), { replace: true })
+      }, 1200)
       return
     }
 
@@ -132,8 +163,15 @@ export default function OAuthCallbackPage() {
       return
     }
 
+    const userId = String(payload.userId).trim()
+    if (!userId) {
+      setHasError(true)
+      setMessage('La respuesta de autenticacion no fue valida.')
+      return
+    }
+
     const nextUser: AuthUser = {
-      id: String(payload.userId),
+      id: userId,
       email: payload.email,
       name: buildOAuthDisplayName(payload.username, payload.email),
       role: mapRole(payload.userType),
@@ -143,16 +181,15 @@ export default function OAuthCallbackPage() {
     markRegisteredUser()
     setAuthenticatedUser(nextUser, callbackData.token)
 
-    const oauthIntent = consumeOAuthIntent()
     const isRegisterAction = callbackData.action?.toUpperCase() === 'REGISTER'
     const shouldGoToOnboarding = oauthIntent === 'register' || (oauthIntent === null && isRegisterAction)
-    const targetPath = shouldGoToOnboarding ? '/profile' : `/user/${payload.userId}`
+    const targetPath = shouldGoToOnboarding ? '/profile' : resolveDefaultPathForRole(nextUser.role)
 
     setMessage('Acceso completado. Redirigiendo...')
     window.setTimeout(() => {
       navigate(targetPath, { replace: true })
     }, 700)
-  }, [callbackData, navigate])
+  }, [callbackData, navigate, oauthIntent])
 
   return (
     <section className='flex min-h-screen items-center justify-center bg-muted/30 px-4 py-10'>

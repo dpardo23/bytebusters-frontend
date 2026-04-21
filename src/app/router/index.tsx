@@ -7,6 +7,7 @@ import { Skeleton } from '@/shared/ui';
 // Lazy loaded pages
 const LoginPage = lazy(() => import('@/pages/auth/LoginPage'));
 const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage'));
+const OAuthCallbackPage = lazy(() => import('@/pages/auth/OAuthCallbackPage'));
 const RoleSelectionPage = lazy(() => import('@/pages/auth/RoleSelectionPage'));
 const ProfessionalRegisterPage = lazy(() => import('@/pages/auth/ProfessionalRegisterPage'));
 const RecruiterRegisterPage = lazy(() => import('@/pages/auth/RecruiterRegisterPage'));
@@ -240,6 +241,14 @@ export const router = createBrowserRouter([
     element: (
       <Suspense fallback={<PageLoader />}>
         <AccessDeniedPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: 'oauth2/callback',
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <OAuthCallbackPage />
       </Suspense>
     ),
   },

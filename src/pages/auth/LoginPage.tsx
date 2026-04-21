@@ -52,6 +52,9 @@ const MOCK_LOGIN_ACCOUNTS: MockLoginAccount[] = [
   },
 ];
 
+const API_BASE_URL = String(import.meta.env.VITE_API_URL || 'http://localhost:8080').replace(/\/$/, '');
+const OAUTH_INTENT_KEY = 'oauth_intent';
+
 export default function LoginPage() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -64,6 +67,11 @@ export default function LoginPage() {
     MOCK_LOGIN_ACCOUNTS[0].role,
   );
   const [showPassword, setShowPassword] = useState(false);
+
+  const redirectToOAuthProvider = (provider: 'github' | 'google') => {
+    sessionStorage.setItem(OAUTH_INTENT_KEY, 'login');
+    window.location.assign(`${API_BASE_URL}/api/auth/oauth/${provider}?intent=login`);
+  };
 
   useEffect(() => {
     if (!prefills) {
@@ -120,7 +128,7 @@ export default function LoginPage() {
       <AuthHero
         eyebrow="Bienvenido de vuelta"
         title="Inicia sesión y continúa construyendo tu presencia profesional."
-        description="Mantuvimos el acceso estático para que puedas probar la experiencia completa del frontend sin depender todavía de un backend de autenticación."
+        description="Ingresa con tu cuenta o con Google y GitHub para autenticarte contra el backend."
       />
 
       <motion.section
@@ -226,6 +234,7 @@ export default function LoginPage() {
             <SocialAuthGroup
               googleLabel="Continuar con Google"
               githubLabel="Continuar con GitHub"
+              onProviderClick={redirectToOAuthProvider}
             />
 
             <div className="grid gap-2 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-300">
@@ -248,7 +257,7 @@ export default function LoginPage() {
           <AuthFooterLink prompt="¿No tienes cuenta?" cta="Crear cuenta" to="/register" />
 
           <p className="text-center text-xs leading-6 text-slate-500 dark:text-slate-400">
-            El acceso social mostrado arriba es solo visual. La sesión real sigue siendo estática y local para esta demo.
+            El acceso social inicia el flujo OAuth con el backend y completa la sesión al volver al frontend.
           </p>
         </div>
       </motion.section>
