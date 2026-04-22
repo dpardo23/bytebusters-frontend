@@ -17,8 +17,8 @@ import {
   Wand2,
   XCircle,
 } from 'lucide-react';
-import { Badge, Button, Card, Progress } from '@/components/shared';
-import { cn } from '@/lib/utils';
+import { Badge, Button, Card, Progress } from '@/shared/ui';
+import { cn } from '@/shared/lib/utils';
 
 type SkillStatus = 'Aprobada' | 'Observacion';
 type QueueSeverity = 'Alta' | 'Media' | 'Baja';
@@ -152,7 +152,7 @@ const recentActivity = [
     title: 'Nuevo trigger',
     detail: 'Se activo auto-review para skills con integraciones externas.',
     icon: Wand2,
-    tone: 'text-sky-500 bg-sky-500/10',
+    tone: 'text-violet-500 bg-violet-500/10',
   },
 ];
 
@@ -425,4 +425,3 @@ export default function AdminSkillsPage() {
     </div>
   );
 }
-

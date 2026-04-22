@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import type { PlatformMetrics, ActivityLog, TimeSeriesData } from '@/types';
-import { analyticsService } from '@/services';
+import type { PlatformMetrics, ActivityLog, TimeSeriesData } from '@/shared/types';
+import { analyticsService } from '@/shared/services';
 
 interface AnalyticsStore {
   metrics: PlatformMetrics | null;
@@ -65,4 +65,3 @@ export const useAnalyticsStore = create<AnalyticsStore>((set, get) => ({
     await Promise.all([fetchMetrics(), fetchActivityLogs(), fetchTimeSeriesData()]);
   },
 }));
-

@@ -28,8 +28,8 @@ import {
   Input,
   Select,
   Skeleton,
-} from '@/components/shared';
-import { recruiterTalentProfiles } from '@/lib/constants/recruiterTalent';
+} from '@/shared/ui';
+import { recruiterTalentProfiles } from '@/shared/mocks/recruiterTalent';
 
 type SkillScope = 'all' | 'hard' | 'soft';
 type LevelFilter = '' | 'Junior' | 'Mid' | 'Senior';
@@ -632,4 +632,3 @@ function RecruiterStatCard({
     </Card>
   );
 }
-

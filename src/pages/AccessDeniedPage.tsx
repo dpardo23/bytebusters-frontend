@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ShieldX } from 'lucide-react';
-import { Button } from '@/components/shared';
+import { Button } from '@/shared/ui';
 
 export default function AccessDeniedPage() {
   return (
@@ -24,4 +24,3 @@ export default function AccessDeniedPage() {
     </div>
   );
 }
-

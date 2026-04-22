@@ -11,8 +11,11 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    hmr: {
-      overlay: false,
-    },
+    // Permite el host específico del error y los dominios generales de desarrollo de Vercel/v0
+    allowedHosts: [
+      'sb-9yjww1tzc4u3.vercel.run',
+      '.vercel.run',
+      '.vercel.app'
+    ],
   },
 })

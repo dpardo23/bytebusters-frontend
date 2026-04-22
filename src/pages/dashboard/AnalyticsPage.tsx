@@ -30,9 +30,9 @@ import {
   MapPin,
   RefreshCw,
 } from 'lucide-react';
-import { Button, Card, Badge, LoadingSpinner } from '@/components/shared';
+import { Button, Card, Badge, LoadingSpinner } from '@/shared/ui';
 import { useAnalyticsStore } from '@/store/analyticsStore';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/lib/utils';
 
 type TimeRange = '7d' | '30d' | '90d' | '1y';
 
@@ -447,4 +447,3 @@ export default function AnalyticsPage() {
     </div>
   );
 }
-

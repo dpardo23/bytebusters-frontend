@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { UserPreferences, Language, PortfolioSection } from '@/types';
-import { preferencesService } from '@/services';
+import type { UserPreferences, Language, PortfolioSection } from '@/shared/types';
+import { preferencesService } from '@/shared/services';
 
 interface PreferencesStore {
   preferences: UserPreferences | null;
@@ -106,4 +106,3 @@ export const usePreferencesStore = create<PreferencesStore>()(
     }
   )
 );
-

@@ -1,8 +1,8 @@
 import { ArrowUpRight, Briefcase, MapPin, Search, Shield, Sparkles, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Badge, Button } from '@/components/shared';
-import { useAuthStore } from '@/store/auth/authStore';
-import { mockUsers } from '@/lib/constants/data';
+import { Badge, Button } from '@/shared/ui';
+import { useAuthStore } from '@/store/authStore';
+import { mockUsers } from '@/shared/mocks/data';
 
 const featuredProfiles = mockUsers
   .filter((user) => user.role === 'professional')
@@ -190,5 +190,3 @@ export default function ExplorePage() {
     </section>
   );
 }
-
-

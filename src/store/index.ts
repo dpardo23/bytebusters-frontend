@@ -1,7 +1,7 @@
-export { useAuthStore } from './auth/authStore';
+export { useAuthStore } from './authStore';
 export { useUiStore } from './uiStore';
-export { useSkillsStore } from './profile/skillsStore';
-export { useProjectsStore } from './profile/projectsStore';
+export { useSkillsStore } from './skillsStore';
+export { useProjectsStore } from './projectsStore';
 export { useConnectionsStore } from './connectionsStore';
 export { useVisibilityStore } from './visibilityStore';
 export { useAnalyticsStore } from './analyticsStore';

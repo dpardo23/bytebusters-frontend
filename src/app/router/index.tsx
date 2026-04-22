@@ -1,8 +1,8 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
-import { DashboardLayout, AdminLayout, AuthLayout, PublicPortfolioLayout } from '@/components/layout';
-import { ProtectedRoute } from '@/components/layout/ProtectedRoute';
-import { Skeleton } from '@/components/shared';
+import { DashboardLayout, AdminLayout, AuthLayout, PublicPortfolioLayout } from '../layouts';
+import { ProtectedRoute } from './ProtectedRoute';
+import { Skeleton } from '@/shared/ui';
 
 // Lazy loaded pages
 const LoginPage = lazy(() => import('@/pages/auth/LoginPage'));
@@ -15,8 +15,11 @@ const ProjectDetailPage = lazy(() => import('@/pages/dashboard/ProjectDetailPage
 const ConnectionsPage = lazy(() => import('@/pages/dashboard/ConnectionsPage'));
 const VisibilityPage = lazy(() => import('@/pages/dashboard/VisibilityPage'));
 const ExperiencePage = lazy(() => import('@/pages/dashboard/ExperiencePage'));
+const EducationPage = lazy(() => import('@/pages/dashboard/EducationPage'));
 const PreferencesPage = lazy(() => import('@/pages/dashboard/PreferencesPage'));
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
+const AdminUsersPage = lazy(() => import('@/pages/admin/AdminUsersPage'));
+const AdminModerationPage = lazy(() => import('@/pages/admin/AdminModerationPage'));
 const AdminSkillsPage = lazy(() => import('@/pages/admin/AdminSkillsPage'));
 const AdminPortfoliosPage = lazy(() => import('@/pages/admin/AdminPortfoliosPage'));
 const ExplorePage = lazy(() => import('@/pages/public/ExplorePage'));
@@ -24,6 +27,8 @@ const PublicPortfolioPage = lazy(() => import('@/pages/public/PublicPortfolioPag
 const PasswordPortfolioPage = lazy(() => import('@/pages/public/PasswordPortfolioPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 const AccessDeniedPage = lazy(() => import('@/pages/AccessDeniedPage'));
+const RecruiterDashboardPage = lazy(() => import('@/pages/recruiter/RecruiterDashboardPage'));
+const TalentDiscoveryPage = lazy(() => import('@/pages/recruiter/TalentDiscoveryPage'));
 
 function PageLoader() {
   return (
@@ -120,10 +125,34 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: 'dashboard/education',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <EducationPage />
+          </Suspense>
+        ),
+      },
+      {
         path: 'dashboard/preferences',
         element: (
           <Suspense fallback={<PageLoader />}>
             <PreferencesPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'recruiter/dashboard',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <RecruiterDashboardPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'recruiter/talent-discovery',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <TalentDiscoveryPage />
           </Suspense>
         ),
       },
@@ -141,6 +170,22 @@ export const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <AdminDashboardPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'admin/users',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <AdminUsersPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'admin/moderation',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <AdminModerationPage />
           </Suspense>
         ),
       },
@@ -216,4 +261,3 @@ export const router = createBrowserRouter([
     ),
   },
 ]);
-

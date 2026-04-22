@@ -28,9 +28,9 @@ import {
   EmptyState,
   ConfirmDialog,
   ToggleSwitch,
-} from '@/components/shared';
-import { formatDate, isValidMediaUrl, getMediaType } from '@/lib/utils';
-import type { Project, ProjectCategory, ProjectStatus, TechnicalInfo, ProjectMedia } from '@/types';
+} from '@/shared/ui';
+import { formatDate, isValidMediaUrl, getMediaType } from '@/shared/lib/utils';
+import type { Project, ProjectCategory, ProjectStatus, TechnicalInfo, ProjectMedia } from '@/shared/types';
 
 const projectCategories: { value: ProjectCategory; label: string }[] = [
   { value: 'Web', label: 'Web' },
@@ -596,4 +596,3 @@ export default function ProjectsPage() {
     </div>
   );
 }
-

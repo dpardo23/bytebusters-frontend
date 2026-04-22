@@ -24,8 +24,8 @@ import {
   CardContent,
   Badge,
   Skeleton,
-} from '@/components/shared';
-import { formatDate, getYoutubeEmbedUrl, getVimeoEmbedUrl } from '@/lib/utils';
+} from '@/shared/ui';
+import { formatDate, getYoutubeEmbedUrl, getVimeoEmbedUrl } from '@/shared/lib/utils';
 
 export default function ProjectDetailPage() {
   const { t } = useTranslation();
@@ -236,7 +236,7 @@ export default function ProjectDetailPage() {
                       {(media.type === 'youtube' || media.type === 'vimeo') && (
                         <div className="aspect-video">
                           <iframe
-                            src={getEmbedUrl(media.url, media.type) ?? undefined}
+                            src={getEmbedUrl(media.url, media.type)}
                             title={media.title}
                             className="h-full w-full"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -329,4 +329,3 @@ export default function ProjectDetailPage() {
     </div>
   );
 }
-

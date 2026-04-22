@@ -6,8 +6,8 @@ import type {
   LinkedinExperience,
   LinkedinEducation,
   Recommendation,
-} from '@/types';
-import { connectionsService } from '@/services';
+} from '@/shared/types';
+import { connectionsService } from '@/shared/services';
 
 interface ConnectionsStore {
   connections: OAuthConnection[];
@@ -174,4 +174,3 @@ export const useConnectionsStore = create<ConnectionsStore>((set, get) => ({
     }));
   },
 }));
-

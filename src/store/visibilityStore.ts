@@ -5,8 +5,8 @@ import type {
   PortfolioSection,
   ModerationAction,
   User,
-} from '@/types';
-import { visibilityService } from '@/services';
+} from '@/shared/types';
+import { visibilityService } from '@/shared/services';
 
 interface VisibilityStore {
   settings: VisibilitySettings | null;
@@ -168,4 +168,3 @@ export const useVisibilityStore = create<VisibilityStore>((set) => ({
     }
   },
 }));
-

@@ -27,12 +27,12 @@ import {
   Badge,
   Modal,
   LoadingSpinner,
-} from '@/components/shared';
-import { useAuthStore } from '@/store/auth/authStore';
+} from '@/shared/ui';
+import { useAuthStore } from '@/store/authStore';
 import { usePreferencesStore } from '@/store/preferencesStore';
 import { useUiStore } from '@/store/uiStore';
-import { cn } from '@/lib/utils';
-import type { UserPreferences } from '@/types';
+import { cn } from '@/shared/lib/utils';
+import type { UserPreferences } from '@/shared/types';
 
 type SettingsTab = 'profile' | 'account' | 'notifications' | 'privacy' | 'appearance' | 'billing';
 
@@ -754,5 +754,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
-
